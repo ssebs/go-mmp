@@ -15,4 +15,4 @@ This is a re-write of https://github.com/ssebs/MiniMacroPad/
 - [ ] CLI for GUI only, and no-GUI modes
 
 ## LICENSE
-
+[Apache 2 License](./LICENSE)
