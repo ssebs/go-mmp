@@ -6,9 +6,7 @@ import (
 	"github.com/micmonay/keybd_event"
 )
 
-// HotKeys
-type HotKey int
-
+// Modifier Keys for HotKey
 const (
 	SHIFT HotKey = iota
 	CTRL  HotKey = iota
@@ -16,7 +14,16 @@ const (
 	SUPER HotKey = iota
 )
 
+// HotKey
+type HotKey int
+
+func (hk HotKey) String() string {
+	return []string{"SHIFT", "CTRL", "ALT", "SUPER"}[hk]
+}
+
 // HotKeyModifiers
+// When creating, set whatever modifier to true,
+// then use GetActiveModifiers() to get a list of active HotKeys
 type HotKeyModifiers struct {
 	shift   bool
 	control bool
@@ -25,6 +32,7 @@ type HotKeyModifiers struct {
 }
 
 // GetActiveModifiers
+// Return active modifier HotKeys from self
 func (h *HotKeyModifiers) GetActiveModifiers() []HotKey {
 	activeKeys := []HotKey{}
 	if h.shift {
@@ -47,23 +55,19 @@ type Keyboard struct {
 	kb keybd_event.KeyBonding
 }
 
-func (k Keyboard) PressHold(duration time.Duration, keys ...int) error {
+func (k Keyboard) PressHold(delayDuration time.Duration, keys ...int) {
+	// Set keys, press, sleep, release
 	k.kb.SetKeys(keys...)
-	err := k.kb.Press()
-	if err != nil {
-		return err
-	}
-	time.Sleep(duration)
-	err = k.kb.Release()
-	if err != nil {
-		return err
-	}
-	return nil
+	k.kb.Press()
+	time.Sleep(delayDuration)
+	k.kb.Release()
 }
 
-func (k Keyboard) HotKey(duration time.Duration, mods HotKeyModifiers, keys ...int) error {
+func (k Keyboard) HotKey(delayDuration time.Duration, mods HotKeyModifiers, keys ...int) {
+	// Press hotkey (combo of modifier key + other keys) e.g. CTRL+c
 	k.kb.SetKeys(keys...)
 
+	// Set the modifiers to press in addition to the keys
 	for _, hotkey := range mods.GetActiveModifiers() {
 		switch hotkey {
 		case SHIFT:
@@ -76,5 +80,5 @@ func (k Keyboard) HotKey(duration time.Duration, mods HotKeyModifiers, keys ...i
 			k.kb.HasSuper(true)
 		}
 	}
-	return nil
+	k.PressHold(delayDuration)
 }
