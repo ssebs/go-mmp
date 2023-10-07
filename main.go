@@ -11,6 +11,7 @@ func main() {
 	app := app.New()
 	win := app.NewWindow(projName)
 
+	// Create button to test CTRL + SHIFT + ESC hotkey
 	win.SetContent(widget.NewLabel(projName))
 	win.ShowAndRun()
 }

@@ -16,3 +16,12 @@ This is a re-write of https://github.com/ssebs/MiniMacroPad/
 
 ## LICENSE
 [Apache 2 License](./LICENSE)
+
+## Docs:
+- GUI (fyne)
+  - https://developer.fyne.io/
+  - https://github.com/fyne-io/fyne/tree/master/cmd/fyne_demo
+- Serial
+  - https://github.com/bugst/go-serial
+- Keyboard
+  - https://github.com/micmonay/keybd_event
