@@ -7,7 +7,7 @@ import (
 
 func TestHotKeyModifiers(t *testing.T) {
 	t.Run("test get active modifiers", func(t *testing.T) {
-		mods := HotKeyModifiers{shift: true, control: true, super: false}
+		mods := HotKeyModifiers{Shift: true, Control: true, Super: false}
 		want := []HotKey{SHIFT, CTRL}
 		got := mods.GetActiveModifiers()
 		if !reflect.DeepEqual(want, got) {

@@ -25,26 +25,36 @@ func (hk HotKey) String() string {
 // When creating, set whatever modifier to true,
 // then use GetActiveModifiers() to get a list of active HotKeys
 type HotKeyModifiers struct {
-	shift   bool
-	control bool
-	alt     bool
-	super   bool
+	Shift   bool
+	Control bool
+	Alt     bool
+	Super   bool
 }
+
+// Why doesn't intellisense sense this
+// // NewHotKeyModifiers
+// func (h *HotKeyModifiers) NewHotKeyModifiers(shift, control, alt, super bool) *HotKeyModifiers {
+// 	h.shift = shift
+// 	h.control = control
+// 	h.alt = alt
+// 	h.super = super
+// 	return h
+// }
 
 // GetActiveModifiers
 // Return active modifier HotKeys from self
 func (h *HotKeyModifiers) GetActiveModifiers() []HotKey {
 	activeKeys := []HotKey{}
-	if h.shift {
+	if h.Shift {
 		activeKeys = append(activeKeys, SHIFT)
 	}
-	if h.control {
+	if h.Control {
 		activeKeys = append(activeKeys, CTRL)
 	}
-	if h.alt {
+	if h.Alt {
 		activeKeys = append(activeKeys, ALT)
 	}
-	if h.super {
+	if h.Super {
 		activeKeys = append(activeKeys, SUPER)
 	}
 	return activeKeys
@@ -52,33 +62,35 @@ func (h *HotKeyModifiers) GetActiveModifiers() []HotKey {
 
 // Keyboard
 type Keyboard struct {
-	kb keybd_event.KeyBonding
+	KeyBonding *keybd_event.KeyBonding
 }
 
-func (k Keyboard) PressHold(delayDuration time.Duration, keys ...int) {
+// Press and hold a set of keys, with a delayDuration between pressing and releasing
+func (k *Keyboard) PressHold(delayDuration time.Duration, keys ...int) {
 	// Set keys, press, sleep, release
-	k.kb.SetKeys(keys...)
-	k.kb.Press()
+	k.KeyBonding.SetKeys(keys...)
+	k.KeyBonding.Press()
 	time.Sleep(delayDuration)
-	k.kb.Release()
+	k.KeyBonding.Release()
 }
 
-func (k Keyboard) HotKey(delayDuration time.Duration, mods HotKeyModifiers, keys ...int) {
+// Press and hold a set of HotKeys, with a delayDuration between pressing and releasing
+// Also supports adding other keys to press/release
+func (k *Keyboard) RunHotKey(delayDuration time.Duration, mods HotKeyModifiers, keys ...int) {
 	// Press hotkey (combo of modifier key + other keys) e.g. CTRL+c
-	k.kb.SetKeys(keys...)
 
 	// Set the modifiers to press in addition to the keys
 	for _, hotkey := range mods.GetActiveModifiers() {
 		switch hotkey {
 		case SHIFT:
-			k.kb.HasSHIFT(true)
+			k.KeyBonding.HasSHIFT(true)
 		case CTRL:
-			k.kb.HasCTRL(true)
+			k.KeyBonding.HasCTRL(true)
 		case ALT:
-			k.kb.HasALT(true)
+			k.KeyBonding.HasALT(true)
 		case SUPER:
-			k.kb.HasSuper(true)
+			k.KeyBonding.HasSuper(true)
 		}
 	}
-	k.PressHold(delayDuration)
+	k.PressHold(delayDuration, keys...)
 }
