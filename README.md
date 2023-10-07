@@ -7,7 +7,7 @@ This is a re-write of https://github.com/ssebs/MiniMacroPad/
 - Clone this repo
   - You'll need to install a C compiler. See https://developer.fyne.io/started/
 - `go run main.go`
-<!-- - go install github.com/ssebs/MiniMacroPad -->
+<!-- - go install github.com/ssebs/go-mmp -->
 
 ## Building
 - Make sure `fyne` CLI is installed
@@ -32,10 +32,7 @@ This is a re-write of https://github.com/ssebs/MiniMacroPad/
 - [ ] Support keyboard shortcuts?
 - [ ] CLI for GUI only, and no-GUI modes
 
-## LICENSE
-[Apache 2 License](./LICENSE)
-
-## Docs:
+## Docs / References:
 - GUI (fyne)
   - https://developer.fyne.io/
   - https://github.com/fyne-io/fyne/tree/master/cmd/fyne_demo
@@ -43,3 +40,8 @@ This is a re-write of https://github.com/ssebs/MiniMacroPad/
   - https://github.com/bugst/go-serial
 - Keyboard
   - https://github.com/micmonay/keybd_event
+- Existing thing I want to improve
+  - https://github.com/ssebs/MiniMacroPad/
+
+## LICENSE
+[Apache 2 License](./LICENSE)
