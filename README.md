@@ -3,10 +3,28 @@ MiniMacroPad driver software, written in Golang.
 
 This is a re-write of https://github.com/ssebs/MiniMacroPad/
 
+## Usage
+- Clone this repo
+  - You'll need to install a C compiler. See https://developer.fyne.io/started/
+- `go run main.go`
+<!-- - go install github.com/ssebs/MiniMacroPad -->
+
+## Building
+- Make sure `fyne` CLI is installed
+  - `go install fyne.io/fyne/v2/cmd/fyne@latest`
+- Windows:
+  - `PS go-mmp> fyne package -os windows`
+- Mac:
+  - `$ fyne package -os darwin`
+- Linux:
+  - `$ fyne package -os linux`
+
 ## Goals
+- [x] Get started
+- [WIP] Create basic UI
+- [WIP] Run keyboard macros
 - [ ] Listen for Serial data
   - [ ] Take action from this data
-- [ ] Run keyboard macros
 - [ ] CRUD a config file
   - [ ] Support many macros/devices
 - [ ] UI for CRUD'ing these macros
