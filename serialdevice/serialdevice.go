@@ -16,6 +16,7 @@ type SerialDevice struct {
 	portName string
 	mode     *serial.Mode
 	Conn     serial.Port
+	timeout  time.Duration
 }
 
 // Create a new SerialDevice
@@ -32,6 +33,7 @@ func NewSerialDevice(portName string, baudRate int, timeout time.Duration) (ardu
 	if err != nil {
 		return arduino, err
 	}
+	arduino.timeout = timeout
 	err = arduino.Conn.SetReadTimeout(timeout)
 	if err != nil {
 		return arduino, err
@@ -75,11 +77,13 @@ func (s *SerialDevice) SetSerialPort(requestedPortName string) (err error) {
 
 // Listen & run callback when data comes in
 // Runs in a bufio.Scanner.Scan() loop
-func (s *SerialDevice) ListenCallback(fn func(strData string)) {
+// callback must return true to break this loop
+func (s *SerialDevice) ListenCallback(fn func(strData string) bool) (shouldBreak bool) {
 	scanner := bufio.NewScanner(s.Conn)
 	for scanner.Scan() {
-		fn(scanner.Text())
+		shouldBreak = fn(scanner.Text())
 	}
+	return shouldBreak
 }
 
 // Listen & send data thru chan

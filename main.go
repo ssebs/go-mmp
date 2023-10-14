@@ -16,18 +16,22 @@ import (
 
 const projName = "Go-MMP"
 
-func runActionIDFromSerial(actionID string) {
+func runActionIDFromSerial(actionID string) (shouldBreak bool) {
 	iActionID, err := utils.StringToInt(actionID)
 	if err != nil {
 		log.Println(err.Error())
+		return true
 	}
 	switch iActionID {
+	case 9:
+		return true
 	case 10:
 		mmp.OpenTaskManager()
 		fmt.Printf("pressed: %d\n", iActionID)
 	default:
 		fmt.Printf("pressed: %d\n", iActionID)
 	}
+	return false
 }
 
 func main() {
@@ -35,9 +39,17 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	// quitChan := make(chan bool)
+
 	defer arduino.CloseConnection()
 	go func() {
-		arduino.ListenCallback(runActionIDFromSerial)
+		shouldQuit := false
+		for !shouldQuit {
+			shouldQuit = arduino.ListenCallback(runActionIDFromSerial)
+			fmt.Println("shouldquit: ", shouldQuit)
+		}
+		log.Println("No longer listening for serial data, leaving goroutine")
+		// quitChan <- true
 	}()
 
 	app := app.New()
