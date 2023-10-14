@@ -75,10 +75,19 @@ func (s *SerialDevice) SetSerialPort(requestedPortName string) (err error) {
 
 // Listen & run callback when data comes in
 // Runs in a bufio.Scanner.Scan() loop
-func (s *SerialDevice) Listen(fn func(strData string)) {
+func (s *SerialDevice) ListenCallback(fn func(strData string)) {
 	scanner := bufio.NewScanner(s.Conn)
 	for scanner.Scan() {
 		fn(scanner.Text())
+	}
+}
+
+// Listen & send data thru chan
+// Runs in a bufio.Scanner.Scan() loop
+func (s *SerialDevice) ListenChan(ch chan string) {
+	scanner := bufio.NewScanner(s.Conn)
+	for scanner.Scan() {
+		ch <- scanner.Text()
 	}
 }
 
