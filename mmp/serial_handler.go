@@ -42,6 +42,8 @@ func NewMMPSerialDevice(portName string, baudRate int, timeout time.Duration) (a
 		}
 		log.Printf("%s not found in serial ports found: %v", portName, ports)
 		arduino.portName = ports[1]
+		err = arduino.loadConnection(baudRate)
+		return arduino, err
 	default:
 		if _, isFound := utils.SliceContains[string](&ports, portName); isFound {
 			err = arduino.loadConnection(baudRate)

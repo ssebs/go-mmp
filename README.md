@@ -23,8 +23,8 @@ This is a re-write of https://github.com/ssebs/MiniMacroPad/
 - [x] Get started
 - [WIP] Create basic UI
 - [WIP] Run keyboard macros
-- [ ] Listen for Serial data
-  - [ ] Take action from this data
+- [WIP] Listen for Serial data
+  - [WIP] Take action from this data
 - [ ] CRUD a config file
   - [ ] Support many macros/devices
 - [ ] UI for CRUD'ing these macros

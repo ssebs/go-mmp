@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"log"
+	"strconv"
+	"strings"
 	"time"
 
 	"fyne.io/fyne/v2"
@@ -30,6 +32,8 @@ func serialListen(s *mmp.MMPSerialDevice) {
 	buff := make([]byte, 100)
 
 	for {
+		// TODO: support multiple digits
+		fmt.Println("new for iter")
 		n, err := s.Conn.Read(buff)
 		if err != nil {
 			log.Fatal(err)
@@ -39,7 +43,27 @@ func serialListen(s *mmp.MMPSerialDevice) {
 			fmt.Print("\nEOF")
 			break
 		}
-		fmt.Printf("%v", string(buff[:n]))
+		numString := string(buff[:n])
+		numString = strings.TrimSpace(numString)
+
+		if numString != "" {
+			fmt.Println("  buffer: ", buff)
+			fmt.Println("  n: ", n)
+			fmt.Println("  numstring: ", numString)
+
+			num, err := strconv.ParseInt(numString, 10, 32)
+			if err != nil {
+				log.Printf("cannot convert %v to int", numString)
+			}
+			runActionIDFromSerial(int(num))
+		}
+	}
+}
+
+func runActionIDFromSerial(actionID int) {
+	switch actionID {
+	case 9:
+		openTaskManager()
 	}
 }
 
