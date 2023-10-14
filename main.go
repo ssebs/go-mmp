@@ -23,6 +23,8 @@ func openTaskManager() {
 	keeb.RunHotKey(10*time.Millisecond, hkm, keybd_event.VK_ESC)
 }
 
+// Update var in UI
+
 func main() {
 	app := app.New()
 	win := app.NewWindow(projName)

@@ -32,6 +32,12 @@ This is a re-write of https://github.com/ssebs/MiniMacroPad/
 - [ ] Support keyboard shortcuts?
 - [ ] CLI for GUI only, and no-GUI modes
 
+## Architecture Diagram
+> To update it, edit the [Architecture.drawio](./Architecture.drawio) file. I'm using [this](https://open-vsx.org/extension/hediet/vscode-drawio) VSCode extension.
+> 
+![Architecture diagram](./Architecture.png).
+
+
 ## Docs / References:
 - GUI (fyne)
   - https://developer.fyne.io/
