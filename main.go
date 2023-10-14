@@ -13,7 +13,7 @@ import (
 	"fyne.io/fyne/v2/widget"
 	"github.com/micmonay/keybd_event"
 	"github.com/ssebs/go-mmp/keyboard"
-	"github.com/ssebs/go-mmp/mmp"
+	"github.com/ssebs/go-mmp/serialdevice"
 )
 
 const projName = "Go-MMP"
@@ -28,7 +28,7 @@ func openTaskManager() {
 	keeb.RunHotKey(10*time.Millisecond, hkm, keybd_event.VK_ESC)
 }
 
-func serialListen(s *mmp.MMPSerialDevice) {
+func serialListen(s *serialdevice.SerialDevice) {
 	// https://stackoverflow.com/a/50091168
 	reader := bufio.NewScanner(s.Conn)
 
@@ -52,11 +52,12 @@ func runActionIDFromSerial(actionID int) {
 
 func main() {
 
-	arduino, err := mmp.NewMMPSerialDevice("COM7", 9600, time.Millisecond*20)
+	arduino, err := serialdevice.NewSerialDevice("COM7", 9600, time.Millisecond*20)
 	if err != nil {
 		log.Fatal(err)
 	}
 	go serialListen(&arduino)
+	defer arduino.CloseConnection()
 
 	app := app.New()
 	win := app.NewWindow(projName)
