@@ -34,24 +34,23 @@ func NewMMPSerialDevice(portName string, baudRate int, timeout time.Duration) (M
 		return arduino, err
 	}
 
+	fmt.Println("ports", ports)
 	switch len(ports) {
 	case 0:
 		return arduino, ErrSerialDeviceNotFound{}
 	case 1:
 		if _, isFound := utils.SliceContains[string](&ports, portName); isFound {
-			arduino.loadConnection(baudRate)
+			return arduino, arduino.loadConnection(baudRate)
 		}
 		log.Printf("%s not found in serial ports found: %v", portName, ports)
 		arduino.portName = ports[1]
 	default:
 		if _, isFound := utils.SliceContains[string](&ports, portName); isFound {
-			arduino.loadConnection(baudRate)
+			return arduino, arduino.loadConnection(baudRate)
 		}
 		// TODO: ask user which to choose if it doesn't match
 		return arduino, ErrSerialPortNameMismatch{want: portName, got: strings.Join(ports, ", ")}
 	}
-
-	fmt.Println("ports", ports)
 
 	return arduino, serial.PortError{}
 }

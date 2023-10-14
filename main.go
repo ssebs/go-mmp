@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"time"
 
@@ -33,8 +34,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer arduino.Close()
-
+	fmt.Printf("arduino: %v\n", arduino)
 	// app := app.New()
 	// win := app.NewWindow(projName)
 	// win.Resize(fyne.NewSize(300, 200))
