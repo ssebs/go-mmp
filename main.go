@@ -5,10 +5,10 @@ import (
 	"log"
 	"time"
 
-	// "fyne.io/fyne/v2"
-	// "fyne.io/fyne/v2/app"
-	// "fyne.io/fyne/v2/container"
-	// "fyne.io/fyne/v2/widget"
+	"fyne.io/fyne/v2"
+	"fyne.io/fyne/v2/app"
+	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/widget"
 	"github.com/micmonay/keybd_event"
 	"github.com/ssebs/go-mmp/keyboard"
 	"github.com/ssebs/go-mmp/mmp"
@@ -26,7 +26,22 @@ func openTaskManager() {
 	keeb.RunHotKey(10*time.Millisecond, hkm, keybd_event.VK_ESC)
 }
 
-// Update var in UI
+func serialListen(s *mmp.MMPSerialDevice) {
+	buff := make([]byte, 100)
+
+	for {
+		n, err := s.Conn.Read(buff)
+		if err != nil {
+			log.Fatal(err)
+			break
+		}
+		if n == 0 {
+			fmt.Print("\nEOF")
+			break
+		}
+		fmt.Printf("%v", string(buff[:n]))
+	}
+}
 
 func main() {
 
@@ -34,19 +49,20 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Printf("arduino: %v\n", arduino)
-	// app := app.New()
-	// win := app.NewWindow(projName)
-	// win.Resize(fyne.NewSize(300, 200))
-	// win.CenterOnScreen()
+	go serialListen(&arduino)
 
-	// container := container.NewVBox()
+	app := app.New()
+	win := app.NewWindow(projName)
+	win.Resize(fyne.NewSize(300, 200))
+	win.CenterOnScreen()
 
-	// // Create button to test CTRL + SHIFT + ESC hotkey
-	// tmBtn := widget.NewButton("Open Task Manager", openTaskManager)
+	container := container.NewVBox()
 
-	// container.Add(tmBtn)
+	// Create button to test CTRL + SHIFT + ESC hotkey
+	tmBtn := widget.NewButton("Open Task Manager", openTaskManager)
 
-	// win.SetContent(container)
-	// win.ShowAndRun()
+	container.Add(tmBtn)
+
+	win.SetContent(container)
+	win.ShowAndRun()
 }

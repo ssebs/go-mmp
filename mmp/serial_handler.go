@@ -14,45 +14,43 @@ import (
 type MMPSerialDevice struct {
 	portName string
 	mode     *serial.Mode
-	conn     serial.Port
+	Conn     serial.Port
 }
 
 func (s *MMPSerialDevice) loadConnection(baud int) (err error) {
 	s.mode = &serial.Mode{BaudRate: int(baud)}
-	s.conn, err = serial.Open(s.portName, s.mode)
-	if err != nil {
-		return err
-	}
-	return nil
+	s.Conn, err = serial.Open(s.portName, s.mode)
+	return err
 }
 
-func NewMMPSerialDevice(portName string, baudRate int, timeout time.Duration) (MMPSerialDevice, error) {
-	arduino := MMPSerialDevice{portName: portName}
+func NewMMPSerialDevice(portName string, baudRate int, timeout time.Duration) (arduino MMPSerialDevice, err error) {
+	arduino.portName = portName
 
+	// TODO: replace with enumerator.GetDetailedPortsList
 	ports, err := serial.GetPortsList()
 	if err != nil {
 		return arduino, err
 	}
 
-	fmt.Println("ports", ports)
 	switch len(ports) {
 	case 0:
-		return arduino, ErrSerialDeviceNotFound{}
+		err = ErrSerialDeviceNotFound{}
 	case 1:
 		if _, isFound := utils.SliceContains[string](&ports, portName); isFound {
-			return arduino, arduino.loadConnection(baudRate)
+			err = arduino.loadConnection(baudRate)
+			return arduino, err
 		}
 		log.Printf("%s not found in serial ports found: %v", portName, ports)
 		arduino.portName = ports[1]
 	default:
 		if _, isFound := utils.SliceContains[string](&ports, portName); isFound {
-			return arduino, arduino.loadConnection(baudRate)
+			err = arduino.loadConnection(baudRate)
+			return arduino, err
 		}
 		// TODO: ask user which to choose if it doesn't match
-		return arduino, ErrSerialPortNameMismatch{want: portName, got: strings.Join(ports, ", ")}
+		err = ErrSerialPortNameMismatch{want: portName, got: strings.Join(ports, ", ")}
 	}
-
-	return arduino, serial.PortError{}
+	return arduino, err
 }
 
 // Errors
