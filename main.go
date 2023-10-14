@@ -1,10 +1,10 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"log"
 	"strconv"
-	"strings"
 	"time"
 
 	"fyne.io/fyne/v2"
@@ -29,40 +29,23 @@ func openTaskManager() {
 }
 
 func serialListen(s *mmp.MMPSerialDevice) {
-	buff := make([]byte, 100)
+	// https://stackoverflow.com/a/50091168
+	reader := bufio.NewScanner(s.Conn)
 
-	for {
-		// TODO: support multiple digits
-		fmt.Println("new for iter")
-		n, err := s.Conn.Read(buff)
+	for reader.Scan() {
+		numString := reader.Text()
+		fmt.Println("d: ", numString)
+		num, err := strconv.ParseInt(numString, 10, 32)
 		if err != nil {
-			log.Fatal(err)
-			break
+			log.Printf("cannot convert %v to int", numString)
 		}
-		if n == 0 {
-			fmt.Print("\nEOF")
-			break
-		}
-		numString := string(buff[:n])
-		numString = strings.TrimSpace(numString)
-
-		if numString != "" {
-			fmt.Println("  buffer: ", buff)
-			fmt.Println("  n: ", n)
-			fmt.Println("  numstring: ", numString)
-
-			num, err := strconv.ParseInt(numString, 10, 32)
-			if err != nil {
-				log.Printf("cannot convert %v to int", numString)
-			}
-			runActionIDFromSerial(int(num))
-		}
+		runActionIDFromSerial(int(num))
 	}
 }
 
 func runActionIDFromSerial(actionID int) {
 	switch actionID {
-	case 9:
+	case 10:
 		openTaskManager()
 	}
 }
