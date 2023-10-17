@@ -65,6 +65,11 @@ type Keyboard struct {
 	KeyBonding *keybd_event.KeyBonding
 }
 
+// Create new Keyboard
+func NewKeyboard(kb *keybd_event.KeyBonding) *Keyboard {
+	return &Keyboard{KeyBonding: kb}
+}
+
 // Press and hold a set of keys, with a delayDuration between pressing and releasing
 func (k *Keyboard) PressHold(delayDuration time.Duration, keys ...int) {
 	// Set keys, press, sleep, release

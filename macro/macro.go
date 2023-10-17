@@ -11,12 +11,13 @@ import (
 // Macro hold specific macro info
 type Macro struct {
 	Title    string
-	Callback func()
+	Callback func(v ...any)
 }
 
 // MacroManager holds macro data
 type MacroManager struct {
 	Macros []Macro
+	Keeb   keyboard.Keyboard
 }
 
 // Open Task Manager by running CTRL + SHIFT + ESC
@@ -28,4 +29,8 @@ func OpenTaskManager() {
 	keeb := keyboard.Keyboard{KeyBonding: &kb}
 	hkm := keyboard.HotKeyModifiers{Shift: true, Control: true}
 	keeb.RunHotKey(10*time.Millisecond, hkm, keybd_event.VK_ESC)
+}
+
+func (mm *MacroManager) RunShortcut(hkm keyboard.HotKeyModifiers, keys ...int) {
+	mm.Keeb.RunHotKey(10*time.Millisecond, hkm, keys...)
 }
