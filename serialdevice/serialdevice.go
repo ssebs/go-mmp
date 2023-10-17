@@ -17,7 +17,6 @@ type SerialDevice struct {
 	mode     *serial.Mode
 	Conn     serial.Port
 	timeout  time.Duration
-	timeout  time.Duration
 }
 
 // Create a new SerialDevice
