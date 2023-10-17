@@ -35,7 +35,7 @@ func runActionIDFromSerial(actionID string) (shouldBreak bool) {
 	return false
 }
 
-func Listener(btnLabel *widget.Label, sd *serialdevice.SerialDevice) {
+func listener(btnLabel *widget.Label, sd *serialdevice.SerialDevice) {
 	shouldQuit := false
 	for !shouldQuit {
 		// log.Println("shouldquit: ", shouldQuit)
@@ -47,7 +47,7 @@ func Listener(btnLabel *widget.Label, sd *serialdevice.SerialDevice) {
 		btnLabel.SetText(fmt.Sprintf("Button Pressed: %s", actionID))
 		shouldQuit = runActionIDFromSerial(actionID)
 	}
-	log.Println("Exiting Listener")
+	log.Println("Exiting listener")
 }
 
 func main() {
@@ -74,7 +74,7 @@ func main() {
 	pressedLabel := widget.NewLabel("Button Pressed: ")
 
 	// Run listener
-	go Listener(pressedLabel, &arduino)
+	go listener(pressedLabel, &arduino)
 
 	// Create button to test CTRL + SHIFT + ESC hotkey
 	tmBtn := widget.NewButton("Open Task Manager", mmp.OpenTaskManager)
