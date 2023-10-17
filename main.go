@@ -10,7 +10,7 @@ import (
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/widget"
-	"github.com/ssebs/go-mmp/mmp"
+	"github.com/ssebs/go-mmp/macro"
 	"github.com/ssebs/go-mmp/serialdevice"
 	"github.com/ssebs/go-mmp/utils"
 )
@@ -27,7 +27,8 @@ func runActionIDFromSerial(actionID string) (shouldBreak bool) {
 	case 9:
 		return true
 	case 10:
-		mmp.OpenTaskManager()
+
+		macro.OpenTaskManager()
 		fmt.Printf("pressed: %d\n", iActionID)
 	default:
 		fmt.Printf("pressed: %d\n", iActionID)
@@ -77,7 +78,7 @@ func main() {
 	go listener(pressedLabel, &arduino)
 
 	// Create button to test CTRL + SHIFT + ESC hotkey
-	tmBtn := widget.NewButton("Open Task Manager", mmp.OpenTaskManager)
+	tmBtn := widget.NewButton("Open Task Manager", macro.OpenTaskManager)
 
 	container.Add(pressedLabel)
 	container.Add(tmBtn)

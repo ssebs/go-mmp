@@ -1,4 +1,4 @@
-package mmp
+package macro
 
 import (
 	"log"
@@ -7,6 +7,17 @@ import (
 	"github.com/micmonay/keybd_event"
 	"github.com/ssebs/go-mmp/keyboard"
 )
+
+// Macro hold specific macro info
+type Macro struct {
+	Title    string
+	Callback func()
+}
+
+// MacroManager holds macro data
+type MacroManager struct {
+	Macros []Macro
+}
 
 // Open Task Manager by running CTRL + SHIFT + ESC
 func OpenTaskManager() {
