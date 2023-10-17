@@ -17,6 +17,7 @@ import (
 const projName = "Go-MMP"
 
 func runActionIDFromSerial(actionID string) (shouldBreak bool) {
+func runActionIDFromSerial(actionID string) (shouldBreak bool) {
 	iActionID, err := utils.StringToInt(actionID)
 	if err != nil {
 		log.Println(err.Error())
