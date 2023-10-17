@@ -35,6 +35,21 @@ func runActionIDFromSerial(actionID string) (shouldBreak bool) {
 	return false
 }
 
+func Listener(btnLabel *widget.Label, sd *serialdevice.SerialDevice) {
+	shouldQuit := false
+	for !shouldQuit {
+		// log.Println("shouldquit: ", shouldQuit)
+		actionID, err := sd.Listen()
+		if err != nil {
+			log.Println("Listen err: ", err)
+		}
+		log.Println("actionID: ", actionID)
+		btnLabel.SetText(fmt.Sprintf("Button Pressed: %s", actionID))
+		shouldQuit = runActionIDFromSerial(actionID)
+	}
+	log.Println("Exiting Listener")
+}
+
 func main() {
 	app := app.New()
 	win := app.NewWindow(projName)
@@ -42,6 +57,7 @@ func main() {
 	win.CenterOnScreen()
 	arduino, err := serialdevice.NewSerialDevice("COM7", 9600, time.Millisecond*20)
 
+	// Show error dialog
 	if err != nil {
 		errDialog := dialog.NewError(err, win)
 		errDialog.Show()
@@ -51,23 +67,19 @@ func main() {
 		win.ShowAndRun()
 	}
 	defer arduino.CloseConnection()
-	// quitChan := make(chan bool)
 
-	go func() {
-		shouldQuit := false
-		for !shouldQuit {
-			shouldQuit = arduino.ListenCallback(runActionIDFromSerial)
-			fmt.Println("shouldquit: ", shouldQuit)
-		}
-		log.Println("No longer listening for serial data, leaving goroutine")
-		// quitChan <- true
-	}()
-
+	// GUI container
 	container := container.NewVBox()
+	// Display button pressed
+	pressedLabel := widget.NewLabel("Button Pressed: ")
+
+	// Run listener
+	go Listener(pressedLabel, &arduino)
 
 	// Create button to test CTRL + SHIFT + ESC hotkey
 	tmBtn := widget.NewButton("Open Task Manager", mmp.OpenTaskManager)
 
+	container.Add(pressedLabel)
 	container.Add(tmBtn)
 
 	win.SetContent(container)

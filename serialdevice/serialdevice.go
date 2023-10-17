@@ -3,6 +3,7 @@ package serialdevice
 import (
 	"bufio"
 	"fmt"
+	"log"
 	"strings"
 	"time"
 
@@ -91,8 +92,19 @@ func (s *SerialDevice) ListenCallback(fn func(strData string) bool) (shouldBreak
 func (s *SerialDevice) ListenChan(ch chan string) {
 	scanner := bufio.NewScanner(s.Conn)
 	for scanner.Scan() {
+		log.Println("ListenChan txt: ", scanner.Text())
 		ch <- scanner.Text()
 	}
+}
+
+// Listen & return data
+// Runs in a bufio.Scanner.Scan() loop
+func (s *SerialDevice) Listen() (actionID string, err error) {
+	scanner := bufio.NewScanner(s.Conn)
+	for scanner.Scan() {
+		return scanner.Text(), nil
+	}
+	return "", scanner.Err()
 }
 
 // Errors
