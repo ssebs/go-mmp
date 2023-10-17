@@ -8,6 +8,7 @@ import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/widget"
 	"github.com/ssebs/go-mmp/mmp"
 	"github.com/ssebs/go-mmp/serialdevice"
@@ -35,13 +36,23 @@ func runActionIDFromSerial(actionID string) (shouldBreak bool) {
 }
 
 func main() {
+	app := app.New()
+	win := app.NewWindow(projName)
+	win.Resize(fyne.NewSize(300, 200))
+	win.CenterOnScreen()
 	arduino, err := serialdevice.NewSerialDevice("COM7", 9600, time.Millisecond*20)
+
 	if err != nil {
-		log.Fatal(err)
+		errDialog := dialog.NewError(err, win)
+		errDialog.Show()
+		errDialog.SetOnClosed(func() {
+			log.Fatal(err)
+		})
+		win.ShowAndRun()
 	}
+	defer arduino.CloseConnection()
 	// quitChan := make(chan bool)
 
-	defer arduino.CloseConnection()
 	go func() {
 		shouldQuit := false
 		for !shouldQuit {
@@ -51,11 +62,6 @@ func main() {
 		log.Println("No longer listening for serial data, leaving goroutine")
 		// quitChan <- true
 	}()
-
-	app := app.New()
-	win := app.NewWindow(projName)
-	win.Resize(fyne.NewSize(300, 200))
-	win.CenterOnScreen()
 
 	container := container.NewVBox()
 
