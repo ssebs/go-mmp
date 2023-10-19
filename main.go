@@ -2,14 +2,15 @@ package main
 
 import (
 	"fmt"
-	"log"
-
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
+	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/widget"
 	"github.com/ssebs/go-mmp/macro"
 	"github.com/ssebs/go-mmp/serialdevice"
 	"github.com/ssebs/go-mmp/utils"
+	"log"
+	"time"
 )
 
 const projName = "Go-MMP"
@@ -58,18 +59,18 @@ func main() {
 		log.Fatal(err)
 	}
 	fmt.Printf("Config: %s", macroMgr.Config)
-	// arduino, err := serialdevice.NewSerialDevice("COM7", 9600, time.Millisecond*20)
+	arduino, err := serialdevice.NewSerialDeviceFromConfig(*macroMgr.Config, time.Millisecond*20)
 
-	// // Show error dialog
-	// if err != nil {
-	// 	errDialog := dialog.NewError(err, win)
-	// 	errDialog.Show()
-	// 	errDialog.SetOnClosed(func() {
-	// 		log.Fatal(err)
-	// 	})
-	// 	win.ShowAndRun()
-	// }
-	// defer arduino.CloseConnection()
+	// Show error dialog
+	if err != nil {
+		errDialog := dialog.NewError(err, win)
+		errDialog.Show()
+		errDialog.SetOnClosed(func() {
+			log.Fatal(err)
+		})
+		win.ShowAndRun()
+	}
+	defer arduino.CloseConnection()
 
 	// // GUI container
 	// container := container.NewVBox()
