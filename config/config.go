@@ -1,28 +1,52 @@
 package config
 
 import (
-	"github.com/ssebs/go-mmp/gui"
-	"github.com/ssebs/go-mmp/macro"
-	"github.com/ssebs/go-mmp/serialdevice"
+	"log"
+	"os"
+
+	"gopkg.in/yaml.v3"
 )
 
-// ButtonLayout
-// X/y size for GUI elements that should match the macro pad
-type ButtonLayout struct {
-	X int
-	Y int
+// Config
+type Config struct {
+	MacroLayout struct {
+		SizeX  int `yaml:"SizeX"`
+		SizeY  int `yaml:"SizeY"`
+		Width  int `yaml:"Width"`
+		Height int `yaml:"Height"`
+	} `yaml:"MacroLayout"`
+	SerialDevice struct {
+		PortName string `yaml:"PortName"`
+		BaudRate int    `yaml:"BaudRate"`
+	} `yaml:"SerialDevice"`
+	Macros []map[string]struct {
+		ActionID int                 `yaml:"ActionID"`
+		Actions  []map[string]string `yaml:"Actions"`
+	} `yaml:"Macros"`
 }
 
-// Config
-// Manages configuration details of MMP
-type Config struct {
-	Layout   ButtonLayout
-	Gui      gui.GUI
-	Sd       *serialdevice.SerialDevice
-	MacroMgr *macro.MacroManager
+func (c *Config) String() string {
+	data, err := yaml.Marshal(c)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return string(data)
 }
 
 // Create a new config
-func NewConfig(layout ButtonLayout, gui gui.GUI, sd *serialdevice.SerialDevice, mm *macro.MacroManager) *Config {
-	return &Config{Layout: layout, Gui: gui, Sd: sd, MacroMgr: mm}
+func NewConfigFromFile(filename string) (*Config, error) {
+	config := &Config{}
+
+	f, err := os.Open(filename)
+	if err != nil {
+		return config, err
+	}
+	defer f.Close()
+
+	err = yaml.NewDecoder(f).Decode(&config)
+	if err != nil {
+		return config, err
+	}
+
+	return config, nil
 }

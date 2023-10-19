@@ -3,13 +3,11 @@ package main
 import (
 	"fmt"
 	"log"
-	"time"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
-	"fyne.io/fyne/v2/container"
-	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/widget"
+	"github.com/ssebs/go-mmp/config"
 	"github.com/ssebs/go-mmp/macro"
 	"github.com/ssebs/go-mmp/serialdevice"
 	"github.com/ssebs/go-mmp/utils"
@@ -56,33 +54,38 @@ func main() {
 	win := app.NewWindow(projName)
 	win.Resize(fyne.NewSize(300, 200))
 	win.CenterOnScreen()
-	arduino, err := serialdevice.NewSerialDevice("COM7", 9600, time.Millisecond*20)
-
-	// Show error dialog
+	config, err := config.NewConfigFromFile("res/defaultConfig.yml")
 	if err != nil {
-		errDialog := dialog.NewError(err, win)
-		errDialog.Show()
-		errDialog.SetOnClosed(func() {
-			log.Fatal(err)
-		})
-		win.ShowAndRun()
+		log.Fatal(err)
 	}
-	defer arduino.CloseConnection()
+	fmt.Printf("Config: %s", config)
+	// arduino, err := serialdevice.NewSerialDevice("COM7", 9600, time.Millisecond*20)
 
-	// GUI container
-	container := container.NewVBox()
-	// Display button pressed
-	pressedLabel := widget.NewLabel("Button Pressed: ")
+	// // Show error dialog
+	// if err != nil {
+	// 	errDialog := dialog.NewError(err, win)
+	// 	errDialog.Show()
+	// 	errDialog.SetOnClosed(func() {
+	// 		log.Fatal(err)
+	// 	})
+	// 	win.ShowAndRun()
+	// }
+	// defer arduino.CloseConnection()
 
-	// Run listener
-	go listener(pressedLabel, &arduino)
+	// // GUI container
+	// container := container.NewVBox()
+	// // Display button pressed
+	// pressedLabel := widget.NewLabel("Button Pressed: ")
 
-	// Create button to test CTRL + SHIFT + ESC hotkey
-	tmBtn := widget.NewButton("Open Task Manager", macro.OpenTaskManager)
+	// // Run listener
+	// go listener(pressedLabel, &arduino)
 
-	container.Add(pressedLabel)
-	container.Add(tmBtn)
+	// // Create button to test CTRL + SHIFT + ESC hotkey
+	// tmBtn := widget.NewButton("Open Task Manager", macro.OpenTaskManager)
 
-	win.SetContent(container)
-	win.ShowAndRun()
+	// container.Add(pressedLabel)
+	// container.Add(tmBtn)
+
+	// win.SetContent(container)
+	// win.ShowAndRun()
 }
