@@ -5,19 +5,36 @@ import (
 	"time"
 
 	"github.com/micmonay/keybd_event"
+	"github.com/ssebs/go-mmp/config"
 	"github.com/ssebs/go-mmp/keyboard"
 )
 
-// Macro hold specific macro info
-type Macro struct {
-	Title    string
-	Callback func(v ...any)
+// MacroManager
+type MacroManager struct {
+	Keeb   *keyboard.Keyboard
+	Config *config.Config
 }
 
-// MacroManager holds macro data
-type MacroManager struct {
-	Macros []Macro
-	Keeb   keyboard.Keyboard
+// Creates a new MacroManager struct
+// Will load a Config from the configFilePath. If this is empty, load the default.
+// Also creates a Keyboard
+func NewMacroManager(configFilePath string) (*MacroManager, error) {
+	// Create Keyboard
+	kb, err := keyboard.NewKeyboard()
+	if err != nil {
+		return &MacroManager{}, err
+	}
+	// Create/Load Config
+	if configFilePath == "" {
+		configFilePath = "res/defaultConfig.yml"
+	}
+	config, err := config.NewConfigFromFile(configFilePath)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	mgr := &MacroManager{Config: config, Keeb: kb}
+	return mgr, nil
 }
 
 // Open Task Manager by running CTRL + SHIFT + ESC

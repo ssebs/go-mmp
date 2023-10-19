@@ -7,7 +7,6 @@ import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/widget"
-	"github.com/ssebs/go-mmp/config"
 	"github.com/ssebs/go-mmp/macro"
 	"github.com/ssebs/go-mmp/serialdevice"
 	"github.com/ssebs/go-mmp/utils"
@@ -54,11 +53,11 @@ func main() {
 	win := app.NewWindow(projName)
 	win.Resize(fyne.NewSize(300, 200))
 	win.CenterOnScreen()
-	config, err := config.NewConfigFromFile("res/defaultConfig.yml")
+	macroMgr, err := macro.NewMacroManager("")
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Printf("Config: %s", config)
+	fmt.Printf("Config: %s", macroMgr.Config)
 	// arduino, err := serialdevice.NewSerialDevice("COM7", 9600, time.Millisecond*20)
 
 	// // Show error dialog
