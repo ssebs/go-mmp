@@ -1,13 +1,15 @@
 package config
 
 import (
+	"io"
 	"log"
 	"os"
 
 	"gopkg.in/yaml.v3"
 )
 
-// Config
+// Config object
+// Stores related configuration details. No side effects here.
 type Config struct {
 	MacroLayout struct {
 		SizeX  int `yaml:"SizeX"`
@@ -25,6 +27,7 @@ type Config struct {
 	} `yaml:"Macros"`
 }
 
+// Return the Config as a yaml string
 func (c *Config) String() string {
 	data, err := yaml.Marshal(c)
 	if err != nil {
@@ -33,20 +36,35 @@ func (c *Config) String() string {
 	return string(data)
 }
 
-// Create a new config
-func NewConfigFromFile(filename string) (*Config, error) {
-	config := &Config{}
+// Save Config object to a destFilename
+// Returns an error if one occurred
+func (c Config) SaveConfig(destFilename string) error {
+	f, err := os.Create(destFilename)
+	if err != nil {
+		return err
+	}
+	_, err = f.WriteString(c.String())
+	return err
+}
 
+// Create *Config from a io.Reader
+// Returns a pointer to the created Config, and an error if there is one
+func LoadConfig(f io.Reader) (*Config, error) {
+	c := &Config{}
+	err := yaml.NewDecoder(f).Decode(c)
+	if err != nil {
+		return c, err
+	}
+	return c, nil
+}
+
+// Create a new config from a filename/path.
+// Returns a pointer to the created Config, and an error if there is one
+func NewConfigFromFile(filename string) (*Config, error) {
 	f, err := os.Open(filename)
 	if err != nil {
-		return config, err
+		return &Config{}, err
 	}
 	defer f.Close()
-
-	err = yaml.NewDecoder(f).Decode(&config)
-	if err != nil {
-		return config, err
-	}
-
-	return config, nil
+	return LoadConfig(f)
 }
