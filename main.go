@@ -2,15 +2,17 @@ package main
 
 import (
 	"fmt"
+	"log"
+	"time"
+
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
+	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/widget"
 	"github.com/ssebs/go-mmp/macro"
 	"github.com/ssebs/go-mmp/serialdevice"
 	"github.com/ssebs/go-mmp/utils"
-	"log"
-	"time"
 )
 
 const projName = "Go-MMP"
@@ -54,7 +56,7 @@ func main() {
 	win := app.NewWindow(projName)
 	win.Resize(fyne.NewSize(300, 200))
 	win.CenterOnScreen()
-	macroMgr, err := macro.NewMacroManager("")
+	macroMgr, err := macro.NewMacroManager("") // replace "" with path to config
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -72,20 +74,20 @@ func main() {
 	}
 	defer arduino.CloseConnection()
 
-	// // GUI container
-	// container := container.NewVBox()
-	// // Display button pressed
-	// pressedLabel := widget.NewLabel("Button Pressed: ")
+	// GUI container
+	container := container.NewVBox()
+	// Display button pressed
+	pressedLabel := widget.NewLabel("Button Pressed: ")
 
-	// // Run listener
-	// go listener(pressedLabel, &arduino)
+	// Run listener
+	go listener(pressedLabel, &arduino)
 
-	// // Create button to test CTRL + SHIFT + ESC hotkey
-	// tmBtn := widget.NewButton("Open Task Manager", macro.OpenTaskManager)
+	// Create button to test CTRL + SHIFT + ESC hotkey
+	tmBtn := widget.NewButton("Open Task Manager", macro.OpenTaskManager)
 
-	// container.Add(pressedLabel)
-	// container.Add(tmBtn)
+	container.Add(pressedLabel)
+	container.Add(tmBtn)
 
-	// win.SetContent(container)
-	// win.ShowAndRun()
+	win.SetContent(container)
+	win.ShowAndRun()
 }

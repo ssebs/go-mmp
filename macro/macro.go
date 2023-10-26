@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/micmonay/keybd_event"
+
 	"github.com/ssebs/go-mmp/config"
 	"github.com/ssebs/go-mmp/keyboard"
 )

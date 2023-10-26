@@ -45,7 +45,7 @@ func NewSerialDevice(portName string, baudRate int, timeout time.Duration) (ardu
 
 // Create a new SerialDevice from a Config struct
 // Returns a SerialDevice, and an error.
-// See NewSerialDevice. 
+// See NewSerialDevice.
 func NewSerialDeviceFromConfig(c config.Config, timeout time.Duration) (SerialDevice, error) {
 	return NewSerialDevice(c.SerialDevice.PortName, c.SerialDevice.BaudRate, timeout)
 }
