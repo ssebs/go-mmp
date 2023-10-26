@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"time"
@@ -15,15 +16,17 @@ import (
 
 func runActionIDFromSerial(actionID string) (shouldBreak bool) {
 	iActionID, err := utils.StringToInt(actionID)
-	if err != nil {
-		log.Println(err.Error())
+	if errors.Is(err, utils.ErrCannotParseIntFromEmptyString{}) {
+		log.Println(err)
+	} else if err != nil {
+		log.Println(err)
 		return true
 	}
+
 	switch iActionID {
 	case 9:
 		return true
 	case 10:
-
 		macro.OpenTaskManager()
 		fmt.Printf("pressed: %d\n", iActionID)
 	default:
