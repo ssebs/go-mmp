@@ -5,17 +5,13 @@ import (
 	"log"
 	"time"
 
-	"fyne.io/fyne/v2"
-	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
-	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/widget"
+	"github.com/ssebs/go-mmp/gui"
 	"github.com/ssebs/go-mmp/macro"
 	"github.com/ssebs/go-mmp/serialdevice"
 	"github.com/ssebs/go-mmp/utils"
 )
-
-const projName = "Go-MMP"
 
 func runActionIDFromSerial(actionID string) (shouldBreak bool) {
 	iActionID, err := utils.StringToInt(actionID)
@@ -52,25 +48,20 @@ func listener(btnLabel *widget.Label, sd *serialdevice.SerialDevice) {
 }
 
 func main() {
-	app := app.New()
-	win := app.NewWindow(projName)
-	win.Resize(fyne.NewSize(300, 200))
-	win.CenterOnScreen()
+	// gui.ShowDialog("title", "some contents")
+	// gui.ShowErrorDialog(errors.New("test"))
+
 	macroMgr, err := macro.NewMacroManager("") // replace "" with path to config
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Printf("Config: %s", macroMgr.Config)
-	arduino, err := serialdevice.NewSerialDeviceFromConfig(*macroMgr.Config, time.Millisecond*20)
+	// fmt.Printf("Config: %s", macroMgr.Config)
+	g := gui.NewGUI(macroMgr.Config, 1)
+	arduino, err := serialdevice.NewSerialDeviceFromConfig(macroMgr.Config, time.Millisecond*20)
 
 	// Show error dialog
 	if err != nil {
-		errDialog := dialog.NewError(err, win)
-		errDialog.Show()
-		errDialog.SetOnClosed(func() {
-			log.Fatal(err)
-		})
-		win.ShowAndRun()
+		gui.ShowErrorDialog(err)
 	}
 	defer arduino.CloseConnection()
 
@@ -88,6 +79,6 @@ func main() {
 	container.Add(pressedLabel)
 	container.Add(tmBtn)
 
-	win.SetContent(container)
-	win.ShowAndRun()
+	g.SetContent(container)
+	g.ShowAndRun()
 }
