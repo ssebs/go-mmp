@@ -16,8 +16,9 @@ import (
 
 // MacroManager
 type MacroManager struct {
-	Keeb   *keyboard.Keyboard
-	Config *config.Config
+	Keeb        *keyboard.Keyboard
+	Config      *config.Config
+	functionMap map[string]interface{}
 }
 
 // Creates a new MacroManager struct
@@ -37,8 +38,12 @@ func NewMacroManager(configFilePath string) (*MacroManager, error) {
 	if err != nil {
 		log.Fatal(err)
 	}
+	// TODO: something with this
+	funcs := map[string]interface{}{
+		"TaskMgr": OpenTaskManager,
+	}
 
-	mgr := &MacroManager{Config: config, Keeb: kb}
+	mgr := &MacroManager{Config: config, Keeb: kb, functionMap: funcs}
 	return mgr, nil
 }
 

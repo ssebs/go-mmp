@@ -35,7 +35,7 @@ free:
 }
 
 func main() {
-	macroMgr, err := macro.NewMacroManager("") // replace "" with path to config
+	macroMgr, err := macro.NewMacroManager("") // TODO: replace "" with path to config
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -55,11 +55,13 @@ func main() {
 	pressedLabel := widget.NewLabel("Button Pressed: ")
 
 	// Run listener
-	// go listener(pressedLabel, &arduino)
 	btnch := make(chan string, 2)
 	quitch := make(chan struct{})
 
+	// Serial Listener
 	go Listen(btnch, quitch, &arduino)
+
+	// Do something when btnch gets data
 	go func() {
 	free:
 		for {
