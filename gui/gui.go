@@ -62,6 +62,7 @@ func newAppWindow(title string, size fyne.Size) fyne.Window {
 }
 
 // Static dialogs
+// TODO: fix these...
 func ShowDialog(title, msg string) {
 	win := newAppWindow(title, dialogSize)
 	d := dialog.NewInformation(title, msg, win)

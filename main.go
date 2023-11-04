@@ -1,9 +1,9 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"log"
+	"log/slog"
 	"time"
 
 	"fyne.io/fyne/v2/container"
@@ -11,49 +11,30 @@ import (
 	"github.com/ssebs/go-mmp/gui"
 	"github.com/ssebs/go-mmp/macro"
 	"github.com/ssebs/go-mmp/serialdevice"
-	"github.com/ssebs/go-mmp/utils"
 )
 
-func runActionIDFromSerial(actionID string) (shouldBreak bool) {
-	iActionID, err := utils.StringToInt(actionID)
-	if errors.Is(err, utils.ErrCannotParseIntFromEmptyString{}) {
-		log.Println(err)
-	} else if err != nil {
-		log.Println(err)
-		return true
-	}
-
-	switch iActionID {
-	case 9:
-		return true
-	case 10:
-		macro.OpenTaskManager()
-		fmt.Printf("pressed: %d\n", iActionID)
-	default:
-		fmt.Printf("pressed: %d\n", iActionID)
-	}
-	return false
-}
-
-func listener(btnLabel *widget.Label, sd *serialdevice.SerialDevice) {
-	shouldQuit := false
-	for !shouldQuit {
-		// log.Println("shouldquit: ", shouldQuit)
-		actionID, err := sd.Listen()
-		if err != nil {
-			log.Println("Listen err: ", err)
+// Listen for data from a *SerialDevice, to be used in a goroutine
+// Takes in a btnch to send data to when the serial connection gets something,
+// and a quitch if we need to stop the goroutine
+func Listen(btnch chan string, quitch chan struct{}, sd *serialdevice.SerialDevice) {
+	// Keep looping since sd.Listen() will return if no data is sent
+free:
+	for {
+		select {
+		case <-quitch:
+			break free
+		default:
+			// If we get data, send to chan
+			actionID, err := sd.Listen()
+			if err != nil {
+				slog.Debug("Listen err: ", err)
+			}
+			btnch <- actionID
 		}
-		log.Println("actionID: ", actionID)
-		btnLabel.SetText(fmt.Sprintf("Button Pressed: %s", actionID))
-		shouldQuit = runActionIDFromSerial(actionID)
 	}
-	log.Println("Exiting listener")
 }
 
 func main() {
-	// gui.ShowDialog("title", "some contents")
-	// gui.ShowErrorDialog(errors.New("test"))
-
 	macroMgr, err := macro.NewMacroManager("") // replace "" with path to config
 	if err != nil {
 		log.Fatal(err)
@@ -74,7 +55,24 @@ func main() {
 	pressedLabel := widget.NewLabel("Button Pressed: ")
 
 	// Run listener
-	go listener(pressedLabel, &arduino)
+	// go listener(pressedLabel, &arduino)
+	btnch := make(chan string, 2)
+	quitch := make(chan struct{})
+
+	go Listen(btnch, quitch, &arduino)
+	go func() {
+	free:
+		for {
+			select {
+			case btn := <-btnch:
+				pressedLabel.SetText(fmt.Sprintf("Button Pressed: %s", btn))
+				macro.RunActionFromID(btn, quitch)
+			case <-quitch:
+				break free
+			}
+		}
+		g.App.Quit()
+	}()
 
 	// Create button to test CTRL + SHIFT + ESC hotkey
 	tmBtn := widget.NewButton("Open Task Manager", macro.OpenTaskManager)
