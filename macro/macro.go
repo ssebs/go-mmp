@@ -52,10 +52,22 @@ func NewMacroManager(configFilePath string) (*MacroManager, error) {
 // and runs a macro based on the actionID=> action mapping from the config
 //
 // TODO: Fix this comment
-func RunActionFromID(actionID string, quitch chan struct{}) {
+func (m *MacroManager) RunActionFromID(actionID string, quitch chan struct{}) {
 	iActionID, ok := convertActionIDToInt(actionID, quitch)
 	if !ok {
 		return
+	}
+
+	// for each macro
+	for macroName, macro := range m.Config.Macros {
+		// for each action in macro
+		for _, actions := range macro.Actions {
+			// for each func/param in actions
+			for funcName, funcParam := range actions {
+				fmt.Printf("macroName: %s, macroID %d, func: %s(%s)\n", macroName, macro.ActionID, funcName, funcParam)
+			}
+		}
+
 	}
 
 	// do the mapping
@@ -69,6 +81,10 @@ func RunActionFromID(actionID string, quitch chan struct{}) {
 	default:
 		fmt.Printf("pressed: %d\n", iActionID)
 	}
+}
+
+func (m *MacroManager) runAction() {
+
 }
 
 /*

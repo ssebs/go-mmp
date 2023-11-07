@@ -21,7 +21,7 @@ type Config struct {
 		PortName string `yaml:"PortName"`
 		BaudRate int    `yaml:"BaudRate"`
 	} `yaml:"SerialDevice"`
-	Macros []map[string]struct {
+	Macros map[string]struct {
 		ActionID int                 `yaml:"ActionID"`
 		Actions  []map[string]string `yaml:"Actions"`
 	} `yaml:"Macros"`

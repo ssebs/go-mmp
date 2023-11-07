@@ -68,7 +68,7 @@ func main() {
 			select {
 			case btn := <-btnch:
 				pressedLabel.SetText(fmt.Sprintf("Button Pressed: %s", btn))
-				macro.RunActionFromID(btn, quitch)
+				macroMgr.RunActionFromID(btn, quitch)
 			case <-quitch:
 				break free
 			}

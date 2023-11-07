@@ -14,9 +14,9 @@ SerialDevice:
 # List of Macros to
 Macros:
   # Macro name
-  - Open Task Mgr:
-      # Position
-      ActionID: 1
-      # List of stuff to do
-      Actions:
-        - HotKey: ctrl + shift + esc
+  Open Task Mgr:
+    # Position
+    ActionID: 1
+    # List of stuff to do
+    Actions:
+      - HotKey: ctrl + shift + esc
