@@ -13,10 +13,15 @@ SerialDevice:
   # Timeout: 20ms
 # List of Macros to
 Macros:
-  # Macro name
-  Open Task Mgr:
-    # Position
+  # Text on button
+  - Name: Open Task Mgr
+    # Position on display
     ActionID: 1
     # List of stuff to do
     Actions:
-      - HotKey: ctrl + shift + esc
+      - TaskMgr: ""
+  - Name: Skip song
+    ActionID: 10
+    Actions:
+      - PressKey: VK_MEDIA_NEXT_TRACK
+Delay: 20ms

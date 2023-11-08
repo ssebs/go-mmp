@@ -38,16 +38,21 @@ func NewMacroManager(configFilePath string) (*MacroManager, error) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	// TODO: something with this
-	funcs := map[string]interface{}{
-		"TaskMgr": OpenTaskManager,
-	}
 
-	mgr := &MacroManager{Config: config, Keeb: kb, functionMap: funcs}
+	// Create the MacroManager
+	mgr := &MacroManager{Config: config, Keeb: kb, functionMap: make(map[string]interface{}, 4)}
+
+	// TODO: something with this
+	mgr.functionMap = map[string]interface{}{
+		"TaskMgr":   mgr.RunTaskManager,
+		"PressKey":  mgr.PressKeyAction,
+		"PressKeys": mgr.PressKeysAction,
+		"Shortcut":  mgr.RunShortcutAction,
+	}
 	return mgr, nil
 }
 
-// RunActionFromID
+// RunActionFromID - the thing that runs the thing
 // This converts the actionID to an int (if possible),
 // and runs a macro based on the actionID=> action mapping from the config
 //
@@ -83,10 +88,6 @@ func (m *MacroManager) RunActionFromID(actionID string, quitch chan struct{}) {
 	}
 }
 
-func (m *MacroManager) runAction() {
-
-}
-
 /*
  Below are the functions that provide the actual macro functionality
 */
@@ -102,8 +103,41 @@ func OpenTaskManager() {
 	keeb.RunHotKey(10*time.Millisecond, hkm, keybd_event.VK_ESC)
 }
 
-func (mm *MacroManager) RunShortcut(hkm keyboard.HotKeyModifiers, keys ...int) {
+func (mm *MacroManager) RunTaskManager() {
+	hkm := keyboard.HotKeyModifiers{Shift: true, Control: true}
+	mm.Keeb.RunHotKey(10*time.Millisecond, hkm, keybd_event.VK_ESC)
+}
+
+func (mm *MacroManager) RunShortcutAction(hkm keyboard.HotKeyModifiers, keys ...int) {
 	mm.Keeb.RunHotKey(10*time.Millisecond, hkm, keys...)
+}
+
+// PressKeyAction
+// keyName should be VK_ESC format
+func (mm *MacroManager) PressKeyAction(keyName string) {
+	convertedName, err := keyboard.ConvertKeyName(keyName)
+	if err != nil {
+		fmt.Println("could not press key:", keyName)
+		return
+	}
+	mm.Keeb.PressHold(mm.Config.Delay, convertedName)
+}
+
+// PressKeysAction
+// Needs a slice of keyName strings,
+// keyNames should follow the same format at PressKeyAction
+func (mm *MacroManager) PressKeysAction(keyNames []string) {
+	keys := make([]int, 0)
+	for _, key := range keyNames {
+		convertedName, err := keyboard.ConvertKeyName(key)
+		if err != nil {
+			fmt.Printf("could not press key: %s", key)
+			continue
+		}
+		keys = append(keys, convertedName)
+	}
+	// TODO: Check if the key is a modifier key
+	mm.Keeb.PressHold(mm.Config.Delay, keys...)
 }
 
 /*

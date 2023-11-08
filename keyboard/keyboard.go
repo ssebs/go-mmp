@@ -105,9 +105,9 @@ func (k *Keyboard) RunHotKey(delayDuration time.Duration, mods HotKeyModifiers, 
 	k.PressHold(delayDuration, keys...)
 }
 
-// KeyNameStringToInt will convert the "VK_blah" to keybd_event.VK_blah
+// ConvertKeyName will convert the "VK_blah" to keybd_event.VK_blah
 // Returns the int value from the keybd_event.keybd_windows.go lib, or 0 if there's an error
-func KeyNameStringToInt(keyName string) (int, error) {
+func ConvertKeyName(keyName string) (int, error) {
 	val, ok := KeyMap[keyName]
 	if !ok {
 		return 0, fmt.Errorf("could not convert %s to keybd_event.%s", keyName, keyName)

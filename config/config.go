@@ -4,6 +4,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"time"
 
 	"gopkg.in/yaml.v3"
 )
@@ -25,6 +26,7 @@ type Config struct {
 		ActionID int                 `yaml:"ActionID"`
 		Actions  []map[string]string `yaml:"Actions"`
 	} `yaml:"Macros"`
+	Delay time.Duration `yaml:"Delay"`
 }
 
 // Return the Config as a yaml string
