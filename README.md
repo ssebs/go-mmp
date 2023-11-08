@@ -23,8 +23,11 @@ This is a re-write of https://github.com/ssebs/MiniMacroPad/
 - [x] Get started
 - [WIP] Create basic UI
 - [WIP] Run keyboard macros
-- [WIP] Listen for Serial data
-  - [WIP] Take action from this data
+- [x] Listen for Serial data
+  - [x] Take action from this data
+  - [ ] Add support for shortcuts/hotkeys
+  - [ ] Add support for running single keys
+  - [ ] Add support for mouse?
 - [ ] CRUD a config file
   - [ ] Support many macros/devices
 - [ ] UI for CRUD'ing these macros
@@ -33,9 +36,9 @@ This is a re-write of https://github.com/ssebs/MiniMacroPad/
 - [ ] CLI for GUI only, and no-GUI modes
 
 ## Architecture Diagram
-> To update it, edit the [Architecture.drawio](./Architecture.drawio) file. I'm using [this](https://open-vsx.org/extension/hediet/vscode-drawio) VSCode extension.
+> To update it, edit the [Architecture.drawio](./res/Architecture.drawio) file. I'm using [this](https://open-vsx.org/extension/hediet/vscode-drawio) VSCode extension.
 > 
-![Architecture diagram](./Architecture.png).
+![Architecture diagram](./res/Architecture.png).
 
 
 ## Docs / References:
