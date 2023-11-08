@@ -14,11 +14,14 @@ import (
 	"github.com/ssebs/go-mmp/utils"
 )
 
+// fn Function type, for use in functionMap
+type fn func(string) error
+
 // MacroManager
 type MacroManager struct {
 	Keeb        *keyboard.Keyboard
 	Config      *config.Config
-	functionMap map[string]interface{}
+	functionMap map[string]fn
 }
 
 // Creates a new MacroManager struct
@@ -40,52 +43,73 @@ func NewMacroManager(configFilePath string) (*MacroManager, error) {
 	}
 
 	// Create the MacroManager
-	mgr := &MacroManager{Config: config, Keeb: kb, functionMap: make(map[string]interface{}, 4)}
+	mgr := &MacroManager{Config: config, Keeb: kb, functionMap: make(map[string]fn, 4)}
 
 	// TODO: something with this
-	mgr.functionMap = map[string]interface{}{
-		"TaskMgr":   mgr.RunTaskManager,
-		"PressKey":  mgr.PressKeyAction,
-		"PressKeys": mgr.PressKeysAction,
-		"Shortcut":  mgr.RunShortcutAction,
+	mgr.functionMap = map[string]fn{
+		"TaskMgr":  mgr.RunTaskManager,
+		"PressKey": mgr.PressKeyAction,
+		"Shortcut": mgr.RunShortcutAction,
 	}
 	return mgr, nil
+}
+
+func (mm *MacroManager) runFuncFromMap(funcName string, funcParams string) error {
+	_, ok := mm.functionMap[funcName]
+	if !ok {
+		return fmt.Errorf("could not find %s in mm.functionMap", funcName)
+	}
+
+	return mm.functionMap[funcName](funcParams)
 }
 
 // RunActionFromID - the thing that runs the thing
 // This converts the actionID to an int (if possible),
 // and runs a macro based on the actionID=> action mapping from the config
 //
-// TODO: Fix this comment
-func (m *MacroManager) RunActionFromID(actionID string, quitch chan struct{}) {
+// TODO: Fix this comment + rename
+func (mm *MacroManager) RunActionFromID(actionID string, quitch chan struct{}) {
 	iActionID, ok := convertActionIDToInt(actionID, quitch)
 	if !ok {
 		return
 	}
 
+	// TODO: move this to an init function...
+	// TODO: make Macros a map instead & use switch so we can default to log
+
 	// for each macro
-	for macroName, macro := range m.Config.Macros {
-		// for each action in macro
-		for _, actions := range macro.Actions {
-			// for each func/param in actions
-			for funcName, funcParam := range actions {
-				fmt.Printf("macroName: %s, macroID %d, func: %s(%s)\n", macroName, macro.ActionID, funcName, funcParam)
+	for _, macro := range mm.Config.Macros {
+		// fmt.Printf("macro id: %d, name:%s, actions: %v+\n", macro.ActionID, macro.Name, macro.Actions)
+
+		// If the user hit a button that's in the Macro's ActionID
+		if macro.ActionID == iActionID {
+			// For each action
+			for _, action := range macro.Actions {
+				// Get the key/vals from the action
+				for funcName, funcParam := range action {
+					// try and run function
+					err := mm.runFuncFromMap(funcName, funcParam)
+					if err != nil {
+						slog.Debug(err.Error())
+					}
+				}
 			}
 		}
 
 	}
 
-	// do the mapping
-	switch iActionID {
-	case 9:
-		fmt.Printf("quitting app")
-		close(quitch)
-	case 10:
-		OpenTaskManager()
-		fmt.Printf("pressed: %d\n", iActionID)
-	default:
-		fmt.Printf("pressed: %d\n", iActionID)
-	}
+	// // do the mapping
+	// switch iActionID {
+	// case 9:
+	// 	fmt.Printf("quitting app")
+	// 	close(quitch)
+	// case 10:
+	// 	OpenTaskManager()
+	// 	fmt.Printf("pressed: %d\n", iActionID)
+	// default:
+	// 	fmt.Printf("pressed: %d\n", iActionID)
+	// }
+	fmt.Printf("pressed: %d\n", iActionID)
 }
 
 /*
@@ -103,30 +127,33 @@ func OpenTaskManager() {
 	keeb.RunHotKey(10*time.Millisecond, hkm, keybd_event.VK_ESC)
 }
 
-func (mm *MacroManager) RunTaskManager() {
+func (mm *MacroManager) RunTaskManager(param string) error {
 	hkm := keyboard.HotKeyModifiers{Shift: true, Control: true}
 	mm.Keeb.RunHotKey(10*time.Millisecond, hkm, keybd_event.VK_ESC)
+	return nil
 }
 
-func (mm *MacroManager) RunShortcutAction(hkm keyboard.HotKeyModifiers, keys ...int) {
-	mm.Keeb.RunHotKey(10*time.Millisecond, hkm, keys...)
+func (mm *MacroManager) RunShortcutAction(param string) error {
+	// hkm keyboard.HotKeyModifiers, keys ...int
+	// mm.Keeb.RunHotKey(10*time.Millisecond, hkm, keys...)
+	return nil
 }
 
 // PressKeyAction
 // keyName should be VK_ESC format
-func (mm *MacroManager) PressKeyAction(keyName string) {
+func (mm *MacroManager) PressKeyAction(keyName string) error {
 	convertedName, err := keyboard.ConvertKeyName(keyName)
 	if err != nil {
-		fmt.Println("could not press key:", keyName)
-		return
+		return fmt.Errorf("could not press key: %s", keyName)
 	}
 	mm.Keeb.PressHold(mm.Config.Delay, convertedName)
+	return nil
 }
 
 // PressKeysAction
 // Needs a slice of keyName strings,
 // keyNames should follow the same format at PressKeyAction
-func (mm *MacroManager) PressKeysAction(keyNames []string) {
+func (mm *MacroManager) PressKeysAction(keyNames []string) error {
 	keys := make([]int, 0)
 	for _, key := range keyNames {
 		convertedName, err := keyboard.ConvertKeyName(key)
@@ -138,6 +165,7 @@ func (mm *MacroManager) PressKeysAction(keyNames []string) {
 	}
 	// TODO: Check if the key is a modifier key
 	mm.Keeb.PressHold(mm.Config.Delay, keys...)
+	return nil
 }
 
 /*

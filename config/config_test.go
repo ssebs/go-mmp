@@ -16,10 +16,16 @@ SerialDevice:
   PortName: COM7
   BaudRate: 9600
 Macros:
-  - Open Task Mgr:
-      ActionID: 1
-      Actions:
-        - HotKey: ctrl + shift + esc
+  - Name: Open Task Mgr
+    ActionID: 1
+    Actions:
+      - TaskMgr: ""
+  - Name: Skip song
+    ActionID: 10
+    Actions:
+      - PressKey: VK_MEDIA_NEXT_TRACK
+Delay: 20ms
+
 `
 
 func TestLoadConfig(t *testing.T) {

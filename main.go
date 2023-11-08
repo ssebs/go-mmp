@@ -67,8 +67,12 @@ func main() {
 		for {
 			select {
 			case btn := <-btnch:
+				// Set the button pressed to blank if we get blank data
 				pressedLabel.SetText(fmt.Sprintf("Button Pressed: %s", btn))
-				macroMgr.RunActionFromID(btn, quitch)
+				// Only run the function if it's not blank, tho
+				if btn != "" {
+					macroMgr.RunActionFromID(btn, quitch)
+				}
 			case <-quitch:
 				break free
 			}

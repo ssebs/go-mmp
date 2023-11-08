@@ -26,7 +26,7 @@ type Config struct {
 		Name     string              `yaml:"Name"`
 		ActionID int                 `yaml:"ActionID"`
 		Actions  []map[string]string `yaml:"Actions"`
-	}
+	} `yaml:"Macros"`
 	Delay time.Duration `yaml:"Delay"`
 }
 
