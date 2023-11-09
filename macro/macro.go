@@ -22,6 +22,7 @@ type MacroManager struct {
 	Keeb        *keyboard.Keyboard
 	Config      *config.Config
 	functionMap map[string]fn
+	actionMap   map[int]config.Macro
 }
 
 // Creates a new MacroManager struct
@@ -37,30 +38,53 @@ func NewMacroManager(configFilePath string) (*MacroManager, error) {
 	if configFilePath == "" {
 		configFilePath = "res/defaultConfig.yml"
 	}
-	config, err := config.NewConfigFromFile(configFilePath)
+	conf, err := config.NewConfigFromFile(configFilePath)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	// Create the MacroManager
-	mgr := &MacroManager{Config: config, Keeb: kb, functionMap: make(map[string]fn, 4)}
+	// No reason for "4", just some rand size
+	mgr := &MacroManager{Config: conf, Keeb: kb, functionMap: make(map[string]fn, 4), actionMap: make(map[int]config.Macro)}
 
-	// TODO: something with this
-	mgr.functionMap = map[string]fn{
-		"TaskMgr":  mgr.RunTaskManager,
-		"PressKey": mgr.PressKeyAction,
-		"Shortcut": mgr.RunShortcutAction,
-	}
+	mgr.initFunctionMap()
+	mgr.initActionMap()
 	return mgr, nil
 }
 
+// Create function map
+func (mm *MacroManager) initFunctionMap() {
+	mm.functionMap = map[string]fn{
+		"TaskMgr":  mm.RunTaskManager,
+		"PressKey": mm.PressKeyAction,
+		"Shortcut": mm.RunShortcutAction,
+	}
+}
+
+// Convert config Macro list into map based on the actionid
+func (mm *MacroManager) initActionMap() {
+	for _, macro := range mm.Config.Macros {
+		aID := macro.ActionID
+		mm.actionMap[aID] = macro
+	}
+}
+
+// Run the function from the functionMap
 func (mm *MacroManager) runFuncFromMap(funcName string, funcParams string) error {
 	_, ok := mm.functionMap[funcName]
 	if !ok {
 		return fmt.Errorf("could not find %s in mm.functionMap", funcName)
 	}
-
 	return mm.functionMap[funcName](funcParams)
+}
+
+// Get the action from the actionMap
+func (mm *MacroManager) getActionFromMap(actionID int) (*config.Macro, error) {
+	action, ok := mm.actionMap[actionID]
+	if !ok {
+		return nil, fmt.Errorf("could not find actionID: %d in mm.actionMap %v+", actionID, mm.actionMap)
+	}
+	return &action, nil
 }
 
 // RunActionFromID - the thing that runs the thing
@@ -69,47 +93,31 @@ func (mm *MacroManager) runFuncFromMap(funcName string, funcParams string) error
 //
 // TODO: Fix this comment + rename
 func (mm *MacroManager) RunActionFromID(actionID string, quitch chan struct{}) {
+	fmt.Printf("pressed: %s\n", actionID)
 	iActionID, ok := convertActionIDToInt(actionID, quitch)
 	if !ok {
 		return
 	}
 
-	// TODO: move this to an init function...
-	// TODO: make Macros a map instead & use switch so we can default to log
-
-	// for each macro
-	for _, macro := range mm.Config.Macros {
-		// fmt.Printf("macro id: %d, name:%s, actions: %v+\n", macro.ActionID, macro.Name, macro.Actions)
-
-		// If the user hit a button that's in the Macro's ActionID
-		if macro.ActionID == iActionID {
-			// For each action
-			for _, action := range macro.Actions {
-				// Get the key/vals from the action
-				for funcName, funcParam := range action {
-					// try and run function
-					err := mm.runFuncFromMap(funcName, funcParam)
-					if err != nil {
-						slog.Debug(err.Error())
-					}
-				}
-			}
-		}
-
+	// macro is a ptr to the config.Macros[iActionID] if it exists
+	macro, err := mm.getActionFromMap(iActionID)
+	fmt.Println(macro)
+	if err != nil {
+		slog.Debug(err.Error())
+		return
 	}
 
-	// // do the mapping
-	// switch iActionID {
-	// case 9:
-	// 	fmt.Printf("quitting app")
-	// 	close(quitch)
-	// case 10:
-	// 	OpenTaskManager()
-	// 	fmt.Printf("pressed: %d\n", iActionID)
-	// default:
-	// 	fmt.Printf("pressed: %d\n", iActionID)
-	// }
-	fmt.Printf("pressed: %d\n", iActionID)
+	// For each action
+	for _, action := range macro.Actions {
+		// Get the key/vals from the action
+		for funcName, funcParam := range action {
+			// try and run function
+			err := mm.runFuncFromMap(funcName, funcParam)
+			if err != nil {
+				slog.Debug(err.Error())
+			}
+		}
+	}
 }
 
 /*

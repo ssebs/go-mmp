@@ -9,6 +9,13 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+// Macro object
+type Macro struct {
+	Name     string              `yaml:"Name"`
+	ActionID int                 `yaml:"ActionID"`
+	Actions  []map[string]string `yaml:"Actions"`
+}
+
 // Config object
 // Stores related configuration details. No side effects here.
 type Config struct {
@@ -22,12 +29,8 @@ type Config struct {
 		PortName string `yaml:"PortName"`
 		BaudRate int    `yaml:"BaudRate"`
 	} `yaml:"SerialDevice"`
-	Macros []struct {
-		Name     string              `yaml:"Name"`
-		ActionID int                 `yaml:"ActionID"`
-		Actions  []map[string]string `yaml:"Actions"`
-	} `yaml:"Macros"`
-	Delay time.Duration `yaml:"Delay"`
+	Macros []Macro       `yaml:"Macros"`
+	Delay  time.Duration `yaml:"Delay"`
 }
 
 // Return the Config as a yaml string
@@ -70,4 +73,13 @@ func NewConfigFromFile(filename string) (*Config, error) {
 	}
 	defer f.Close()
 	return LoadConfig(f)
+}
+
+// Return the Macro as a yaml string
+func (c *Macro) String() string {
+	data, err := yaml.Marshal(c)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return string(data)
 }
