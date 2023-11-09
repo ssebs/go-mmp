@@ -29,7 +29,7 @@ type GUI struct {
 
 // Create a new GUI, given a GUISize and a monitor #
 func NewGUI(config *config.Config, monitor int) *GUI {
-	gs := GUISize{float32(config.MacroLayout.SizeX), float32(config.MacroLayout.SizeY)}
+	gs := GUISize{float32(config.MacroLayout.Width), float32(config.MacroLayout.Height)}
 	gui := &GUI{Size: gs, Monitor: monitor}
 
 	gui.App = app.New()

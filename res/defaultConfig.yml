@@ -4,8 +4,8 @@ MacroLayout:
   SizeX: 3
   SizeY: 3
   # Size of the GUI
-  Width: 500
-  Height: 400
+  Width: 300
+  Height: 200
 SerialDevice:
   # Serial Port name
   PortName: COM7
