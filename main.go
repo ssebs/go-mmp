@@ -71,7 +71,11 @@ func main() {
 				pressedLabel.SetText(fmt.Sprintf("Button Pressed: %s", btn))
 				// Only run the function if it's not blank, tho
 				if btn != "" {
-					macroMgr.RunActionFromID(btn, quitch)
+					err := macroMgr.RunActionFromID(btn)
+					if err != nil {
+						slog.Warn(err.Error())
+						// close(quitch)
+					}
 				}
 			case <-quitch:
 				break free

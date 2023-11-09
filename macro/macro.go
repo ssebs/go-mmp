@@ -3,7 +3,6 @@ package macro
 import (
 	"errors"
 	"fmt"
-	"log"
 	"log/slog"
 	"time"
 
@@ -22,12 +21,13 @@ type MacroManager struct {
 	Keeb        *keyboard.Keyboard
 	Config      *config.Config
 	functionMap map[string]fn
-	// actionMap   map[int]config.Macro
 }
 
 // Creates a new MacroManager struct
 // Will load a Config from the configFilePath. If this is empty, load the default.
-// Also creates a Keyboard
+// Creates a Keyboard under Keeb
+//
+// To run a macro, use the RunActionFromID func
 func NewMacroManager(configFilePath string) (*MacroManager, error) {
 	// Create Keyboard
 	kb, err := keyboard.NewKeyboard()
@@ -40,7 +40,7 @@ func NewMacroManager(configFilePath string) (*MacroManager, error) {
 	}
 	conf, err := config.NewConfigFromFile(configFilePath)
 	if err != nil {
-		log.Fatal(err)
+		return &MacroManager{}, err
 	}
 
 	// Create the MacroManager
@@ -59,7 +59,7 @@ func (mm *MacroManager) initFunctionMap() {
 	}
 }
 
-// Run the function from the functionMap
+// Run the function from the functionMap if it exists
 func (mm *MacroManager) runFuncFromMap(funcName string, funcParams string) error {
 	_, ok := mm.functionMap[funcName]
 	if !ok {
@@ -68,24 +68,19 @@ func (mm *MacroManager) runFuncFromMap(funcName string, funcParams string) error
 	return mm.functionMap[funcName](funcParams)
 }
 
-// RunActionFromID - the thing that runs the thing
-// This converts the actionID to an int (if possible),
-// and runs a macro based on the actionID=> action mapping from the config
-//
-// TODO: Fix this comment + rename
-func (mm *MacroManager) RunActionFromID(actionID string, quitch chan struct{}) {
+// RunActionFromID - Run Actions from the matching ID in Config.Macros (loaded from yml)
+// This converts the actionID to an int (if possible), if not then log the error
+func (mm *MacroManager) RunActionFromID(actionID string) error {
 	fmt.Printf("pressed: %s\n", actionID)
-	iActionID, ok := convertActionIDToInt(actionID, quitch)
-	if !ok {
-		return
+	iActionID, err := convertActionIDToInt(actionID)
+	if err != nil {
+		return err
 	}
 
 	// macro is a ptr to the config.Macros[iActionID] if it exists
 	macro, ok := mm.Config.Macros[iActionID]
-	// fmt.Println(macro)
 	if !ok {
-		slog.Debug(fmt.Sprintf("could not find actionID: %d in mm.Config.Macros %+v", iActionID, mm.Config.Macros))
-		return
+		return ErrActionIDNotFoundInMacros{aID: iActionID, macros: mm.Config.Macros}
 	}
 
 	// For each action
@@ -94,11 +89,11 @@ func (mm *MacroManager) RunActionFromID(actionID string, quitch chan struct{}) {
 		for funcName, funcParam := range action {
 			// Try and run function
 			err := mm.runFuncFromMap(funcName, funcParam)
-			if err != nil {
-				slog.Debug(err.Error())
-			}
+			// Pass up error if there is one
+			return err
 		}
 	}
+	return nil
 }
 
 /*
@@ -153,15 +148,24 @@ Below are helper functions
 
 // Do error handling if actionID is not actually an int
 // checks for empty string error, returns -1 if there's an error.
-func convertActionIDToInt(actionID string, quitch chan struct{}) (iActionID int, ok bool) {
-	iActionID, err := utils.StringToInt(actionID)
+func convertActionIDToInt(actionID string) (iActionID int, err error) {
+	iActionID, err = utils.StringToInt(actionID)
 	if errors.Is(err, &utils.ErrCannotParseIntFromEmptyString{}) {
 		// do nothing if an empty string was passed
-		return -1, false
+		return -1, err
 	} else if err != nil {
 		slog.Warn("convertActionIDToInt err: ", err)
-		close(quitch)
-		return -1, false
+		return -1, err
 	}
-	return iActionID, true
+	return iActionID, nil
+}
+
+/* Errors */
+type ErrActionIDNotFoundInMacros struct {
+	aID    int
+	macros map[int]config.Macro
+}
+
+func (e ErrActionIDNotFoundInMacros) Error() string {
+	return fmt.Sprintf("could not find actionID: %d in mm.Config.Macros %+v", e.aID, e.macros)
 }
