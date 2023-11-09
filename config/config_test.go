@@ -7,7 +7,6 @@ import (
 )
 
 var sampleYamlConfig string = `---
----
 MacroLayout:
   SizeX: 3
   SizeY: 3

@@ -9,6 +9,20 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+// SerialDevice object
+type SerialDevice struct {
+	PortName string `yaml:"PortName"`
+	BaudRate int    `yaml:"BaudRate"`
+}
+
+// MacroLayout object
+type MacroLayout struct {
+	SizeX  int `yaml:"SizeX"`
+	SizeY  int `yaml:"SizeY"`
+	Width  int `yaml:"Width"`
+	Height int `yaml:"Height"`
+}
+
 // Macro object
 type Macro struct {
 	Name     string              `yaml:"Name"`
@@ -19,28 +33,13 @@ type Macro struct {
 // Config object
 // Stores related configuration details. No side effects here.
 type Config struct {
-	MacroLayout struct {
-		SizeX  int `yaml:"SizeX"`
-		SizeY  int `yaml:"SizeY"`
-		Width  int `yaml:"Width"`
-		Height int `yaml:"Height"`
-	} `yaml:"MacroLayout"`
-	SerialDevice struct {
-		PortName string `yaml:"PortName"`
-		BaudRate int    `yaml:"BaudRate"`
-	} `yaml:"SerialDevice"`
-	Macros map[int]Macro `yaml:"Macros"`
-	Delay  time.Duration `yaml:"Delay"`
+	MacroLayout  MacroLayout   `yaml:"MacroLayout"`
+	SerialDevice SerialDevice  `yaml:"SerialDevice"`
+	Macros       map[int]Macro `yaml:"Macros"`
+	Delay        time.Duration `yaml:"Delay"`
 }
 
-// Return the Config as a yaml string
-func (c *Config) String() string {
-	data, err := yaml.Marshal(c)
-	if err != nil {
-		log.Fatal(err)
-	}
-	return string(data)
-}
+// TODO: Rewrite Config save/loading using io interfaces
 
 // Save Config object to a destFilename
 // Returns an error if one occurred
@@ -75,8 +74,36 @@ func NewConfigFromFile(filename string) (*Config, error) {
 	return LoadConfig(f)
 }
 
+/* Stringers */
+// Return the Config as a yaml string
+func (c *Config) String() string {
+	data, err := yaml.Marshal(c)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return string(data)
+}
+
 // Return the Macro as a yaml string
 func (c *Macro) String() string {
+	data, err := yaml.Marshal(c)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return string(data)
+}
+
+// Return the SerialDevice as a yaml string
+func (c *SerialDevice) String() string {
+	data, err := yaml.Marshal(c)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return string(data)
+}
+
+// Return the MacroLayout as a yaml string
+func (c *MacroLayout) String() string {
 	data, err := yaml.Marshal(c)
 	if err != nil {
 		log.Fatal(err)
