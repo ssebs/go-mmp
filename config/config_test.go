@@ -7,25 +7,26 @@ import (
 )
 
 var sampleYamlConfig string = `---
+---
 MacroLayout:
   SizeX: 3
   SizeY: 3
-  Width: 500
-  Height: 400
+  Width: 300
+  Height: 200
 SerialDevice:
   PortName: COM7
   BaudRate: 9600
 Macros:
-  - Name: Open Task Mgr
+  1:
+    Name: Open Task Mgr
     ActionID: 1
     Actions:
       - TaskMgr: ""
-  - Name: Skip song
-    ActionID: 10
+  10:
+    Name: Skip song
     Actions:
       - PressKey: VK_MEDIA_NEXT_TRACK
 Delay: 20ms
-
 `
 
 func TestLoadConfig(t *testing.T) {

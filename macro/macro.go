@@ -22,7 +22,7 @@ type MacroManager struct {
 	Keeb        *keyboard.Keyboard
 	Config      *config.Config
 	functionMap map[string]fn
-	actionMap   map[int]config.Macro
+	// actionMap   map[int]config.Macro
 }
 
 // Creates a new MacroManager struct
@@ -45,27 +45,17 @@ func NewMacroManager(configFilePath string) (*MacroManager, error) {
 
 	// Create the MacroManager
 	// No reason for "4", just some rand size
-	mgr := &MacroManager{Config: conf, Keeb: kb, functionMap: make(map[string]fn, 4), actionMap: make(map[int]config.Macro)}
-
+	mgr := &MacroManager{Config: conf, Keeb: kb, functionMap: make(map[string]fn, 4)}
 	mgr.initFunctionMap()
-	mgr.initActionMap()
 	return mgr, nil
 }
 
-// Create function map
+// Create function map from string to actual method
 func (mm *MacroManager) initFunctionMap() {
 	mm.functionMap = map[string]fn{
 		"TaskMgr":  mm.RunTaskManager,
 		"PressKey": mm.PressKeyAction,
 		"Shortcut": mm.RunShortcutAction,
-	}
-}
-
-// Convert config Macro list into map based on the actionid
-func (mm *MacroManager) initActionMap() {
-	for _, macro := range mm.Config.Macros {
-		aID := macro.ActionID
-		mm.actionMap[aID] = macro
 	}
 }
 
@@ -76,15 +66,6 @@ func (mm *MacroManager) runFuncFromMap(funcName string, funcParams string) error
 		return fmt.Errorf("could not find %s in mm.functionMap", funcName)
 	}
 	return mm.functionMap[funcName](funcParams)
-}
-
-// Get the action from the actionMap
-func (mm *MacroManager) getActionFromMap(actionID int) (*config.Macro, error) {
-	action, ok := mm.actionMap[actionID]
-	if !ok {
-		return nil, fmt.Errorf("could not find actionID: %d in mm.actionMap %v+", actionID, mm.actionMap)
-	}
-	return &action, nil
 }
 
 // RunActionFromID - the thing that runs the thing
@@ -100,10 +81,10 @@ func (mm *MacroManager) RunActionFromID(actionID string, quitch chan struct{}) {
 	}
 
 	// macro is a ptr to the config.Macros[iActionID] if it exists
-	macro, err := mm.getActionFromMap(iActionID)
-	fmt.Println(macro)
-	if err != nil {
-		slog.Debug(err.Error())
+	macro, ok := mm.Config.Macros[iActionID]
+	// fmt.Println(macro)
+	if !ok {
+		slog.Debug(fmt.Sprintf("could not find actionID: %d in mm.Config.Macros %+v", iActionID, mm.Config.Macros))
 		return
 	}
 
@@ -111,7 +92,7 @@ func (mm *MacroManager) RunActionFromID(actionID string, quitch chan struct{}) {
 	for _, action := range macro.Actions {
 		// Get the key/vals from the action
 		for funcName, funcParam := range action {
-			// try and run function
+			// Try and run function
 			err := mm.runFuncFromMap(funcName, funcParam)
 			if err != nil {
 				slog.Debug(err.Error())
@@ -125,16 +106,6 @@ func (mm *MacroManager) RunActionFromID(actionID string, quitch chan struct{}) {
 */
 
 // Open Task Manager by running CTRL + SHIFT + ESC
-func OpenTaskManager() {
-	kb, err := keybd_event.NewKeyBonding()
-	if err != nil {
-		slog.Warn(err.Error())
-	}
-	keeb := keyboard.Keyboard{KeyBonding: &kb}
-	hkm := keyboard.HotKeyModifiers{Shift: true, Control: true}
-	keeb.RunHotKey(10*time.Millisecond, hkm, keybd_event.VK_ESC)
-}
-
 func (mm *MacroManager) RunTaskManager(param string) error {
 	hkm := keyboard.HotKeyModifiers{Shift: true, Control: true}
 	mm.Keeb.RunHotKey(10*time.Millisecond, hkm, keybd_event.VK_ESC)

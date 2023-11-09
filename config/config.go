@@ -29,7 +29,7 @@ type Config struct {
 		PortName string `yaml:"PortName"`
 		BaudRate int    `yaml:"BaudRate"`
 	} `yaml:"SerialDevice"`
-	Macros []Macro       `yaml:"Macros"`
+	Macros map[int]Macro `yaml:"Macros"`
 	Delay  time.Duration `yaml:"Delay"`
 }
 
