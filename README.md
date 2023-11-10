@@ -25,8 +25,9 @@ This is a re-write of https://github.com/ssebs/MiniMacroPad/
 - [WIP] Run keyboard macros
 - [x] Listen for Serial data
   - [x] Take action from this data
-  - [ ] Add support for shortcuts/hotkeys
-  - [ ] Add support for running single keys
+  - [x] Add support for shortcuts/hotkeys
+  - [x] Add support for running single keys
+  - [ ] Add support for strings (see py keyboard lib!)
   - [ ] Add support for mouse?
 - [ ] CRUD a config file
   - [ ] Support many macros/devices
