@@ -17,11 +17,26 @@ Macros:
   1:
     # Text on button
     Name: Open Task Mgr
-    ActionID: 1
     # List of stuff to do
     Actions:
       # FuncName: "param"
       - TaskMgr: ""
+  2:
+    Name: nt
+    Actions:
+      # FuncName: "param"
+      - Shortcut: ""
+  3:
+    Name: gg
+    Actions:
+      # FuncName: "param"
+      - PressKey: VK_ENTER
+      - Delay: 100ms
+      - SendString: "gg"
+      - Delay: 100ms
+      - PressKey: VK_ENTER
+      # - Shortcut: "SHIFT+ENTER"
+      # - Shortcut: "ENTER"
   # Button 10
   10:
     Name: Skip song

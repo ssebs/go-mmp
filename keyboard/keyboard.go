@@ -2,6 +2,7 @@ package keyboard
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/micmonay/keybd_event"
@@ -105,9 +106,23 @@ func (k *Keyboard) RunHotKey(delayDuration time.Duration, mods HotKeyModifiers, 
 	k.PressHold(delayDuration, keys...)
 }
 
+// TODO: implement sendstring
+func (k *Keyboard) RunSendString(delayDuration time.Duration, keys string) error {
+	// Convert string to keys to press
+	for _, c := range strings.ToUpper(keys) {
+		converted, err := ConvertKeyName(string(c))
+		if err != nil {
+			return err
+		}
+		k.PressHold(delayDuration, converted)
+	}
+	return nil
+}
+
 // ConvertKeyName will convert the "VK_blah" to keybd_event.VK_blah
 // Returns the int value from the keybd_event.keybd_windows.go lib, or 0 if there's an error
 func ConvertKeyName(keyName string) (int, error) {
+	// check for space
 	val, ok := KeyMap[keyName]
 	if !ok {
 		return 0, fmt.Errorf("could not convert %s to keybd_event.%s", keyName, keyName)
@@ -317,4 +332,76 @@ var KeyMap = map[string]int{
 	"_VK_RWIN":            0x5C + 0xFFF,
 	"_KEYEVENTF_KEYUP":    0x0002,
 	"_KEYEVENTF_SCANCODE": 0x0008,
+
+	" ": keybd_event.VK_SPACE,
+	// "!": keybd_event.VK_,
+	// "@": keybd_event.VK_At,
+	// "#": keybd_event.VK_HAS,
+	// "$": keybd_event.VK_DO,
+	// "%": keybd_event.VK_P,
+	// "^": keybd_event.VCAR,
+	// "&": keybd_event.VK_AMP,
+	"*": keybd_event.VK_KPASTERISK,
+	// "(": keybd_event.VK_PAR,
+	// ")": keybd_event.VK_SPACE,
+	// "-": keybd_event.VK_HYp,
+	// "_": keybd_event.VK_UND,
+	// "=": keybd_event.VK_SPACE,
+	// "+": keybd_event.VK_SPACE,
+	// "[": keybd_event.VK_SPACE,
+	// "]": keybd_event.VK_SPACE,
+	// "{": keybd_event.VK_SPACE,
+	// "}": keybd_event.VK_SPACE,
+	// ";": keybd_event.VK_SPACE,
+	// ":": keybd_event.VK_CO,
+	// "'": keybd_event.VK_SPACE,
+	// "\"": keybd_event.VK_SPACE,
+	",": keybd_event.VK_COMMA,
+	// "<": keybd_event.VK_SPACE,
+	".": keybd_event.VK_OEM_PERIOD,
+	// ">": keybd_event.VK_SPACE,
+	"/": keybd_event.VK_SLASH,
+	// "?": keybd_event,
+	"\\": keybd_event.VK_BACKSLASH,
+	// "|": keybd_event.VK_SPACE,
+	// "`": keybd_event.VK_SPACE,
+	// "~": keybd_event.VK_SPACE,
+	// "\t": keybd_event.VK_SPACE,
+
+	"1": keybd_event.VK_1,
+	"2": keybd_event.VK_2,
+	"3": keybd_event.VK_3,
+	"4": keybd_event.VK_4,
+	"5": keybd_event.VK_5,
+	"6": keybd_event.VK_6,
+	"7": keybd_event.VK_7,
+	"8": keybd_event.VK_8,
+	"9": keybd_event.VK_9,
+	"0": keybd_event.VK_0,
+	"Q": keybd_event.VK_Q,
+	"W": keybd_event.VK_W,
+	"E": keybd_event.VK_E,
+	"R": keybd_event.VK_R,
+	"T": keybd_event.VK_T,
+	"Y": keybd_event.VK_Y,
+	"U": keybd_event.VK_U,
+	"I": keybd_event.VK_I,
+	"O": keybd_event.VK_O,
+	"P": keybd_event.VK_P,
+	"A": keybd_event.VK_A,
+	"S": keybd_event.VK_S,
+	"D": keybd_event.VK_D,
+	"F": keybd_event.VK_F,
+	"G": keybd_event.VK_G,
+	"H": keybd_event.VK_H,
+	"J": keybd_event.VK_J,
+	"K": keybd_event.VK_K,
+	"L": keybd_event.VK_L,
+	"Z": keybd_event.VK_Z,
+	"X": keybd_event.VK_X,
+	"C": keybd_event.VK_C,
+	"V": keybd_event.VK_V,
+	"B": keybd_event.VK_B,
+	"N": keybd_event.VK_N,
+	"M": keybd_event.VK_M,
 }

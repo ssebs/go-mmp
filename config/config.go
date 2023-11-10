@@ -25,9 +25,8 @@ type MacroLayout struct {
 
 // Macro object
 type Macro struct {
-	Name     string              `yaml:"Name"`
-	ActionID int                 `yaml:"ActionID"`
-	Actions  []map[string]string `yaml:"Actions"`
+	Name    string              `yaml:"Name"`
+	Actions []map[string]string `yaml:"Actions"`
 }
 
 // Config object

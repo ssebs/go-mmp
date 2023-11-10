@@ -50,24 +50,6 @@ func NewMacroManager(configFilePath string) (*MacroManager, error) {
 	return mgr, nil
 }
 
-// Create function map from string to actual method
-func (mm *MacroManager) initFunctionMap() {
-	mm.functionMap = map[string]fn{
-		"TaskMgr":  mm.RunTaskManager,
-		"PressKey": mm.PressKeyAction,
-		"Shortcut": mm.RunShortcutAction,
-	}
-}
-
-// Run the function from the functionMap if it exists
-func (mm *MacroManager) runFuncFromMap(funcName string, funcParams string) error {
-	_, ok := mm.functionMap[funcName]
-	if !ok {
-		return fmt.Errorf("could not find %s in mm.functionMap", funcName)
-	}
-	return mm.functionMap[funcName](funcParams)
-}
-
 // RunActionFromID - Run Actions from the matching ID in Config.Macros (loaded from yml)
 // This converts the actionID to an int (if possible), if not then log the error
 func (mm *MacroManager) RunActionFromID(actionID string) error {
@@ -96,6 +78,17 @@ func (mm *MacroManager) RunActionFromID(actionID string) error {
 	return nil
 }
 
+// Create function map from string to actual method
+func (mm *MacroManager) initFunctionMap() {
+	mm.functionMap = map[string]fn{
+		"TaskMgr":    mm.RunTaskManager,
+		"PressKey":   mm.PressKeyAction,
+		"Shortcut":   mm.RunShortcutAction,
+		"SendString": mm.RunSendString,
+		"Delay":      mm.RunDelay,
+	}
+}
+
 /*
  Below are the functions that provide the actual macro functionality
 */
@@ -110,6 +103,23 @@ func (mm *MacroManager) RunTaskManager(param string) error {
 func (mm *MacroManager) RunShortcutAction(param string) error {
 	// hkm keyboard.HotKeyModifiers, keys ...int
 	// mm.Keeb.RunHotKey(10*time.Millisecond, hkm, keys...)
+	return nil
+}
+
+func (mm *MacroManager) RunSendString(param string) error {
+	// hkm keyboard.HotKeyModifiers, keys ...int
+	// mm.Keeb.RunHotKey(10*time.Millisecond, hkm, keys...)
+	return mm.Keeb.RunSendString(time.Millisecond*50, param)
+
+}
+func (mm *MacroManager) RunDelay(param string) error {
+	// hkm keyboard.HotKeyModifiers, keys ...int
+	// mm.Keeb.RunHotKey(10*time.Millisecond, hkm, keys...)
+	delay, err := time.ParseDuration(param)
+	if err != nil {
+		return err
+	}
+	time.Sleep(delay)
 	return nil
 }
 
@@ -140,6 +150,15 @@ func (mm *MacroManager) PressKeysAction(keyNames []string) error {
 	// TODO: Check if the key is a modifier key
 	mm.Keeb.PressHold(mm.Config.Delay, keys...)
 	return nil
+}
+
+// Run the function from the functionMap if it exists
+func (mm *MacroManager) runFuncFromMap(funcName string, funcParams string) error {
+	_, ok := mm.functionMap[funcName]
+	if !ok {
+		return fmt.Errorf("could not find %s in mm.functionMap", funcName)
+	}
+	return mm.functionMap[funcName](funcParams)
 }
 
 /*
