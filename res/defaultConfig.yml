@@ -24,18 +24,21 @@ Macros:
   2:
     Name: nt
     Actions:
-      # FuncName: "param"
-      - Shortcut: ""
+      - PressKey: VK_ENTER
+      - SendString: nt
+      - PressKey: VK_ENTER
   3:
+    Name: nice
+    Actions:
+      - PressKey: VK_ENTER
+      - SendString: nice
+      - PressKey: VK_ENTER
+  4:
     Name: gg
     Actions:
-      # FuncName: "param"
+      - Shortcut: "SHIFT+ENTER"
+      - SendString: gg
       - PressKey: VK_ENTER
-      - Delay: 100ms
-      - SendString: "gg"
-      - Delay: 100ms
-      - PressKey: VK_ENTER
-      # - Shortcut: "SHIFT+ENTER"
       # - Shortcut: "ENTER"
   # Button 10
   10:

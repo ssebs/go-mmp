@@ -2,9 +2,9 @@ package keyboard
 
 import (
 	"fmt"
-	"strings"
 	"time"
 
+	"git.tcp.direct/kayos/sendkeys"
 	"github.com/micmonay/keybd_event"
 )
 
@@ -65,15 +65,20 @@ func (h *HotKeyModifiers) GetActiveModifiers() []HotKey {
 // Keyboard
 type Keyboard struct {
 	KeyBonding *keybd_event.KeyBonding
+	KBW        *sendkeys.KBWrap
 }
 
 // Create new Keyboard
 func NewKeyboard() (*Keyboard, error) {
 	kb, err := keybd_event.NewKeyBonding()
 	if err != nil {
-		return &Keyboard{}, err
+		return nil, err
 	}
-	return &Keyboard{&kb}, nil
+	wrap, err := sendkeys.NewKBWrapWithOptions()
+	if err != nil {
+		return nil, err
+	}
+	return &Keyboard{&kb, wrap}, nil
 }
 
 // Press and hold a set of keys, with a delayDuration between pressing and releasing
@@ -108,15 +113,8 @@ func (k *Keyboard) RunHotKey(delayDuration time.Duration, mods HotKeyModifiers, 
 
 // TODO: implement sendstring
 func (k *Keyboard) RunSendString(delayDuration time.Duration, keys string) error {
-	// Convert string to keys to press
-	for _, c := range strings.ToUpper(keys) {
-		converted, err := ConvertKeyName(string(c))
-		if err != nil {
-			return err
-		}
-		k.PressHold(delayDuration, converted)
-	}
-	return nil
+	fmt.Println("typing: ", keys)
+	return k.KBW.Type(keys)
 }
 
 // ConvertKeyName will convert the "VK_blah" to keybd_event.VK_blah

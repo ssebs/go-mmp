@@ -70,9 +70,11 @@ func (mm *MacroManager) RunActionFromID(actionID string) error {
 		// Get the key/vals from the action
 		for funcName, funcParam := range action {
 			// Try and run function
-			err := mm.runFuncFromMap(funcName, funcParam)
-			// Pass up error if there is one
-			return err
+			// fmt.Printf("funcName: %s, funcParam: %s\n", funcName, funcParam)
+			if err := mm.runFuncFromMap(funcName, funcParam); err != nil {
+				// Pass up error if there is one
+				return err
+			}
 		}
 	}
 	return nil
@@ -109,6 +111,7 @@ func (mm *MacroManager) RunShortcutAction(param string) error {
 func (mm *MacroManager) RunSendString(param string) error {
 	// hkm keyboard.HotKeyModifiers, keys ...int
 	// mm.Keeb.RunHotKey(10*time.Millisecond, hkm, keys...)
+	fmt.Println("RunSendString, ", param)
 	return mm.Keeb.RunSendString(time.Millisecond*50, param)
 
 }

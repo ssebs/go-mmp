@@ -3,6 +3,8 @@ MiniMacroPad driver software, written in Golang.
 
 This is a re-write of https://github.com/ssebs/MiniMacroPad/
 
+TODO: Use this keyboard lib git.tcp.direct/kayos/sendkeys
+
 ## Usage
 - Clone this repo
   - You'll need to install a C compiler. See https://developer.fyne.io/started/
