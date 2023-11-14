@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
+	"strings"
 	"time"
 
 	"github.com/micmonay/keybd_event"
@@ -102,10 +103,35 @@ func (mm *MacroManager) RunTaskManager(param string) error {
 	return nil
 }
 
+// param should be formatted as: "SHIFT+ENTER+c"
 func (mm *MacroManager) RunShortcutAction(param string) error {
+	keymods := keyboard.HotKeyModifiers{}
+	keys := make([]int, 1)
+	for _, word := range strings.Split(param, "+") {
+		switch word {
+		case "SHIFT":
+			keymods.Shift = true
+		case "CTRL":
+			keymods.Control = true
+		case "ALT":
+			keymods.Alt = true
+		case "SUPER":
+			keymods.Super = true
+		default:
+			iKey, err := keyboard.ConvertKeyName(word)
+			if err != nil {
+				fmt.Printf("could not convert %s to keyboard int", word)
+				continue
+			}
+			keys = append(keys, iKey)
+		}
+	}
+	// TODO: run the macro
+	mm.Keeb.RunHotKey(10*time.Millisecond, keymods, keys...)
+	return fmt.Errorf("replace me")
 	// hkm keyboard.HotKeyModifiers, keys ...int
 	// mm.Keeb.RunHotKey(10*time.Millisecond, hkm, keys...)
-	return nil
+	// return nil
 }
 
 func (mm *MacroManager) RunSendString(param string) error {

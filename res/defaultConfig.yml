@@ -20,7 +20,8 @@ Macros:
     # List of stuff to do
     Actions:
       # FuncName: "param"
-      - TaskMgr: ""
+      # - TaskMgr: ""
+      - Shortcut: "CTRL+SHIFT+ESC"
   2:
     Name: nt
     Actions:
@@ -38,8 +39,7 @@ Macros:
     Actions:
       - Shortcut: "SHIFT+ENTER"
       - SendString: gg
-      - PressKey: VK_ENTER
-      # - Shortcut: "ENTER"
+      - Shortcut: "ENTER"
   # Button 10
   10:
     Name: Skip song
