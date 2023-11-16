@@ -117,8 +117,9 @@ func (k *Keyboard) RunSendString(delayDuration time.Duration, keys string) error
 	return k.KBW.Type(keys)
 }
 
-// ConvertKeyName will convert the "VK_blah" to keybd_event.VK_blah
-// Returns the int value from the keybd_event.keybd_windows.go lib, or 0 if there's an error
+// ConvertKeyName takes a key name as a string and returns the corresponding
+// integer value from the KeyMap. If the key name is not found in the KeyMap,
+// it returns an error.
 func ConvertKeyName(keyName string) (int, error) {
 	// check for space
 	val, ok := KeyMap[keyName]

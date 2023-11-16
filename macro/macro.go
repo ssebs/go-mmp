@@ -24,10 +24,10 @@ type MacroManager struct {
 	functionMap map[string]fn
 }
 
-// Creates a new MacroManager struct
-// Will load a Config from the configFilePath. If this is empty, load the default.
-// Creates a Keyboard under Keeb
-//
+// NewMacroManager Creates a MacroManager with the given configuration file path.
+// It initializes the keyboard and loads the configuration. If the configuration file
+// path is empty, it uses the default configuration file.
+
 // To run a macro, use the RunActionFromID func
 func NewMacroManager(configFilePath string) (*MacroManager, error) {
 	// Create Keyboard
