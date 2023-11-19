@@ -13,8 +13,20 @@ SerialDevice:
   # Timeout: 20ms
 # List of Macros to
 Macros:
-  # Position on display
   1:
+    Name: nt
+    Actions:
+      - PressKey: VK_ENTER
+      - SendString: nt
+      - PressKey: VK_ENTER
+  2:
+    Name: nice
+    Actions:
+      - PressKey: VK_ENTER
+      - SendString: nice
+      - PressKey: VK_ENTER
+  # Position on display
+  3:
     # Text on button
     Name: Open Task Mgr
     # List of stuff to do
@@ -22,23 +34,43 @@ Macros:
       # FuncName: "param"
       # - TaskMgr: ""
       - Shortcut: "CTRL+SHIFT+ESC"
-  2:
-    Name: nt
-    Actions:
-      - PressKey: VK_ENTER
-      - SendString: nt
-      - PressKey: VK_ENTER
-  3:
-    Name: nice
-    Actions:
-      - PressKey: VK_ENTER
-      - SendString: nice
-      - PressKey: VK_ENTER
   4:
     Name: gg
     Actions:
       - Shortcut: "SHIFT+ENTER"
       - SendString: gg
+      - Shortcut: "ENTER"
+  5:
+    Name: ggwp
+    Actions:
+      - Shortcut: "SHIFT+ENTER"
+      - SendString: ggwp
+      - Shortcut: "ENTER"
+  6:
+    Name: ggez
+    Actions:
+      - Shortcut: "SHIFT+ENTER"
+      - SendString: ggez
+      - Shortcut: "ENTER"
+  7:
+    Name: surf reset all
+    Actions:
+      - Shortcut: "ENTER"
+      - SendString: "/r"
+      - Shortcut: "ENTER"
+  8:
+    Name: surf reset stage
+    Actions:
+      - Shortcut: "ENTER"
+      - SendString: "/rs"
+      - Shortcut: "ENTER"
+  9:
+    Name: startup folder
+    Actions:
+      - Shortcut: "SUPER+R"
+      - Delay: 1s
+      - SendString: "shell:startup"
+      - Delay: 1s
       - Shortcut: "ENTER"
   # Button 10
   10:

@@ -25,6 +25,7 @@ TODO: Use this keyboard lib git.tcp.direct/kayos/sendkeys
 - [x] Get started
 - [WIP] Create basic UI
 - [WIP] Run keyboard macros
+- [ ] Load buttons from config into GUI
 - [x] Listen for Serial data
   - [x] Take action from this data
   - [x] Add support for shortcuts/hotkeys
