@@ -6,7 +6,6 @@ import (
 	"log/slog"
 	"time"
 
-	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
 	"github.com/ssebs/go-mmp/gui"
 	"github.com/ssebs/go-mmp/macro"
@@ -40,7 +39,7 @@ func main() {
 		log.Fatal(err)
 	}
 	// fmt.Printf("Config: %s", macroMgr.Config)
-	g := gui.NewGUI(macroMgr.Config, 1)
+	g := gui.NewGUI(macroMgr.Config)
 	arduino, err := serialdevice.NewSerialDeviceFromConfig(macroMgr.Config, time.Millisecond*20)
 
 	// Show error dialog
@@ -49,8 +48,6 @@ func main() {
 	}
 	defer arduino.CloseConnection()
 
-	// GUI container
-	container := container.NewVBox()
 	// Display button pressed
 	pressedLabel := widget.NewLabel("Button Pressed: ")
 
@@ -84,14 +81,16 @@ func main() {
 		g.App.Quit()
 	}()
 
-	// Create button to test CTRL + SHIFT + ESC hotkey
-	tmBtn := widget.NewButton("Open Task Manager", func() {
-		macroMgr.RunTaskManager("")
-	})
+	// // GUI container (testing)
+	// container := container.NewVBox()
+	// // Create button to test CTRL + SHIFT + ESC hotkey
+	// tmBtn := widget.NewButton("Open Task Manager", func() {
+	// 	macroMgr.RunTaskManager("")
+	// })
 
-	container.Add(pressedLabel)
-	container.Add(tmBtn)
+	// container.Add(pressedLabel)
+	// container.Add(tmBtn)
+	// g.SetContent(container)
 
-	g.SetContent(container)
 	g.ShowAndRun()
 }

@@ -78,6 +78,8 @@ func (mm *MacroManager) RunActionFromID(actionID string) error {
 			}
 		}
 	}
+
+	//TODO: Show button pressed on gui
 	return nil
 }
 
