@@ -1,49 +1,34 @@
 package config
 
 import (
-	"bytes"
+	"os"
 	"reflect"
 	"testing"
 )
 
-var sampleYamlConfig string = `---
-MacroLayout:
-  SizeX: 3
-  SizeY: 3
-  Width: 300
-  Height: 200
-SerialDevice:
-  PortName: COM7
-  BaudRate: 9600
-Macros:
-  1:
-    Name: Open Task Mgr
-    ActionID: 1
-    Actions:
-      - TaskMgr: ""
-  10:
-    Name: Skip song
-    Actions:
-      - PressKey: VK_MEDIA_NEXT_TRACK
-Delay: 20ms
-`
-
 func TestLoadConfig(t *testing.T) {
+	configPath := "../res/defaultConfig.yml"
 	t.Run("make sure loadconfig works", func(t *testing.T) {
-		buff := bytes.Buffer{}
-		buff.WriteString(sampleYamlConfig)
-
-		got, err := LoadConfig(&buff)
-
+		// expected usage
+		c, err := NewConfigFromFile(configPath)
 		if err != nil {
-			t.Fatal(err)
+			t.Fatalf("expected no error, got %s", err)
 		}
-		want, err := NewConfigFromFile("../res/defaultConfig.yml")
+
+		// manual to test
+		// TODO: make this path agnostic to where you are running the test
+		f, err := os.Open(configPath)
 		if err != nil {
-			t.Fatal(err)
+			t.Fatalf("could not open file for test, err: %s. %+v", err, f)
 		}
-		if !reflect.DeepEqual(got, want) {
-			t.Fatalf("got %v want %v", got, want)
+		defer f.Close()
+		c2, err := LoadConfig(f)
+		if err != nil {
+			t.Fatalf("expected no error, got %s", err)
+		}
+
+		if !reflect.DeepEqual(c, c2) {
+			t.Fatalf("expected NewConfigFromFile('') to load res/defaultconfig.yml. got %+v, want %+v", c2, c)
 		}
 	})
 }
