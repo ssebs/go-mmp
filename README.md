@@ -53,6 +53,8 @@ If you have an arduino powered device, you could use this to run various keyboar
   - [x] Add support for shortcuts/hotkeys
   - [x] Add support for running single keys
   - [x] Add support for strings
+  - [ ] Clear whatever is coming in when we first open the app
+    - [ ] !if someone pressed a button before opening the app, it will run it asap!
   - [ ] Add support for mouse?
 - [ ] Add unit tests!
   - Current Coverage: 
