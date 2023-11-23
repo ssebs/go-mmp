@@ -106,9 +106,11 @@ func (mm *MacroManager) RunTaskManager(param string) error {
 }
 
 // param should be formatted as: "SHIFT+ENTER+c"
+// TODO: FIX https://keyboard-test.space/
 func (mm *MacroManager) RunShortcutAction(param string) error {
 	keymods := keyboard.HotKeyModifiers{}
 	keys := make([]int, 1)
+	// Generate HotKeyModifiers from the string
 	for _, word := range strings.Split(param, "+") {
 		switch word {
 		case "SHIFT":

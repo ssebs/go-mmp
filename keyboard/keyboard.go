@@ -9,60 +9,6 @@ import (
 	"github.com/micmonay/keybd_event"
 )
 
-// Modifier Keys for HotKey
-const (
-	SHIFT HotKey = iota
-	CTRL  HotKey = iota
-	ALT   HotKey = iota
-	SUPER HotKey = iota
-)
-
-// HotKey
-type HotKey int
-
-func (hk HotKey) String() string {
-	return []string{"SHIFT", "CTRL", "ALT", "SUPER"}[hk]
-}
-
-// HotKeyModifiers
-// When creating, set whatever modifier to true,
-// then use GetActiveModifiers() to get a list of active HotKeys
-type HotKeyModifiers struct {
-	Shift   bool
-	Control bool
-	Alt     bool
-	Super   bool
-}
-
-// Why doesn't intellisense sense this
-// // NewHotKeyModifiers
-// func (h *HotKeyModifiers) NewHotKeyModifiers(shift, control, alt, super bool) *HotKeyModifiers {
-// 	h.shift = shift
-// 	h.control = control
-// 	h.alt = alt
-// 	h.super = super
-// 	return h
-// }
-
-// GetActiveModifiers
-// Return active modifier HotKeys from self
-func (h *HotKeyModifiers) GetActiveModifiers() []HotKey {
-	activeKeys := []HotKey{}
-	if h.Shift {
-		activeKeys = append(activeKeys, SHIFT)
-	}
-	if h.Control {
-		activeKeys = append(activeKeys, CTRL)
-	}
-	if h.Alt {
-		activeKeys = append(activeKeys, ALT)
-	}
-	if h.Super {
-		activeKeys = append(activeKeys, SUPER)
-	}
-	return activeKeys
-}
-
 // Keyboard
 type Keyboard struct {
 	KeyBonding *keybd_event.KeyBonding
@@ -116,6 +62,56 @@ func (k *Keyboard) RunHotKey(delayDuration time.Duration, mods HotKeyModifiers, 
 func (k *Keyboard) RunSendString(delayDuration time.Duration, keys string) error {
 	fmt.Println("typing: ", keys)
 	return k.KBW.Type(keys)
+}
+
+// Modifier Keys for HotKey
+const (
+	SHIFT HotKey = iota
+	CTRL  HotKey = iota
+	ALT   HotKey = iota
+	SUPER HotKey = iota
+)
+
+// HotKey
+type HotKey int
+
+func (hk HotKey) String() string {
+	return []string{"SHIFT", "CTRL", "ALT", "SUPER"}[hk]
+}
+
+// HotKeyModifiers
+// When creating, set whatever modifier to true,
+// then use GetActiveModifiers() to get a list of active HotKeys
+type HotKeyModifiers struct {
+	Shift   bool
+	Control bool
+	Alt     bool
+	Super   bool
+}
+
+// NewHotKeyModifiers
+func NewHotKeyModifiers(shift, control, alt, super bool) *HotKeyModifiers {
+	h := &HotKeyModifiers{Shift: shift, Control: control, Alt: alt, Super: super}
+	return h
+}
+
+// GetActiveModifiers
+// Return active modifier HotKeys from self
+func (h *HotKeyModifiers) GetActiveModifiers() []HotKey {
+	activeKeys := []HotKey{}
+	if h.Shift {
+		activeKeys = append(activeKeys, SHIFT)
+	}
+	if h.Control {
+		activeKeys = append(activeKeys, CTRL)
+	}
+	if h.Alt {
+		activeKeys = append(activeKeys, ALT)
+	}
+	if h.Super {
+		activeKeys = append(activeKeys, SUPER)
+	}
+	return activeKeys
 }
 
 // ConvertKeyName takes a key name as a string and returns the corresponding
