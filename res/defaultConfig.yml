@@ -69,6 +69,7 @@ Macros:
     Name: startup folder
     Actions:
       - Shortcut: "SUPER+R"
+      - Delay: 100ms
       - SendString: "shell:startup"
       - Delay: 100ms
       - Shortcut: "ENTER"
