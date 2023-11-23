@@ -14,6 +14,8 @@ import (
 	"github.com/ssebs/go-mmp/utils"
 )
 
+// For testing: Check out https://keyboard-test.space/
+
 // fn Function type, for use in functionMap
 type fn func(string) error
 
@@ -86,11 +88,11 @@ func (mm *MacroManager) RunActionFromID(actionID string) error {
 // Create function map from string to actual method
 func (mm *MacroManager) initFunctionMap() {
 	mm.functionMap = map[string]fn{
-		"TaskMgr":    mm.RunTaskManager,
-		"PressKey":   mm.PressKeyAction,
-		"Shortcut":   mm.RunShortcutAction,
-		"SendString": mm.RunSendString,
-		"Delay":      mm.RunDelay,
+		"TaskMgr":    mm.DoTaskManager,
+		"Shortcut":   mm.DoShortcutAction,
+		"SendString": mm.DoSendString,
+		"Delay":      mm.DoDelay,
+		"PressKey":   mm.DoPressKeyAction,
 	}
 }
 
@@ -99,17 +101,17 @@ func (mm *MacroManager) initFunctionMap() {
 */
 
 // Open Task Manager by running CTRL + SHIFT + ESC
-func (mm *MacroManager) RunTaskManager(param string) error {
-	hkm := keyboard.HotKeyModifiers{Shift: true, Control: true}
-	mm.Keeb.RunHotKey(10*time.Millisecond, hkm, keybd_event.VK_ESC)
+func (mm *MacroManager) DoTaskManager(param string) error {
+	hkm := &keyboard.HotKeyModifiers{Shift: true, Control: true}
+	mm.Keeb.RunHotKey(mm.Config.Delay, hkm, keybd_event.VK_ESC)
 	return nil
 }
 
+// DoShortcutAction will type a shortcut
 // param should be formatted as: "SHIFT+ENTER+c"
-// TODO: FIX https://keyboard-test.space/
-func (mm *MacroManager) RunShortcutAction(param string) error {
-	keymods := keyboard.HotKeyModifiers{}
-	keys := make([]int, 1)
+func (mm *MacroManager) DoShortcutAction(param string) error {
+	keymods := &keyboard.HotKeyModifiers{}
+	keys := make([]int, 0)
 	// Generate HotKeyModifiers from the string
 	for _, word := range strings.Split(param, "+") {
 		switch word {
@@ -124,68 +126,47 @@ func (mm *MacroManager) RunShortcutAction(param string) error {
 		default:
 			iKey, err := keyboard.ConvertKeyName(word)
 			if err != nil {
-				fmt.Printf("could not convert %s to keyboard int", word)
-				continue
+				return fmt.Errorf("could not convert %s to keyboard int", word)
 			}
 			keys = append(keys, iKey)
 		}
 	}
-	// TODO: run the macro
-	mm.Keeb.RunHotKey(10*time.Millisecond, keymods, keys...)
-	return fmt.Errorf("replace me")
-	// hkm keyboard.HotKeyModifiers, keys ...int
-	// mm.Keeb.RunHotKey(10*time.Millisecond, hkm, keys...)
-	// return nil
+
+	// Run the macro
+	mm.Keeb.RunHotKey(mm.Config.Delay, keymods, keys...)
+	return nil
 }
 
-func (mm *MacroManager) RunSendString(param string) error {
-	// hkm keyboard.HotKeyModifiers, keys ...int
-	// mm.Keeb.RunHotKey(10*time.Millisecond, hkm, keys...)
+// DoSendString will type a string that's passed
+func (mm *MacroManager) DoSendString(param string) error {
 	fmt.Println("RunSendString, ", param)
-	return mm.Keeb.RunSendString(time.Millisecond*50, param)
+	return mm.Keeb.RunSendString(param)
 
 }
-func (mm *MacroManager) RunDelay(param string) error {
-	// hkm keyboard.HotKeyModifiers, keys ...int
-	// mm.Keeb.RunHotKey(10*time.Millisecond, hkm, keys...)
+
+// DoDelay will time.sleep for the delay given if it can be parsed
+func (mm *MacroManager) DoDelay(param string) error {
 	delay, err := time.ParseDuration(param)
 	if err != nil {
-		return err
+		return fmt.Errorf("could not parse delay duration %q, err: %s", param, err)
 	}
 	time.Sleep(delay)
 	return nil
 }
 
-// PressKeyAction
-// keyName should be VK_ESC format
-func (mm *MacroManager) PressKeyAction(keyName string) error {
+// PressKeyAction converts the keyName & will press&hold it with mm.Config.Delay
+// keyName should be found in KeyMap
+func (mm *MacroManager) DoPressKeyAction(keyName string) error {
 	convertedName, err := keyboard.ConvertKeyName(keyName)
 	if err != nil {
 		return fmt.Errorf("could not press key: %s", keyName)
 	}
+
 	mm.Keeb.PressHold(mm.Config.Delay, convertedName)
 	return nil
 }
 
-// PressKeysAction
-// Needs a slice of keyName strings,
-// keyNames should follow the same format at PressKeyAction
-func (mm *MacroManager) PressKeysAction(keyNames []string) error {
-	keys := make([]int, 0)
-	for _, key := range keyNames {
-		convertedName, err := keyboard.ConvertKeyName(key)
-		if err != nil {
-			fmt.Printf("could not press key: %s", key)
-			continue
-		}
-		keys = append(keys, convertedName)
-	}
-	// TODO: Check if the key is a modifier key
-	mm.Keeb.PressHold(mm.Config.Delay, keys...)
-	return nil
-}
-
-// Run the function from the functionMap if it exists
+// runFuncFromMap runs the function from the functionMap if it exists, errors otherwise
 func (mm *MacroManager) runFuncFromMap(funcName string, funcParams string) error {
 	_, ok := mm.functionMap[funcName]
 	if !ok {

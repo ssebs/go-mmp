@@ -59,6 +59,12 @@ func LoadConfig(f io.Reader) (*Config, error) {
 	if err != nil {
 		return c, err
 	}
+
+	// Set default delay if it's 0
+	if c.Delay == 0 {
+		c.Delay = 100 * time.Millisecond
+	}
+
 	return c, nil
 }
 

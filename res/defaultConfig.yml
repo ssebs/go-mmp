@@ -2,7 +2,7 @@
 # Layout of the physical device
 MacroLayout:
   SizeX: 3
-  SizeY: 3
+  SizeY: 4
   # Size of the GUI
   Width: 300
   Height: 200
@@ -11,6 +11,7 @@ SerialDevice:
   PortName: COM7
   BaudRate: 9600
   # Timeout: 20ms
+Delay: 60ms # Delay for ShortCuts
 # List of Macros to
 Macros:
   1:
@@ -68,13 +69,11 @@ Macros:
     Name: startup folder
     Actions:
       - Shortcut: "SUPER+R"
-      - Delay: 1s
       - SendString: "shell:startup"
-      - Delay: 1s
+      - Delay: 100ms
       - Shortcut: "ENTER"
   # Button 10
   10:
     Name: Skip song
     Actions:
       - PressKey: VK_MEDIA_NEXT_TRACK
-Delay: 20ms
