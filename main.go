@@ -39,7 +39,7 @@ func main() {
 		log.Fatal(err)
 	}
 	// fmt.Printf("Config: %s", macroMgr.Config)
-	g := gui.NewGUI(macroMgr.Config)
+	g := gui.NewGUI(macroMgr)
 	arduino, err := serialdevice.NewSerialDeviceFromConfig(macroMgr.Config, time.Millisecond*20)
 
 	// Show error dialog
