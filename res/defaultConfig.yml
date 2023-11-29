@@ -39,25 +39,19 @@ Macros:
     Name: gg
     Actions:
       - Shortcut: "SHIFT+ENTER"
-      - Delay: 100ms
       - SendString: gg
-      - Delay: 100ms
       - Shortcut: "ENTER"
   5:
     Name: ggwp
     Actions:
       - Shortcut: "SHIFT+ENTER"
-      - Delay: 100ms
       - SendString: ggwp
-      - Delay: 100ms
       - Shortcut: "ENTER"
   6:
     Name: ggez
     Actions:
       - Shortcut: "SHIFT+ENTER"
-      - Delay: 200ms
       - SendString: ggez
-      - Delay: 200ms
       - Shortcut: "ENTER"
   7:
     Name: surf reset all

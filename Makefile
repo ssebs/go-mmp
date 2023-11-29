@@ -1,4 +1,5 @@
 build:
+	@rm main.exe
 	go build main.go
 run: build
 	./main.exe
