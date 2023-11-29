@@ -3,6 +3,7 @@ package gui
 import (
 	"fmt"
 	"log"
+	"time"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
@@ -20,11 +21,11 @@ var dialogSize = fyne.Size{Width: 200, Height: 150}
 // GUI
 type GUI struct {
 	Size         fyne.Size
-	config       *config.Config
-	macroManager *macro.MacroManager
 	App          fyne.App
 	RootWin      fyne.Window
-	// MacroGrid map[int]config.Macro
+	macroManager *macro.MacroManager
+	config       *config.Config
+	grid         *fyne.Container
 }
 
 // Create a new GUI, given a MacroManager ptr
@@ -44,7 +45,7 @@ func NewGUI(mm *macro.MacroManager) *GUI {
 
 // initMacroGrid will generate grid from g.config.MacroLayout.SizeX & number of Macros
 func (g *GUI) initMacroGrid() {
-	grid := container.New(layout.NewGridLayout(g.config.MacroLayout.SizeX))
+	g.grid = container.New(layout.NewGridLayout(g.config.MacroLayout.SizeX))
 
 	for pos := 1; pos <= len(g.config.Macros); pos++ {
 		macro := g.config.Macros[pos]
@@ -56,16 +57,43 @@ func (g *GUI) initMacroGrid() {
 		btn := widget.NewButton(macro.Name, func() {
 			// Runs the macro from the btn id that was clicked
 			g.macroManager.RunActionFromID(fmt.Sprint(p))
-			// fmt.Printf("running action from %d\n", p)
 		})
 		// Add to the grid
-		grid.Add(btn)
-
+		g.grid.Add(btn)
 	}
-	// Add chans for each button to show pressed state when a (physical) button is pressed
 
 	// Add grid to g.RootWin
-	g.RootWin.SetContent(grid)
+	g.RootWin.SetContent(g.grid)
+}
+
+// ListenForDisplayButtonPress will listen for a button press then visibly update
+// the button so it looks like it was pressed
+func (g *GUI) ListenForDisplayButtonPress(displayBtnch chan string, quitch chan struct{}) {
+free:
+	for {
+		select {
+		case btnStr := <-displayBtnch:
+			// fmt.Printf("~~DISPLAY BTN %s~~\n", btnStr)
+			// If you can convert the btnstr into an int
+			if iBtn, err := utils.StringToInt(btnStr); err == nil {
+				// Since the buttons start at 1 in the Config, get the btn - 1
+				btn := g.grid.Objects[iBtn-1].(*widget.Button)
+				// Display the button press
+				ShowPressedAnimation(g.macroManager.Config.Delay, btn)
+			}
+		case <-quitch:
+			break free
+		}
+	}
+}
+
+// ShowPressedAnimation will change the color of the button for the delay given
+func ShowPressedAnimation(delay time.Duration, btn *widget.Button) {
+	btn.Importance = widget.HighImportance
+	btn.Refresh()
+	time.Sleep(delay)
+	btn.Importance = widget.MediumImportance
+	btn.Refresh()
 }
 
 /* Usefull stuff from the demo app:

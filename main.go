@@ -16,8 +16,8 @@ import (
 // Takes in a btnch to send data to when the serial connection gets something,
 // and a quitch if we need to stop the goroutine
 func Listen(btnch chan string, quitch chan struct{}, sd *serialdevice.SerialDevice) {
-	// Keep looping since sd.Listen() will return if no data is sent
 free:
+	// Keep looping since sd.Listen() will return if no data is sent
 	for {
 		select {
 		case <-quitch:
@@ -54,9 +54,12 @@ func main() {
 	// Run listener
 	btnch := make(chan string, 2)
 	quitch := make(chan struct{})
+	displayBtnch := make(chan string, 1)
 
 	// Serial Listener
 	go Listen(btnch, quitch, &arduino)
+	// Visible button press listener
+	go g.ListenForDisplayButtonPress(displayBtnch, quitch)
 
 	// Do something when btnch gets data
 	go func() {
@@ -68,6 +71,9 @@ func main() {
 				pressedLabel.SetText(fmt.Sprintf("Button Pressed: %s", btn))
 				// Only run the function if it's not blank, tho
 				if btn != "" {
+					// send btn id to show the btn press
+					displayBtnch <- btn
+					// Run the action from the btn id
 					err := macroMgr.RunActionFromID(btn)
 					if err != nil {
 						slog.Warn(err.Error())
