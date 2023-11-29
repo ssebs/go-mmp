@@ -26,8 +26,9 @@ type SerialDevice struct {
 // This will:
 //   - set the serial port based on the given portName
 //   - open the connection using the supplied baudRate, and set the timeout
-func NewSerialDevice(portName string, baudRate int, timeout time.Duration) (arduino SerialDevice, err error) {
-	err = arduino.SetSerialPort(portName)
+func NewSerialDevice(pn string, baudRate int, timeout time.Duration) (*SerialDevice, error) {
+	arduino := &SerialDevice{portName: pn, timeout: timeout}
+	err := arduino.SetSerialPort(pn)
 	if err != nil {
 		return arduino, err
 	}
@@ -35,7 +36,6 @@ func NewSerialDevice(portName string, baudRate int, timeout time.Duration) (ardu
 	if err != nil {
 		return arduino, err
 	}
-	arduino.timeout = timeout
 	err = arduino.Conn.SetReadTimeout(timeout)
 	if err != nil {
 		return arduino, err
@@ -46,11 +46,13 @@ func NewSerialDevice(portName string, baudRate int, timeout time.Duration) (ardu
 // Create a new SerialDevice from a Config struct
 // Returns a SerialDevice, and an error.
 // See NewSerialDevice.
-func NewSerialDeviceFromConfig(c *config.Config, timeout time.Duration) (SerialDevice, error) {
-	return NewSerialDevice(c.SerialDevice.PortName, c.SerialDevice.BaudRate, timeout)
+func NewSerialDeviceFromConfig(c *config.Config, timeout time.Duration) (*SerialDevice, error) {
+	arduino, err := NewSerialDevice(c.SerialDevice.PortName, c.SerialDevice.BaudRate, timeout)
+	return arduino, err
 }
 
-// Open a serial connection based on the baudrate, and save the opened conn to SerialDevice.Conn
+// Open a serial connection based on the baudrate,
+// and save the opened conn to SerialDevice.Conn
 func (s *SerialDevice) OpenConnection(baud int) (err error) {
 	s.mode = &serial.Mode{BaudRate: int(baud)}
 	s.Conn, err = serial.Open(s.portName, s.mode)

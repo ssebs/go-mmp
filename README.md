@@ -56,6 +56,11 @@ If you have an arduino powered device, you could use this to run various keyboar
   - [ ] Clear whatever is coming in when we first open the app
     - [ ] !if someone pressed a button before opening the app, it will run it asap!
   - [ ] Add support for mouse?
+- [WIP] Error handling
+  - [x] GUI
+  - [x] fix serial device errors (serial port busy, nonexistent, etc)
+  - [ ] more!
+  - [ ] Figure out the "Fyne error:  GLFW poll event error: InvalidValue: Invalid scancode 144"
 - [ ] Add unit tests!
   - Current Coverage: 
   - [ ] config tests

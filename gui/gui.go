@@ -8,15 +8,12 @@ import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
-	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
 	"github.com/ssebs/go-mmp/config"
 	"github.com/ssebs/go-mmp/macro"
 	"github.com/ssebs/go-mmp/utils"
 )
-
-var dialogSize = fyne.Size{Width: 200, Height: 150}
 
 // GUI
 type GUI struct {
@@ -109,42 +106,27 @@ func ShowPressedAnimation(delay time.Duration, btn *widget.Button) {
 - Windows
 */
 
-/*"static" stuff below*/
+/* Dialogs */
 
-// Create a fyne app & attach a window
-// Returns the window
-// TODO: make this not quit the app if closed
-func newAppWindow(title string, size fyne.Size) fyne.Window {
-	app := app.New()
-	win := app.NewWindow(title)
-	win.CenterOnScreen()
-	win.Resize(size)
-	return win
-}
+func ShowErrorDialogAndRun(err error) {
+	w := fyne.CurrentApp().NewWindow("Error!")
 
-// Static dialogs
-// TODO: fix these...
-func ShowDialog(title, msg string) {
-	win := newAppWindow(title, dialogSize)
-	d := dialog.NewInformation(title, msg, win)
-	d.Resize(dialogSize)
-	d.SetOnClosed(func() {
-		win.Close()
-	})
-	d.Show()
-	win.ShowAndRun()
-}
+	// What to do if the button / close btn are pressed
+	errFunc := func() {
+		log.Fatal("error", err.Error())
+	}
+	// Container for the dialog stuff
+	container := container.NewVBox()
+	// Add widgets to it
+	lbl := widget.NewLabel(fmt.Sprintf("Error: %s", err.Error()))
+	btn := widget.NewButton("OK", errFunc)
+	container.Add(lbl)
+	container.Add(btn)
 
-func ShowErrorDialog(err error) {
-	win := newAppWindow(err.Error(), dialogSize)
-	d := dialog.NewError(err, win)
-	d.Resize(dialogSize)
-	d.SetOnClosed(func() {
-		win.Close()
-		log.Fatal(err)
-	})
-	d.Show()
-	win.ShowAndRun()
+	w.SetContent(container)
+	w.SetOnClosed(errFunc)
+	w.CenterOnScreen()
+	w.ShowAndRun()
 }
 
 /* Helpers */

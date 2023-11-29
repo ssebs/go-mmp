@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"log/slog"
 	"time"
 
@@ -36,7 +35,7 @@ free:
 func main() {
 	macroMgr, err := macro.NewMacroManager("") // TODO: replace "" with path to config
 	if err != nil {
-		log.Fatal(err)
+		gui.ShowErrorDialogAndRun(err)
 	}
 	// fmt.Printf("Config: %s", macroMgr.Config)
 	g := gui.NewGUI(macroMgr)
@@ -44,7 +43,7 @@ func main() {
 
 	// Show error dialog
 	if err != nil {
-		gui.ShowErrorDialog(err)
+		gui.ShowErrorDialogAndRun(err)
 	}
 	defer arduino.CloseConnection()
 
@@ -57,7 +56,7 @@ func main() {
 	displayBtnch := make(chan string, 1)
 
 	// Serial Listener
-	go Listen(btnch, quitch, &arduino)
+	go Listen(btnch, quitch, arduino)
 	// Visible button press listener
 	go g.ListenForDisplayButtonPress(displayBtnch, quitch)
 
