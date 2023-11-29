@@ -23,9 +23,9 @@ Macros:
   2:
     Name: nice
     Actions:
-      - PressKey: VK_ENTER
+      - Shortcut: ENTER
       - SendString: nice
-      - PressKey: VK_ENTER
+      - Shortcut: ENTER
   # Position on display
   3:
     # Text on button
@@ -39,31 +39,41 @@ Macros:
     Name: gg
     Actions:
       - Shortcut: "SHIFT+ENTER"
+      - Delay: 100ms
       - SendString: gg
+      - Delay: 100ms
       - Shortcut: "ENTER"
   5:
     Name: ggwp
     Actions:
       - Shortcut: "SHIFT+ENTER"
+      - Delay: 100ms
       - SendString: ggwp
+      - Delay: 100ms
       - Shortcut: "ENTER"
   6:
     Name: ggez
     Actions:
       - Shortcut: "SHIFT+ENTER"
+      - Delay: 200ms
       - SendString: ggez
+      - Delay: 200ms
       - Shortcut: "ENTER"
   7:
     Name: surf reset all
     Actions:
       - Shortcut: "ENTER"
+      - Delay: 100ms
       - SendString: "/r"
+      - Delay: 100ms
       - Shortcut: "ENTER"
   8:
     Name: surf reset stage
     Actions:
       - Shortcut: "ENTER"
+      - Delay: 100ms
       - SendString: "/rs"
+      - Delay: 100ms
       - Shortcut: "ENTER"
   9:
     Name: startup folder

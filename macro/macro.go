@@ -78,6 +78,8 @@ func (mm *MacroManager) RunActionFromID(actionID string) error {
 				// Pass up error if there is one
 				return err
 			}
+			// TODO add ActionDelay to config
+			mm.DoDelay(fmt.Sprint(mm.Config.Delay * 4))
 		}
 	}
 
