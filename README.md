@@ -55,6 +55,8 @@ If you have an arduino powered device, you could use this to run various keyboar
   - [x] Add support for strings
   - [ ] Clear whatever is coming in when we first open the app
     - [ ] !if someone pressed a button before opening the app, it will run it asap!
+  - [ ] Add support for LMB/RMB/MMB clicks
+    - [ ] Support repeat press while holding btn down
   - [ ] Add support for mouse?
 - [WIP] Error handling
   - [x] GUI
