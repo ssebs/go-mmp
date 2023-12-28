@@ -11,7 +11,7 @@ SerialDevice:
   PortName: COM7
   BaudRate: 9600
   # Timeout: 20ms
-Delay: 80ms # Delay for ShortCuts
+Delay: 125ms # Delay for ShortCuts
 # List of Macros to
 Macros:
   1:
