@@ -8,7 +8,7 @@ If you have an arduino powered device, you could use this to run various keyboar
 <!-- TODO: Add video of it -->
 
 ## To Finish before moving on
-- [ ] Save / Load config file
+- [x] Save / Load config file
 - [ ] Double check error handling for serial stuff
 - [ ] Mouse button support
 - [ ] Press to repeat macro, press again to stop support
@@ -20,8 +20,10 @@ If you have an arduino powered device, you could use this to run various keyboar
 
 ## Usage
 - Connect an arduino/serial based device that sends [0-9] numbers over serial
+  - See [arduino-mmp.ino](./arduino-mmp.ino) source code to see how I did this.
 - Run this GUI app
 - It will generate a config for you at `$HOME/mmp-config.yml`
+    - e.g. `C:\Users\sebsafari\mmpConfig.yml` or `/home/sebsafari/mmpConfig.yml`
   - You can edit this config from a text editor.
   - > GUI editor coming soon™
   - This is where you configure:
