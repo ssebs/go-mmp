@@ -38,6 +38,23 @@ If you have an arduino powered device, you could use this to run various keyboar
 - When you press a button on the MacroPad, it should run the macro.
 - TBD: CLI flags
 
+## Actions:
+- PressKey: (string)
+  - e.g. `VK_ENTER`
+  - Press & release a key.
+  - The keyname must be found in `keyboard/keymap.go`
+- SendString: (string)
+  - e.g. `cool`
+  - Type a string of keys
+- Shortcut: (string)
+  - e.g. `CTRL+SHIFT+ESC`
+    - Hotkey sequence, split up by "+" chars.
+  - The keys between the "+"'s must be found in `keyboard/keymap.go`
+- Delay: (durationString)
+  - e.g. `10ms`
+  - A duration string is a possibly signed sequence of decimal numbers, each with optional fraction and a unit suffix, such as "300ms", "-1.5h" or "2h45m". Valid time units are "ns", "us" (or "µs"), "ms", "s", "m", "h".
+  - This will add a delay
+
 ## Building
 - git clone https://github.com/ssebs/go-mmp
   - You'll need to install a C compiler. See https://developer.fyne.io/started/
@@ -55,6 +72,13 @@ If you have an arduino powered device, you could use this to run various keyboar
       - `$ fyne package -os darwin`
     - Linux:
       - `$ fyne package -os linux`
+
+## Hardware
+You'll need an arduino with some buttons. 
+Screenshot of mine below:
+![Macro Pad](./res/mmpbuilt.png)
+
+![Wiring](./res/mmpwiring.png)
 
 ## Goals / To-do (general)
 - [x] Get started
@@ -102,23 +126,10 @@ If you have an arduino powered device, you could use this to run various keyboar
   - [ ] UI for CRUD'ing these macros
   - [ ] Save default config to $HOME/mmp-config.yml
 - [ ] Move main.go to a `cmd` pkg
+- [ ] wiring diagram
+- [ ] better instructions for hardware
 
-## Actions:
-- PressKey: (string)
-  - e.g. `VK_ENTER`
-  - Press & release a key.
-  - The keyname must be found in `keyboard/keymap.go`
-- SendString: (string)
-  - e.g. `cool`
-  - Type a string of keys
-- Shortcut: (string)
-  - e.g. `CTRL+SHIFT+ESC`
-    - Hotkey sequence, split up by "+" chars.
-  - The keys between the "+"'s must be found in `keyboard/keymap.go`
-- Delay: (durationString)
-  - e.g. `10ms`
-  - A duration string is a possibly signed sequence of decimal numbers, each with optional fraction and a unit suffix, such as "300ms", "-1.5h" or "2h45m". Valid time units are "ns", "us" (or "µs"), "ms", "s", "m", "h".
-  - This will add a delay
+
 
 ## Architecture Diagram
 > To update it, edit the [Architecture.drawio](./res/Architecture.drawio) file. I'm using [this](https://open-vsx.org/extension/hediet/vscode-drawio) VSCode extension.
