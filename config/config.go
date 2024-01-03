@@ -1,11 +1,15 @@
 package config
 
 import (
+	"errors"
+	"fmt"
 	"io"
 	"log"
 	"os"
+	"path/filepath"
 	"time"
 
+	"github.com/ssebs/go-mmp/utils"
 	"gopkg.in/yaml.v3"
 )
 
@@ -77,6 +81,42 @@ func NewConfigFromFile(filename string) (*Config, error) {
 	}
 	defer f.Close()
 	return LoadConfig(f)
+}
+
+// GetConfigFilePath checks if a config file exists at ${HOME}/mmpConfig.yml,
+// and returns it if so. If not, copy the default config to there.
+// If there's an error, return empty string and error.
+func GetConfigFilePath() (string, error) {
+	// TODO: add option to always copy defaultConfig.yml for testing
+	// Get homePath string
+	homePath, err := getHomeConfigPath()
+	if err != nil {
+		return "", err
+	}
+
+	// Check if it exists, if not copy defaultconfig to homePath
+	if !utils.CheckFileExists(homePath) {
+		if err := utils.CopyFile("res/defaultConfig.yml", homePath); err != nil {
+			return homePath, err
+		}
+	}
+
+	fmt.Println("homePath:", homePath)
+	return homePath, nil
+}
+
+// getHomeConfigPath will generate the ${HOME}/mmpConfig.yml path as a string
+// Returns an error if we couldn't find the home dir.
+func getHomeConfigPath() (string, error) {
+	// TODO: don't use errors.New
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		// TODO: change this error so we can check for it.
+		return "", errors.New("could not get user home dir: " + err.Error())
+	}
+
+	homePath := filepath.FromSlash(homeDir + "/mmpConfig.yml")
+	return homePath, nil
 }
 
 /* Stringers */

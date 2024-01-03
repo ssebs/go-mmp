@@ -33,7 +33,7 @@ free:
 }
 
 func main() {
-	macroMgr, err := macro.NewMacroManager("") // TODO: replace "" with path to config
+	macroMgr, err := macro.NewMacroManager()
 	if err != nil {
 		gui.ShowErrorDialogAndRun(err)
 	}

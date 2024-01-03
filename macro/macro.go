@@ -26,22 +26,23 @@ type MacroManager struct {
 	functionMap map[string]fn
 }
 
-// NewMacroManager Creates a MacroManager with the given configuration file path.
-// It initializes the keyboard and loads the configuration. If the configuration file
-// path is empty, it uses the default configuration file.
-
+// NewMacroManager Creates a MacroManager, will load a Config from ${HOME}/mmpConfig.yml.
+// If the config file is missing, copy the default one there.
+// This also initializes the keyboard
+//
 // To run a macro, use the RunActionFromID func
-func NewMacroManager(configFilePath string) (*MacroManager, error) {
+func NewMacroManager() (*MacroManager, error) {
 	// Create Keyboard
 	kb, err := keyboard.NewKeyboard()
 	if err != nil {
 		return &MacroManager{}, err
 	}
 	// Create/Load Config
-	if configFilePath == "" {
-		configFilePath = "res/defaultConfig.yml"
+	path, err := config.GetConfigFilePath()
+	if err != nil {
+		return &MacroManager{}, err
 	}
-	conf, err := config.NewConfigFromFile(configFilePath)
+	conf, err := config.NewConfigFromFile(path)
 	if err != nil {
 		return &MacroManager{}, err
 	}

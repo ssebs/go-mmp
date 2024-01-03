@@ -1,6 +1,9 @@
 package utils
 
 import (
+	"fmt"
+	"io"
+	"os"
 	"reflect"
 	"strconv"
 )
@@ -33,4 +36,40 @@ func StringToInt(s string) (int, error) {
 		return 0, &ErrCannotParseIntFromEmptyString{}
 	}
 	return int(i64), err
+}
+
+// CheckFileExists will check if file is there, and is readable
+// Returns a bool with the answer
+func CheckFileExists(path string) bool {
+	fi, err := os.Stat(path)
+	if err != nil {
+		return false
+	}
+	if fi.Size() == 0 {
+		return false
+	}
+	return true
+}
+
+// CopyFile will copy a file from src to dest.
+// Returns an error if one occurs
+func CopyFile(src, dest string) error {
+	// Open the source file for reading
+	srcFile, err := os.Open(src)
+	if err != nil {
+		return fmt.Errorf("failed to open source file: %v", err)
+	}
+	defer srcFile.Close()
+	// Open the destination file for writing
+	dstFile, err := os.Create(dest)
+	if err != nil {
+		return fmt.Errorf("failed to create destination file: %v", err)
+	}
+	defer dstFile.Close()
+	// Copy the contents of the source file to the destination file
+	_, err = io.Copy(dstFile, srcFile)
+	if err != nil {
+		return fmt.Errorf("failed to copy file: %v", err)
+	}
+	return nil
 }
