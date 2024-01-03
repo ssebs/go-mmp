@@ -7,6 +7,17 @@ If you have an arduino powered device, you could use this to run various keyboar
 
 <!-- TODO: Add video of it -->
 
+## To Finish before moving on
+- [ ] Save / Load config file
+- [ ] Double check error handling for serial stuff
+- [ ] Mouse button support
+- [ ] Press to repeat macro, press again to stop support
+- [ ] Clean code / unit tests
+- [ ] Cross platform (Windows + Mac)
+- [ ] Documentation for using it
+- [ ] Publish 
+- [ ] YT Video
+
 ## Usage
 - Connect an arduino/serial based device that sends [0-9] numbers over serial
 - Run this GUI app
@@ -43,7 +54,7 @@ If you have an arduino powered device, you could use this to run various keyboar
     - Linux:
       - `$ fyne package -os linux`
 
-## Goals / To-do
+## Goals / To-do (general)
 - [x] Get started
 - [x] Create basic UI
 - [x] Run keyboard macros
@@ -109,7 +120,7 @@ If you have an arduino powered device, you could use this to run various keyboar
 
 ## Architecture Diagram
 > To update it, edit the [Architecture.drawio](./res/Architecture.drawio) file. I'm using [this](https://open-vsx.org/extension/hediet/vscode-drawio) VSCode extension.
-> 
+ 
 ![Architecture diagram](./res/Architecture.png).
 
 
