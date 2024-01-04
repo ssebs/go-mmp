@@ -86,16 +86,5 @@ func main() {
 		g.App.Quit()
 	}()
 
-	// // GUI container (testing)
-	// container := container.NewVBox()
-	// // Create button to test CTRL + SHIFT + ESC hotkey
-	// tmBtn := widget.NewButton("Open Task Manager", func() {
-	// 	macroMgr.RunTaskManager("")
-	// })
-
-	// container.Add(pressedLabel)
-	// container.Add(tmBtn)
-	// g.SetContent(container)
-
 	g.ShowAndRun()
 }

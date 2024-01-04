@@ -9,11 +9,11 @@ If you have an arduino powered device, you could use this to run various keyboar
 
 ## To Finish before moving on
 - [x] Save / Load config file
-- [ ] Double check error handling for serial stuff
-- [ ] Mouse button support
+- [x] Double check error handling for serial stuff
 - [ ] Press to repeat macro, press again to stop support
-- [ ] Clean code / unit tests
+- [ ] Mouse button support
 - [ ] Cross platform (Windows + Mac)
+- [ ] Clean code / unit tests
 - [ ] Documentation for using it
 - [ ] Publish 
 - [ ] YT Video
@@ -36,7 +36,7 @@ If you have an arduino powered device, you could use this to run various keyboar
       - Actions:
         - List of Actions, see [Actions](#actions)
 - When you press a button on the MacroPad, it should run the macro.
-- TBD: CLI flags
+  - You can also click the button in the UI to run the macro.
 
 ## Actions:
 - PressKey: (string)
@@ -54,6 +54,11 @@ If you have an arduino powered device, you could use this to run various keyboar
   - e.g. `10ms`
   - A duration string is a possibly signed sequence of decimal numbers, each with optional fraction and a unit suffix, such as "300ms", "-1.5h" or "2h45m". Valid time units are "ns", "us" (or "µs"), "ms", "s", "m", "h".
   - This will add a delay
+- DoRepeatKey: (string)
+  - e.g. `VK_A+250ms`
+    - keyname + delay sequence, split up by "+" chars.
+    - Delay must be in durationString format
+    - The keyname must be found in `keyboard/keymap.go`
 
 ## Building
 - git clone https://github.com/ssebs/go-mmp

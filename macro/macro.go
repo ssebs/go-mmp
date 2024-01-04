@@ -21,9 +21,11 @@ type fn func(string) error
 
 // MacroManager
 type MacroManager struct {
-	Keeb        *keyboard.Keyboard
-	Config      *config.Config
-	functionMap map[string]fn
+	Keeb         *keyboard.Keyboard
+	Config       *config.Config
+	functionMap  map[string]fn
+	isRepeating  bool
+	repeatStopCh chan struct{}
 }
 
 // NewMacroManager Creates a MacroManager, will load a Config from ${HOME}/mmpConfig.yml.
@@ -49,7 +51,13 @@ func NewMacroManager() (*MacroManager, error) {
 
 	// Create the MacroManager
 	// No reason for "4", just some rand size
-	mgr := &MacroManager{Config: conf, Keeb: kb, functionMap: make(map[string]fn, 4)}
+	mgr := &MacroManager{
+		Config:       conf,
+		Keeb:         kb,
+		functionMap:  make(map[string]fn, 4),
+		isRepeating:  false,
+		repeatStopCh: make(chan struct{}),
+	}
 	mgr.initFunctionMap()
 	return mgr, nil
 }
@@ -97,6 +105,7 @@ func (mm *MacroManager) initFunctionMap() {
 		"SendString": mm.DoSendString,
 		"Delay":      mm.DoDelay,
 		"PressKey":   mm.DoPressKeyAction,
+		"RepeatKey":  mm.DoRepeatKey,
 	}
 }
 
@@ -167,6 +176,34 @@ func (mm *MacroManager) DoPressKeyAction(keyName string) error {
 	}
 
 	mm.Keeb.PressHold(mm.Config.Delay, convertedName)
+	return nil
+}
+
+// DoRepeatKey converts the keyName & will press & repeat it until the button is pressed again
+// keyName should be found in KeyMap
+func (mm *MacroManager) DoRepeatKey(param string) error {
+	// Generate keys from the string
+	words := strings.Split(param, "+")
+	iKey, err := keyboard.ConvertKeyName(words[0])
+	if err != nil {
+		return fmt.Errorf("could not convert %s to keyboard int", words[0])
+	}
+
+	delay, err := time.ParseDuration(words[1])
+	if err != nil {
+		return fmt.Errorf("could not parse delay duration %q, err: %s", words[1], err)
+	}
+
+	// Run the function async until isRepeating is true & this func is called again
+	go mm.Keeb.PressRepeat(delay, mm.repeatStopCh, iKey)
+
+	// If isRepeating is set to true and this function is called again, close stopCh
+	if mm.isRepeating {
+		close(mm.repeatStopCh)
+		mm.repeatStopCh = make(chan struct{})
+	}
+
+	mm.isRepeating = !mm.isRepeating
 	return nil
 }
 

@@ -2,7 +2,6 @@ package config
 
 import (
 	"errors"
-	"fmt"
 	"io"
 	"log"
 	"os"
@@ -101,7 +100,7 @@ func GetConfigFilePath() (string, error) {
 		}
 	}
 
-	fmt.Println("homePath:", homePath)
+	// fmt.Println("homePath:", homePath)
 	return homePath, nil
 }
 

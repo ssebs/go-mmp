@@ -70,6 +70,15 @@ Macros:
       - Delay: 100ms
       - Shortcut: "ENTER"
   9:
+    Name: Repeat
+    Actions:
+      - RepeatKey: VK_A+250ms
+  # Button 10
+  10:
+    Name: Skip song
+    Actions:
+      - PressKey: VK_MEDIA_NEXT_TRACK
+  11:
     Name: startup folder
     Actions:
       - Shortcut: "SUPER+R"
@@ -77,8 +86,3 @@ Macros:
       - SendString: "shell:startup"
       - Delay: 100ms
       - Shortcut: "ENTER"
-  # Button 10
-  10:
-    Name: Skip song
-    Actions:
-      - PressKey: VK_MEDIA_NEXT_TRACK
