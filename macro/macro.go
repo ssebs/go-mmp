@@ -202,7 +202,7 @@ func (mm *MacroManager) DoRepeatKey(param string) error {
 	} else if iKey == -2 {
 		// TODO: Fix the error handling above! Use errors.As()
 		// Run the function async until isRepeating is true & this func is called again
-		go mm.Keeb.PressRepeatMouse(mm.Config.Delay, mm.repeatStopCh, words[0])
+		go mm.Keeb.PressRepeatMouse(repeatDelay, mm.repeatStopCh, words[0])
 	} else {
 		return fmt.Errorf("could not press key: %s", words[0])
 	}
