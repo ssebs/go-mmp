@@ -171,11 +171,15 @@ func (mm *MacroManager) DoDelay(param string) error {
 // keyName should be found in KeyMap
 func (mm *MacroManager) DoPressKeyAction(keyName string) error {
 	convertedName, err := keyboard.ConvertKeyName(keyName)
-	if err != nil {
+	switch err.(type) {
+	case nil:
+		mm.Keeb.PressHold(mm.Config.Delay, convertedName)
+	case keyboard.ErrKeyNameIsMouseButton:
+		mm.Keeb.PressMouse(keyName, false)
+	default:
 		return fmt.Errorf("could not press key: %s", keyName)
 	}
 
-	mm.Keeb.PressHold(mm.Config.Delay, convertedName)
 	return nil
 }
 
@@ -184,25 +188,30 @@ func (mm *MacroManager) DoPressKeyAction(keyName string) error {
 func (mm *MacroManager) DoRepeatKey(param string) error {
 	// Generate keys from the string
 	words := strings.Split(param, "+")
-	iKey, err := keyboard.ConvertKeyName(words[0])
-	if err != nil {
-		return fmt.Errorf("could not convert %s to keyboard int", words[0])
-	}
 
 	repeatDelay, err := time.ParseDuration(words[1])
 	if err != nil {
 		return fmt.Errorf("could not parse delay duration %q, err: %s", words[1], err)
 	}
 
-	// Run the function async until isRepeating is true & this func is called again
-	go mm.Keeb.PressRepeat(repeatDelay, mm.Config.Delay, mm.repeatStopCh, iKey)
+	// Convert key name and see if it should be a button press
+	iKey, err := keyboard.ConvertKeyName(words[0])
+	if err == nil {
+		// Run the function async until isRepeating is true & this func is called again
+		go mm.Keeb.PressRepeat(repeatDelay, mm.Config.Delay, mm.repeatStopCh, iKey)
+	} else if iKey == -2 {
+		// TODO: Fix the error handling above! Use errors.As()
+		// Run the function async until isRepeating is true & this func is called again
+		go mm.Keeb.PressRepeatMouse(mm.Config.Delay, mm.repeatStopCh, words[0])
+	} else {
+		return fmt.Errorf("could not press key: %s", words[0])
+	}
 
 	// If isRepeating is set to true and this function is called again, close stopCh
 	if mm.isRepeating {
 		close(mm.repeatStopCh)
 		mm.repeatStopCh = make(chan struct{})
 	}
-
 	mm.isRepeating = !mm.isRepeating
 	return nil
 }

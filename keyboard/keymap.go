@@ -10,14 +10,34 @@ import (
 // ConvertKeyName takes a key name as a string and returns the corresponding
 // integer value from the KeyMap. If the key name is not found in the KeyMap,
 // it returns an error.
+// if the int returned is -1, there's a conversion failure.
+// if the int returned is -2, the keyName is a mouse btn
 func ConvertKeyName(keyName string) (int, error) {
 	keyName = strings.ToUpper(keyName)
+
+	if isKeyNameMouseBtn(keyName) {
+		return -2, &ErrKeyNameIsMouseButton{}
+	}
+
 	// check for space
 	val, ok := KeyMap[keyName]
 	if !ok {
 		return -1, fmt.Errorf("could not convert %s to keybd_event.%s", keyName, keyName)
 	}
 	return val, nil
+}
+
+func isKeyNameMouseBtn(keyName string) bool {
+	switch keyName {
+	case "LMB":
+		return true
+	case "RMB":
+		return true
+	case "MMB":
+		return true
+	default:
+		return false
+	}
 }
 
 // Keymap for string => int for keybd_evt
@@ -458,4 +478,11 @@ var KeyMap = map[string]int{
 	"NONAME":              keybd_event.VK_NONAME,
 	"PA1":                 keybd_event.VK_PA1,
 	"OEM_CLEAR":           keybd_event.VK_OEM_CLEAR,
+}
+
+// Errors
+type ErrKeyNameIsMouseButton struct{}
+
+func (e ErrKeyNameIsMouseButton) Error() string {
+	return "keyName is actually a mouse button"
 }

@@ -54,11 +54,12 @@ If you have an arduino powered device, you could use this to run various keyboar
   - e.g. `10ms`
   - A duration string is a possibly signed sequence of decimal numbers, each with optional fraction and a unit suffix, such as "300ms", "-1.5h" or "2h45m". Valid time units are "ns", "us" (or "µs"), "ms", "s", "m", "h".
   - This will add a delay
-- DoRepeatKey: (string)
+- RepeatKey: (string)
   - e.g. `VK_A+250ms`
     - keyname + delay sequence, split up by "+" chars.
     - Delay must be in durationString format
-    - The keyname must be found in `keyboard/keymap.go`
+    - The keyname must be found in `keyboard/keymap.go`, or if it's a mouse button then it can be: "LMB", "RMB", "MMB"
+    - You can not have multiple keys!
 
 ## Building
 - git clone https://github.com/ssebs/go-mmp
@@ -150,6 +151,8 @@ Screenshot of mine below:
   - https://github.com/bugst/go-serial
 - Keyboard
   - https://github.com/micmonay/keybd_event
+- Mouse
+  - https://github.com/go-vgo/robotgo
 - Existing thing I want to improve
   - https://github.com/ssebs/MiniMacroPad/
 - For testing macros, check out https://keyboard-test.space/

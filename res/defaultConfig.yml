@@ -70,9 +70,9 @@ Macros:
       - Delay: 100ms
       - Shortcut: "ENTER"
   9:
-    Name: Repeat
+    Name: Spam click
     Actions:
-      - RepeatKey: VK_A+250ms
+      - RepeatKey: LMB+20ms
   # Button 10
   10:
     Name: Skip song

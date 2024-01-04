@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"git.tcp.direct/kayos/sendkeys"
+	"github.com/go-vgo/robotgo"
 	"github.com/micmonay/keybd_event"
 )
 
@@ -26,7 +27,20 @@ func NewKeyboard() (*Keyboard, error) {
 
 	return &Keyboard{
 		KeyBonding: &kb,
-		KBW:        wrap}, nil
+		KBW:        wrap,
+	}, nil
+}
+
+// Press Mouse button. "button" is the button to press.
+func (k *Keyboard) PressMouse(button string, isDouble bool) {
+	switch button {
+	case "LMB":
+		robotgo.Click("left", isDouble)
+	case "RMB":
+		robotgo.Click("right", isDouble)
+	case "MMB":
+		robotgo.Click("center", isDouble)
+	}
 }
 
 // Press and hold a set of keys, with a delayDuration between pressing and releasing
@@ -60,6 +74,31 @@ free:
 		}
 	}
 	k.KeyBonding.Clear()
+}
+
+// PressRepeatMouse will be called each time the button is pressed.
+// After it's called, it should repeat pressing "keys" with delayDuration until it's pressed again.
+func (k *Keyboard) PressRepeatMouse(repeatDuration time.Duration, stopCh chan struct{}, button string) {
+free:
+	for {
+		select {
+		case <-stopCh:
+			break free
+		default:
+			// Press the button over and over
+			// fmt.Println("Pressing", button)
+			switch button {
+			case "LMB":
+				robotgo.Click("left", false)
+			case "RMB":
+				robotgo.Click("right", false)
+			case "MMB":
+				robotgo.Click("center", false)
+			}
+			// Sleep between repeats
+			time.Sleep(repeatDuration)
+		}
+	}
 }
 
 // Press and hold a set of HotKeys, with a delayDuration between pressing and releasing
