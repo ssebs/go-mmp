@@ -83,7 +83,7 @@ func (s *SerialDevice) SetSerialPort(requestedPortName string) (err error) {
 		return nil
 	}
 	// TODO: give the user option to use one of the listed ports
-	return ErrSerialPortNameMismatch{got: strings.Join(ports, ", "), want: requestedPortName}
+	return ErrSerialPortNameMismatch{Got: strings.Join(ports, ", "), Want: requestedPortName}
 }
 
 // Listen & run callback when data comes in
@@ -120,13 +120,15 @@ func (s *SerialDevice) Listen() (actionID string, err error) {
 // Errors
 type ErrSerialDeviceNotFound struct{}
 type ErrSerialPortNameMismatch struct {
-	got  string
-	want string
+	Got  string
+	Want string
 }
 
 func (e ErrSerialDeviceNotFound) Error() string {
 	return "serial device not found"
 }
+
 func (e ErrSerialPortNameMismatch) Error() string {
-	return fmt.Sprintf("portName not found in serial.GetPortsList. want %v, got %v", e.got, e.want)
+	return fmt.Sprintf(
+		"%q not found in your serial devices, are you sure that's the right port?\n\nExpecting: %q, Found: %q\n\nPlease check your config file.", e.Want, e.Want, e.Got)
 }

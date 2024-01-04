@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"fyne.io/fyne/v2/widget"
+	"github.com/ssebs/go-mmp/config"
 	"github.com/ssebs/go-mmp/gui"
 	"github.com/ssebs/go-mmp/macro"
 	"github.com/ssebs/go-mmp/serialdevice"
@@ -33,17 +34,23 @@ free:
 }
 
 func main() {
+	// Init MacroManager & Load config
 	macroMgr, err := macro.NewMacroManager()
 	if err != nil {
 		gui.ShowErrorDialogAndRun(err)
 	}
 	// fmt.Printf("Config: %s", macroMgr.Config)
-	g := gui.NewGUI(macroMgr)
-	arduino, err := serialdevice.NewSerialDeviceFromConfig(macroMgr.Config, time.Millisecond*20)
 
-	// Show error dialog
+	// Init GUI from macroMgr
+	g := gui.NewGUI(macroMgr)
+
+	// Connect Serial Device from the config
+	arduino, err := serialdevice.NewSerialDeviceFromConfig(macroMgr.Config, time.Millisecond*20)
 	if err != nil {
-		gui.ShowErrorDialogAndRun(err)
+		// path should already exist, if there's an error here it should have already been handled when
+		//   creating the config before this code was ran
+		path, _ := config.GetConfigFilePath()
+		gui.ShowErrorDialogAndRunWithLink(err, path)
 	}
 	defer arduino.CloseConnection()
 

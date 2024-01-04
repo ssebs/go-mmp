@@ -32,6 +32,8 @@ func NewKeyboard() (*Keyboard, error) {
 }
 
 // Press Mouse button. "button" is the button to press.
+// It can be either: LMB, RMB, MMB
+// isDouble is if it's a double click
 func (k *Keyboard) PressMouse(button string, isDouble bool) {
 	switch button {
 	case "LMB":
@@ -125,56 +127,4 @@ func (k *Keyboard) RunHotKey(delayDuration time.Duration, mods *HotKeyModifiers,
 // RunSendString will type the keys with a random smol delay
 func (k *Keyboard) RunSendString(keys string) error {
 	return k.KBW.Type(keys)
-}
-
-/* HotKey + HotKeyMods stuff */
-
-// Modifier Keys for HotKey
-const (
-	SHIFT HotKey = iota
-	CTRL  HotKey = iota
-	ALT   HotKey = iota
-	SUPER HotKey = iota
-)
-
-// HotKey
-type HotKey int
-
-func (hk HotKey) String() string {
-	return []string{"SHIFT", "CTRL", "ALT", "SUPER"}[hk]
-}
-
-// HotKeyModifiers
-// When creating, set whatever modifier to true,
-// then use GetActiveModifiers() to get a list of active HotKeys
-type HotKeyModifiers struct {
-	Shift   bool
-	Control bool
-	Alt     bool
-	Super   bool
-}
-
-// NewHotKeyModifiers
-func NewHotKeyModifiers(shift, control, alt, super bool) *HotKeyModifiers {
-	h := &HotKeyModifiers{Shift: shift, Control: control, Alt: alt, Super: super}
-	return h
-}
-
-// GetActiveModifiers
-// Return active modifier HotKeys from self
-func (h *HotKeyModifiers) GetActiveModifiers() []HotKey {
-	activeKeys := []HotKey{}
-	if h.Shift {
-		activeKeys = append(activeKeys, SHIFT)
-	}
-	if h.Control {
-		activeKeys = append(activeKeys, CTRL)
-	}
-	if h.Alt {
-		activeKeys = append(activeKeys, ALT)
-	}
-	if h.Super {
-		activeKeys = append(activeKeys, SUPER)
-	}
-	return activeKeys
 }
