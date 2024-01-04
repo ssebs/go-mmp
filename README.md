@@ -11,9 +11,11 @@ If you have an arduino powered device, you could use this to run various keyboar
 - [x] Save / Load config file
 - [x] Double check error handling for serial stuff
 - [x] Press to repeat ~~macro~~ key, press again to stop
-- [ ] Mouse button support
+- [WIP] Mouse button support
+  - technically functional, but code should be refactored
+- [WIP] Clean code
+- [ ] Allow for GUI to pop up with a failed arduino connection
 - [ ] Cross platform (Windows + Mac)
-- [ ] Clean code / unit tests
 - [ ] Documentation for using it
 - [ ] Publish 
 - [ ] YT Video
@@ -29,6 +31,7 @@ If you have an arduino powered device, you could use this to run various keyboar
   - This is where you configure:
     - The MacroPad's layout (3x3 buttons)
     - The serial device info (portname, buad, etc)
+      - You'll need to find out what the Serial port name is & update the config file.
     - The Macros themselves
       - The digit is used to position the macros, so keep the 1,2,3,4... for each macro you want.
       - Name:

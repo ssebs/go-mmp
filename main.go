@@ -44,11 +44,11 @@ func main() {
 	// Init GUI from macroMgr
 	g := gui.NewGUI(macroMgr)
 
+	// TODO: Allow for GUI to pop up with a failed arduino connection
+
 	// Connect Serial Device from the config
 	arduino, err := serialdevice.NewSerialDeviceFromConfig(macroMgr.Config, time.Millisecond*20)
 	if err != nil {
-		// path should already exist, if there's an error here it should have already been handled when
-		//   creating the config before this code was ran
 		path, _ := config.GetConfigFilePath()
 		gui.ShowErrorDialogAndRunWithLink(err, path)
 	}
@@ -57,13 +57,14 @@ func main() {
 	// Display button pressed
 	pressedLabel := widget.NewLabel("Button Pressed: ")
 
-	// Run listener
+	// Chans for listeners
 	btnch := make(chan string, 2)
 	quitch := make(chan struct{})
 	displayBtnch := make(chan string, 1)
 
-	// Serial Listener
+	// Run Serial Listener
 	go Listen(btnch, quitch, arduino)
+
 	// Visible button press listener
 	go g.ListenForDisplayButtonPress(displayBtnch, quitch)
 
@@ -93,5 +94,6 @@ func main() {
 		g.App.Quit()
 	}()
 
+	// Finally, display the GUI once everything is loaded & loop
 	g.ShowAndRun()
 }
