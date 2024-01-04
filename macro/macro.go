@@ -189,13 +189,13 @@ func (mm *MacroManager) DoRepeatKey(param string) error {
 		return fmt.Errorf("could not convert %s to keyboard int", words[0])
 	}
 
-	delay, err := time.ParseDuration(words[1])
+	repeatDelay, err := time.ParseDuration(words[1])
 	if err != nil {
 		return fmt.Errorf("could not parse delay duration %q, err: %s", words[1], err)
 	}
 
 	// Run the function async until isRepeating is true & this func is called again
-	go mm.Keeb.PressRepeat(delay, mm.repeatStopCh, iKey)
+	go mm.Keeb.PressRepeat(repeatDelay, mm.Config.Delay, mm.repeatStopCh, iKey)
 
 	// If isRepeating is set to true and this function is called again, close stopCh
 	if mm.isRepeating {

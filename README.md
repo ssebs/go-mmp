@@ -10,7 +10,7 @@ If you have an arduino powered device, you could use this to run various keyboar
 ## To Finish before moving on
 - [x] Save / Load config file
 - [x] Double check error handling for serial stuff
-- [ ] Press to repeat macro, press again to stop support
+- [x] Press to repeat ~~macro~~ key, press again to stop
 - [ ] Mouse button support
 - [ ] Cross platform (Windows + Mac)
 - [ ] Clean code / unit tests

@@ -1,7 +1,6 @@
 package keyboard
 
 import (
-	"fmt"
 	"time"
 
 	"git.tcp.direct/kayos/sendkeys"
@@ -42,7 +41,7 @@ func (k *Keyboard) PressHold(delayDuration time.Duration, keys ...int) {
 
 // PressRepeat will be called each time the button is pressed.
 // After it's called, it should repeat pressing "keys" with delayDuration until it's pressed again.
-func (k *Keyboard) PressRepeat(delayDuration time.Duration, stopCh chan struct{}, keys ...int) {
+func (k *Keyboard) PressRepeat(repeatDuration, delayDuration time.Duration, stopCh chan struct{}, keys ...int) {
 	k.KeyBonding.SetKeys(keys...)
 
 free:
@@ -51,14 +50,16 @@ free:
 		case <-stopCh:
 			break free
 		default:
-			fmt.Println("Repeat press down!")
 			// Press the keys over and over
-			// k.KeyBonding.Press()
+			k.KeyBonding.Press()
 			time.Sleep(delayDuration)
-			// k.KeyBonding.Release()
-			// k.KeyBonding.Clear()
+			k.KeyBonding.Release()
+
+			// Sleep between repeats
+			time.Sleep(repeatDuration)
 		}
 	}
+	k.KeyBonding.Clear()
 }
 
 // Press and hold a set of HotKeys, with a delayDuration between pressing and releasing
