@@ -27,6 +27,7 @@ func ConvertKeyName(keyName string) (int, error) {
 	return val, nil
 }
 
+// TODO: remove this since it's in macroaction
 func isKeyNameMouseBtn(keyName string) bool {
 	switch keyName {
 	case "LMB":

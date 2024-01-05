@@ -75,12 +75,12 @@ func NewMacroManager(doResetConfig bool) (*MacroManager, error) {
 // If you want to add a new macro type to use in the config, add it here too.
 func (mm *MacroManager) initFunctionMap() {
 	mm.functionMap = map[string]fn{
-		"TaskMgr":    mm.DoTaskManager,
-		"Shortcut":   mm.DoShortcutAction,
-		"SendString": mm.DoSendString,
-		"Delay":      mm.DoDelay,
-		"PressKey":   mm.DoPressKeyAction,
-		"RepeatKey":  mm.DoRepeatKey,
+		"Delay":        mm.DoDelayAction,
+		"PressRelease": mm.DoPressReleaseAction,
+		"SendText":     mm.DoSendTextAction,
+		"Shortcut":     mm.DoShortcutAction,
+		"Repeat":       mm.DoRepeatAction,
+		"TaskMgr":      mm.DoTaskManager,
 	}
 }
 
@@ -118,8 +118,8 @@ func (mm *MacroManager) RunActionFromID(actionID string) error {
 
 			// Delay between each Action that is ran
 			// TODO add ActionDelay to config, for now double the default delay
-			mm.DoDelay(fmt.Sprint(mm.Config.Delay))
-			mm.DoDelay(fmt.Sprint(mm.Config.Delay))
+			mm.DoDelayAction(fmt.Sprint(mm.Config.Delay))
+			mm.DoDelayAction(fmt.Sprint(mm.Config.Delay))
 		}
 	}
 	return nil

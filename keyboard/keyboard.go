@@ -31,6 +31,7 @@ func NewKeyboard() (*Keyboard, error) {
 	}, nil
 }
 
+// TODO: remove
 // Press Mouse button. "button" is the button to press.
 // It can be either: LMB, RMB, MMB
 // isDouble is if it's a double click
@@ -124,7 +125,9 @@ func (k *Keyboard) RunHotKey(delayDuration time.Duration, mods *HotKeyModifiers,
 	k.PressHold(delayDuration, keys...)
 }
 
-// RunSendString will type the keys with a random smol delay
-func (k *Keyboard) RunSendString(keys string) error {
-	return k.KBW.Type(keys)
-}
+// // RunSendString will type the keys with a random smol delay
+// func (k *Keyboard) RunSendString(str string) error {
+// 	// return k.KBW.Type(keys)
+// 	robotgo.TypeStr(str)
+// 	return nil
+// }

@@ -54,9 +54,11 @@ If you have an arduino powered device, you could use this to run various keyboar
 
 
 ## Actions:
-- PressKey: (string)
+
+> ! UPDATE THIS SECTION !
+- PressRelease: (string)
   - e.g. `VK_ENTER`
-  - Press & release a key.
+  - Press & release a key or mouse btn.
   - The keyname must be found in `keyboard/keymap.go`
 - SendString: (string)
   - e.g. `cool`

@@ -5,6 +5,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/go-vgo/robotgo"
 	"github.com/micmonay/keybd_event"
 	"github.com/ssebs/go-mmp/keyboard"
 )
@@ -16,10 +17,45 @@ import (
  Below are the functions that provide the actual macro functionality
 */
 
-// Open Task Manager by running CTRL + SHIFT + ESC
-func (mm *MacroManager) DoTaskManager(param string) error {
-	hkm := &keyboard.HotKeyModifiers{Shift: true, Control: true}
-	mm.Keeb.RunHotKey(mm.Config.Delay, hkm, keybd_event.VK_ESC)
+// MIGRATED TO ROBOTGO
+// DoSendString will type a string that's passed
+func (mm *MacroManager) DoSendTextAction(param string) error {
+	// fmt.Println("DoSendTextAction:", param)
+	robotgo.TypeStr(param)
+	return nil
+}
+
+// DoPressReleaseAction will press and release a key or mouse button
+func (mm *MacroManager) DoPressReleaseAction(param string) error {
+	// fmt.Println("DoPressReleaseAction:", param)
+	// If it's a mouse button, pressMouse
+	if isKeyNameMouseBtn(param) {
+		pressMouse(param, false)
+		return nil
+	}
+	// Otherwise, KeyPress
+	return robotgo.KeyPress(param)
+}
+
+func (mm *MacroManager) DoRepeatAction(param string) error {
+	return nil
+}
+
+// OLD TO MIGRATE
+
+// PressKeyAction converts the keyName & will press&hold it with mm.Config.Delay
+// keyName should be found in KeyMap
+func (mm *MacroManager) DoPressKeyAction(keyName string) error {
+	convertedName, err := keyboard.ConvertKeyName(keyName)
+	switch err.(type) {
+	case nil:
+		mm.Keeb.PressHold(mm.Config.Delay, convertedName)
+	case keyboard.ErrKeyNameIsMouseButton:
+		mm.Keeb.PressMouse(keyName, false)
+	default:
+		return fmt.Errorf("could not press key: %s", keyName)
+	}
+
 	return nil
 }
 
@@ -53,42 +89,9 @@ func (mm *MacroManager) DoShortcutAction(param string) error {
 	return nil
 }
 
-// DoSendString will type a string that's passed
-func (mm *MacroManager) DoSendString(param string) error {
-	fmt.Println("RunSendString, ", param)
-	return mm.Keeb.RunSendString(param)
-
-}
-
-// DoDelay will time.sleep for the delay given if it can be parsed
-func (mm *MacroManager) DoDelay(param string) error {
-	delay, err := time.ParseDuration(param)
-	if err != nil {
-		return fmt.Errorf("could not parse delay duration %q, err: %s", param, err)
-	}
-	time.Sleep(delay)
-	return nil
-}
-
-// PressKeyAction converts the keyName & will press&hold it with mm.Config.Delay
-// keyName should be found in KeyMap
-func (mm *MacroManager) DoPressKeyAction(keyName string) error {
-	convertedName, err := keyboard.ConvertKeyName(keyName)
-	switch err.(type) {
-	case nil:
-		mm.Keeb.PressHold(mm.Config.Delay, convertedName)
-	case keyboard.ErrKeyNameIsMouseButton:
-		mm.Keeb.PressMouse(keyName, false)
-	default:
-		return fmt.Errorf("could not press key: %s", keyName)
-	}
-
-	return nil
-}
-
 // DoRepeatKey converts the keyName & will press & repeat it until the button is pressed again
 // keyName should be found in KeyMap
-func (mm *MacroManager) DoRepeatKey(param string) error {
+func (mm *MacroManager) DoRepeatKeyAction(param string) error {
 	// Generate keys from the string
 	words := strings.Split(param, "+")
 
@@ -117,4 +120,55 @@ func (mm *MacroManager) DoRepeatKey(param string) error {
 	}
 	mm.isRepeating = !mm.isRepeating
 	return nil
+}
+
+// DoTaskManager - Open Task Manager by running CTRL + SHIFT + ESC
+// Deprecated, just create a shortcut instead
+func (mm *MacroManager) DoTaskManager(param string) error {
+	hkm := &keyboard.HotKeyModifiers{Shift: true, Control: true}
+	mm.Keeb.RunHotKey(mm.Config.Delay, hkm, keybd_event.VK_ESC)
+	return nil
+}
+
+// MISC
+
+// DoDelay will time.sleep for the delay given if it can be parsed
+func (mm *MacroManager) DoDelayAction(param string) error {
+	delay, err := time.ParseDuration(param)
+	if err != nil {
+		return fmt.Errorf("could not parse delay duration %q, err: %s", param, err)
+	}
+	time.Sleep(delay)
+	return nil
+}
+
+/* Helpers */
+
+// pressMouse will press a mouse button down.
+// "button" is the button to press.
+// It can be either: LMB, RMB, or MMB
+// isDouble is if it's a double click
+func pressMouse(button string, isDouble bool) {
+	switch button {
+	case "LMB", "LEFTMOUSE", "LEFTMOUSEBUTTON", "LEFTCLICK":
+		robotgo.Click("left", isDouble)
+	case "RMB", "RIGHTMOUSE", "RIGHTMOUSEBUTTON", "RIGHTCLICK":
+		robotgo.Click("right", isDouble)
+	case "MMB", "MIDDLEMOUSE", "MIDDLEMOUSEBUTTON", "MIDDLECLICK":
+		robotgo.Click("center", isDouble)
+	}
+}
+
+// isKeyNameMouseBtn checks if the keyname is a mouse button or not.
+func isKeyNameMouseBtn(keyName string) bool {
+	switch keyName {
+	case "LMB", "LEFTMOUSE", "LEFTMOUSEBUTTON", "LEFTCLICK":
+		return true
+	case "RMB", "RIGHTMOUSE", "RIGHTMOUSEBUTTON", "RIGHTCLICK":
+		return true
+	case "MMB", "MIDDLEMOUSE", "MIDDLEMOUSEBUTTON", "MIDDLECLICK":
+		return true
+	default:
+		return false
+	}
 }

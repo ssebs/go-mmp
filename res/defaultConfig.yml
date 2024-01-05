@@ -17,9 +17,9 @@ Macros:
   1:
     Name: nt
     Actions:
-      - PressKey: VK_ENTER
-      - SendString: nt
-      - PressKey: VK_ENTER
+      - PressRelease: enter
+      - SendText: nt
+      - PressRelease: enter
   2:
     Name: nice
     Actions:
@@ -72,7 +72,7 @@ Macros:
   9:
     Name: Spam click
     Actions:
-      - RepeatKey: LMB+20ms
+      - RepeatKey: LMB+100ms
   # Button 10
   10:
     Name: Skip song
