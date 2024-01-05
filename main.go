@@ -35,25 +35,12 @@ free:
 	}
 }
 
-// parseFlags will parse the CLI flags that may have been used.
-// Useful for disabling the serial listening functionality
-func parseFlags() CLIFlags {
-	// TODO: Allow for GUI to pop up with a failed arduino connection... might not be possible with fyne
-	// for now, let's use CLI flags
-	cliFlags := CLIFlags{}
-	flag.BoolVar(&cliFlags.IsGUIOnly, "gui-only", false, fmt.Sprintf("Open %s in GUI Only Mode. Useful if you don't have a working arduino.", utils.ProjectName))
-	flag.BoolVar(&cliFlags.DoResetConfig, "reset-config", false, "If you want to reset your mmpConfig.yml file.")
-
-	flag.Parse()
-	return cliFlags
-}
-
 func main() {
 	// CLI flags
 	cliFlags := parseFlags()
 
 	// Init MacroManager & Load config
-	macroMgr, err := macro.NewMacroManager()
+	macroMgr, err := macro.NewMacroManager(cliFlags.DoResetConfig)
 	if err != nil {
 		gui.ShowErrorDialogAndRun(err)
 	}
@@ -123,4 +110,17 @@ func main() {
 type CLIFlags struct {
 	IsGUIOnly     bool
 	DoResetConfig bool
+}
+
+// parseFlags will parse the CLI flags that may have been used.
+// Useful for disabling the serial listening functionality
+func parseFlags() CLIFlags {
+	// TODO: Allow for GUI to pop up with a failed arduino connection... might not be possible with fyne
+	// for now, let's use CLI flags
+	cliFlags := CLIFlags{}
+	flag.BoolVar(&cliFlags.IsGUIOnly, "gui-only", false, fmt.Sprintf("Open %s in GUI Only Mode. Useful if you don't have a working arduino.", utils.ProjectName))
+	flag.BoolVar(&cliFlags.DoResetConfig, "reset-config", false, "If you want to reset your mmpConfig.yml file.")
+
+	flag.Parse()
+	return cliFlags
 }

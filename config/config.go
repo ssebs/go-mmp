@@ -86,7 +86,6 @@ func NewConfigFromFile(filename string) (*Config, error) {
 // and returns it if so. If not, copy the default config to there.
 // If there's an error, return empty string and error.
 func GetConfigFilePath() (string, error) {
-	// TODO: add option to always copy defaultConfig.yml for testing
 	// Get homePath string
 	homePath, err := getHomeConfigPath()
 	if err != nil {
@@ -102,6 +101,20 @@ func GetConfigFilePath() (string, error) {
 
 	// fmt.Println("homePath:", homePath)
 	return homePath, nil
+}
+
+// ResetDefaultConfig will save the default config to ${HOME}/mmpConfig.yml
+func ResetDefaultConfig() error {
+	// Get homePath string
+	homePath, err := getHomeConfigPath()
+	if err != nil {
+		return err
+	}
+	// Copy file, if we get an error then return it
+	if err := utils.CopyFile("res/defaultConfig.yml", homePath); err != nil {
+		return err
+	}
+	return nil
 }
 
 // getHomeConfigPath will generate the ${HOME}/mmpConfig.yml path as a string

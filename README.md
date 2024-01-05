@@ -102,9 +102,8 @@ Screenshot of mine below:
   - [x] Add support for strings
   - [ ] Clear whatever is coming in when we first open the app
     - [ ] !if someone pressed a button before opening the app, it will run it asap!
-  - [ ] Add support for LMB/RMB/MMB clicks
-    - [ ] Support repeat press while holding btn down
-  - [ ] Add support for mouse?
+  - [x] Add support for LMB/RMB/MMB clicks
+    - [x] Support repeat press while holding btn down
 - [WIP] Error handling
   - [x] GUI
   - [x] fix serial device errors (serial port busy, nonexistent, etc)
@@ -128,9 +127,9 @@ Screenshot of mine below:
     - [ ] mock?
   - [ ] utils tests
   - [ ] gui tests?
-- [ ] CLI flag for GUI only, and non-GUI modes
-- [ ] GUI button should depress when matching Serial btn is pressed
-- [ ] GUI button should run the macro
+- [x] CLI flag for GUI only, and non-GUI modes
+- [x] GUI button should depress when matching Serial btn is pressed
+- [x] GUI button should run the macro
 - [ ] Make the config file easier to edit
   - [ ] Support more than 1 device?
   - [ ] UI for CRUD'ing these macros

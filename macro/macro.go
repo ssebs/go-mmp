@@ -33,12 +33,20 @@ type MacroManager struct {
 // This also initializes the keyboard
 //
 // To run a macro, use the RunActionFromID func
-func NewMacroManager() (*MacroManager, error) {
+func NewMacroManager(doResetConfig bool) (*MacroManager, error) {
 	// Create Keyboard
 	kb, err := keyboard.NewKeyboard()
 	if err != nil {
 		return &MacroManager{}, err
 	}
+
+	// If the user wants to nuke their config
+	if doResetConfig {
+		if err := config.ResetDefaultConfig(); err != nil {
+			return &MacroManager{}, err
+		}
+	}
+
 	// Create/Load Config
 	path, err := config.GetConfigFilePath()
 	if err != nil {
