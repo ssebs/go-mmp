@@ -37,43 +37,30 @@ func (mm *MacroManager) DoPressReleaseAction(param string) error {
 	return robotgo.KeyPress(param)
 }
 
-// DoShortcutAction will type a shortcut
+// DoShortcutAction will type a shortcut out for you
 // param should be formatted as: "SHIFT+ENTER+c"
+// After keys are held down, there's a delay defined in mm.Config.Delay,
+// then the keys will release
+// This does NOT support mouse buttons
 func (mm *MacroManager) DoShortcutAction(param string) error {
-	// keys := strings.Split(param, "+")
+	// TODO: add option to delay between keydown/keyup
+	keys := strings.Split(param, "+")
 
-	// We can't pass just keys...
-	// KeyTap expects 1 key + args
-	robotgo.KeySleep = int(mm.Config.Delay.Milliseconds() * 2)
-	// robotgo.KeyTap(keys[0], keys[1:])
-	robotgo.KeyTap("ctrl", "c")
+	// Hold down all keys
+	for _, key := range keys {
+		if err := robotgo.KeyDown(key); err != nil {
+			return err
+		}
+	}
+	// Delay
+	time.Sleep(mm.Config.Delay)
 
-	// OLD below
-
-	// keymods := &keyboard.HotKeyModifiers{}
-	// keys := make([]int, 0)
-	// // Generate HotKeyModifiers from the string
-	// for _, word := range strings.Split(param, "+") {
-	// 	switch word {
-	// 	case "SHIFT":
-	// 		keymods.Shift = true
-	// 	case "CTRL":
-	// 		keymods.Control = true
-	// 	case "ALT":
-	// 		keymods.Alt = true
-	// 	case "SUPER":
-	// 		keymods.Super = true
-	// 	default:
-	// 		iKey, err := keyboard.ConvertKeyName(word)
-	// 		if err != nil {
-	// 			return fmt.Errorf("could not convert %s to keyboard int", word)
-	// 		}
-	// 		keys = append(keys, iKey)
-	// 	}
-	// }
-
-	// // Run the macro
-	// mm.Keeb.RunHotKey(mm.Config.Delay, keymods, keys...)
+	// Release all keys
+	for _, key := range keys {
+		if err := robotgo.KeyUp(key); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
