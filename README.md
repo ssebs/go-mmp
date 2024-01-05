@@ -21,10 +21,10 @@ If you have an arduino powered device, you could use this to run various keyboar
 - [ ] YT Video
 
 ## Usage
-- TBD CLI args
 - Connect an arduino/serial based device that sends [0-9] numbers over serial
   - See [arduino-mmp.ino](./arduino-mmp.ino) source code to see how I did this.
 - Run this GUI app
+  - Double click the .exe
 - It will generate a config for you at `$HOME/mmp-config.yml`
     - e.g. `C:\Users\sebsafari\mmpConfig.yml` or `/home/sebsafari/mmpConfig.yml`
   - You can edit this config from a text editor.
@@ -40,7 +40,18 @@ If you have an arduino powered device, you could use this to run various keyboar
       - Actions:
         - List of Actions, see [Actions](#actions)
 - When you press a button on the MacroPad, it should run the macro.
-  - You can also click the button in the UI to run the macro.
+- You can also click the button in the UI to run the macro.
+- Run with the CLI
+  > Not sure why, but the print statements stop working after I export to exe.
+  - CLI Usage:
+    ```
+    Usage of go-mmp.exe:
+      -gui-only
+            Open Go-MMP in GUI Only Mode. Useful if you don't have a working arduino.
+      -reset-config
+            If you want to reset your mmpConfig.yml file.
+    ```
+
 
 ## Actions:
 - PressKey: (string)
