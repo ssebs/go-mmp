@@ -59,19 +59,19 @@ If you have an arduino powered device, you could use this to run various keyboar
 - PressRelease: (string)
   - e.g. `VK_ENTER`
   - Press & release a key or mouse btn.
-  - The keyname must be found in `keyboard/keymap.go`
-- SendString: (string)
+  - The keyname must be found in https://github.com/go-vgo/robotgo/blob/master/docs/keys.md#keys
+- SendText: (string)
   - e.g. `cool`
   - Type a string of keys
 - Shortcut: (string)
   - e.g. `CTRL+SHIFT+ESC`
     - Hotkey sequence, split up by "+" chars.
-  - The keys between the "+"'s must be found in `keyboard/keymap.go`
+  - The keys between the "+"'s must be found in https://github.com/go-vgo/robotgo/blob/master/docs/keys.md#keys
 - Delay: (durationString)
   - e.g. `10ms`
   - A duration string is a possibly signed sequence of decimal numbers, each with optional fraction and a unit suffix, such as "300ms", "-1.5h" or "2h45m". Valid time units are "ns", "us" (or "µs"), "ms", "s", "m", "h".
   - This will add a delay
-- RepeatKey: (string)
+- Repeat: (string)
   - e.g. `VK_A+250ms`
     - keyname + delay sequence, split up by "+" chars.
     - Delay must be in durationString format

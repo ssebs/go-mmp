@@ -37,6 +37,47 @@ func (mm *MacroManager) DoPressReleaseAction(param string) error {
 	return robotgo.KeyPress(param)
 }
 
+// DoShortcutAction will type a shortcut
+// param should be formatted as: "SHIFT+ENTER+c"
+func (mm *MacroManager) DoShortcutAction(param string) error {
+	// keys := strings.Split(param, "+")
+
+	// We can't pass just keys...
+	// KeyTap expects 1 key + args
+	robotgo.KeySleep = int(mm.Config.Delay.Milliseconds() * 2)
+	// robotgo.KeyTap(keys[0], keys[1:])
+	robotgo.KeyTap("ctrl", "c")
+
+	// OLD below
+
+	// keymods := &keyboard.HotKeyModifiers{}
+	// keys := make([]int, 0)
+	// // Generate HotKeyModifiers from the string
+	// for _, word := range strings.Split(param, "+") {
+	// 	switch word {
+	// 	case "SHIFT":
+	// 		keymods.Shift = true
+	// 	case "CTRL":
+	// 		keymods.Control = true
+	// 	case "ALT":
+	// 		keymods.Alt = true
+	// 	case "SUPER":
+	// 		keymods.Super = true
+	// 	default:
+	// 		iKey, err := keyboard.ConvertKeyName(word)
+	// 		if err != nil {
+	// 			return fmt.Errorf("could not convert %s to keyboard int", word)
+	// 		}
+	// 		keys = append(keys, iKey)
+	// 	}
+	// }
+
+	// // Run the macro
+	// mm.Keeb.RunHotKey(mm.Config.Delay, keymods, keys...)
+	return nil
+}
+
+// DoRepeatAction will...
 func (mm *MacroManager) DoRepeatAction(param string) error {
 	return nil
 }
@@ -59,35 +100,35 @@ func (mm *MacroManager) DoPressKeyAction(keyName string) error {
 	return nil
 }
 
-// DoShortcutAction will type a shortcut
-// param should be formatted as: "SHIFT+ENTER+c"
-func (mm *MacroManager) DoShortcutAction(param string) error {
-	keymods := &keyboard.HotKeyModifiers{}
-	keys := make([]int, 0)
-	// Generate HotKeyModifiers from the string
-	for _, word := range strings.Split(param, "+") {
-		switch word {
-		case "SHIFT":
-			keymods.Shift = true
-		case "CTRL":
-			keymods.Control = true
-		case "ALT":
-			keymods.Alt = true
-		case "SUPER":
-			keymods.Super = true
-		default:
-			iKey, err := keyboard.ConvertKeyName(word)
-			if err != nil {
-				return fmt.Errorf("could not convert %s to keyboard int", word)
-			}
-			keys = append(keys, iKey)
-		}
-	}
+// // DoShortcutAction will type a shortcut
+// // param should be formatted as: "SHIFT+ENTER+c"
+// func (mm *MacroManager) DoShortcutAction(param string) error {
+// 	keymods := &keyboard.HotKeyModifiers{}
+// 	keys := make([]int, 0)
+// 	// Generate HotKeyModifiers from the string
+// 	for _, word := range strings.Split(param, "+") {
+// 		switch word {
+// 		case "SHIFT":
+// 			keymods.Shift = true
+// 		case "CTRL":
+// 			keymods.Control = true
+// 		case "ALT":
+// 			keymods.Alt = true
+// 		case "SUPER":
+// 			keymods.Super = true
+// 		default:
+// 			iKey, err := keyboard.ConvertKeyName(word)
+// 			if err != nil {
+// 				return fmt.Errorf("could not convert %s to keyboard int", word)
+// 			}
+// 			keys = append(keys, iKey)
+// 		}
+// 	}
 
-	// Run the macro
-	mm.Keeb.RunHotKey(mm.Config.Delay, keymods, keys...)
-	return nil
-}
+// 	// Run the macro
+// 	mm.Keeb.RunHotKey(mm.Config.Delay, keymods, keys...)
+// 	return nil
+// }
 
 // DoRepeatKey converts the keyName & will press & repeat it until the button is pressed again
 // keyName should be found in KeyMap

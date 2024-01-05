@@ -10,7 +10,6 @@
             "request": "launch",
             "mode": "auto",
             "program": "${workspaceFolder}/main.go",
-            
         },
         {
             "name": "GUI Only",
@@ -31,6 +30,13 @@
             "args": [
                 "--reset-config"
             ]
+        },
+        {
+            "name": "test",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/tmp/test.go",
         }
     ]
 }

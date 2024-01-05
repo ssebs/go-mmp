@@ -78,9 +78,10 @@ func (mm *MacroManager) initFunctionMap() {
 		"Delay":        mm.DoDelayAction,
 		"PressRelease": mm.DoPressReleaseAction,
 		"SendText":     mm.DoSendTextAction,
-		"Shortcut":     mm.DoShortcutAction,
-		"Repeat":       mm.DoRepeatAction,
-		"TaskMgr":      mm.DoTaskManager,
+
+		"Shortcut": mm.DoShortcutAction,
+		"Repeat":   mm.DoRepeatAction,
+		"TaskMgr":  mm.DoTaskManager,
 	}
 }
 
@@ -89,7 +90,7 @@ func (mm *MacroManager) initFunctionMap() {
 // The macro must exist in the config, and the name must match the key in the function map.
 // This converts the actionID to an int (if possible), if not then log the error
 func (mm *MacroManager) RunActionFromID(actionID string) error {
-	fmt.Printf("pressed: %s\n", actionID)
+	fmt.Printf("Pressed: %s\n", actionID)
 
 	// Convert the button id to an int
 	iActionID, err := convertActionIDToInt(actionID)
@@ -109,17 +110,11 @@ func (mm *MacroManager) RunActionFromID(actionID string) error {
 	for _, action := range matchedMacro.Actions {
 		// Get the key/vals from the action
 		for funcName, funcParam := range action {
-
 			// Run the function that was mapped, with the params given as a string
 			if err := mm.runFuncFromMap(funcName, funcParam); err != nil {
 				// Pass up error if there is one
 				return err
 			}
-
-			// Delay between each Action that is ran
-			// TODO add ActionDelay to config, for now double the default delay
-			mm.DoDelayAction(fmt.Sprint(mm.Config.Delay))
-			mm.DoDelayAction(fmt.Sprint(mm.Config.Delay))
 		}
 	}
 	return nil
