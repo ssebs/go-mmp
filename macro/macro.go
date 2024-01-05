@@ -134,11 +134,7 @@ func (mm *MacroManager) runFuncFromMap(funcName string, funcParams string) error
 	return mm.functionMap[funcName](funcParams)
 }
 
-/*
-Below are helper functions
-*/
-
-// Do error handling if actionID is not actually an int
+// convertActionIDToInt converts a string to an int
 // checks for empty string error, returns -1 if there's an error.
 func convertActionIDToInt(actionID string) (iActionID int, err error) {
 	iActionID, err = utils.StringToInt(actionID)

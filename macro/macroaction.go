@@ -9,7 +9,7 @@ import (
 	"github.com/ssebs/go-mmp/keyboard"
 )
 
-// macroaction is where the DoBlah functions are housed.
+// macroaction.go is where the DoBlah functions are housed.
 // macro.go was getting too hard to read, so I moved half of the methods here.
 
 /*
