@@ -4,22 +4,22 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
-	"strings"
-	"time"
-
-	"github.com/micmonay/keybd_event"
 
 	"github.com/ssebs/go-mmp/config"
 	"github.com/ssebs/go-mmp/keyboard"
 	"github.com/ssebs/go-mmp/utils"
 )
 
+// macro.go is where the MacroManager is defined, and where the functionmap logic is setup.
+// macroaction.go is where the actual macro functionality methods are housed.
+
 // For testing: Check out https://keyboard-test.space/
 
 // fn Function type, for use in functionMap
 type fn func(string) error
 
-// MacroManager
+// MacroManager creates a functionMap from the config, and has an instance of a keyboard.Keyboard to run the macros.
+// Use NewMacroManager to init!
 type MacroManager struct {
 	Keeb         *keyboard.Keyboard
 	Config       *config.Config
@@ -70,43 +70,9 @@ func NewMacroManager(doResetConfig bool) (*MacroManager, error) {
 	return mgr, nil
 }
 
-// RunActionFromID - Run Actions from the matching ID in Config.Macros (loaded from yml)
-// This converts the actionID to an int (if possible), if not then log the error
-func (mm *MacroManager) RunActionFromID(actionID string) error {
-	fmt.Printf("pressed: %s\n", actionID)
-
-	iActionID, err := convertActionIDToInt(actionID)
-	if err != nil {
-		return err
-	}
-
-	// macro is a ptr to the config.Macros[iActionID] if it exists
-	macro, ok := mm.Config.Macros[iActionID]
-	if !ok {
-		return ErrActionIDNotFoundInMacros{aID: iActionID, macros: mm.Config.Macros}
-	}
-
-	// For each action
-	for _, action := range macro.Actions {
-		// Get the key/vals from the action
-		for funcName, funcParam := range action {
-			// Try and run function
-			// fmt.Printf("funcName: %s, funcParam: %s\n", funcName, funcParam)
-			if err := mm.runFuncFromMap(funcName, funcParam); err != nil {
-				// Pass up error if there is one
-				return err
-			}
-			// TODO add ActionDelay to config
-			mm.DoDelay(fmt.Sprint(mm.Config.Delay))
-			mm.DoDelay(fmt.Sprint(mm.Config.Delay))
-		}
-	}
-
-	//TODO: Show button pressed on gui
-	return nil
-}
-
-// Create function map from string to actual method
+// initFunctionMap will create function map from string to actual method
+// This is needed for RunActionFromID to work
+// If you want to add a new macro type to use in the config, add it here too.
 func (mm *MacroManager) initFunctionMap() {
 	mm.functionMap = map[string]fn{
 		"TaskMgr":    mm.DoTaskManager,
@@ -118,110 +84,44 @@ func (mm *MacroManager) initFunctionMap() {
 	}
 }
 
-/*
- Below are the functions that provide the actual macro functionality
-*/
+// RunActionFromID - Run Actions from the matching ID in Config.Macros (loaded from yml)
+// This is the method to call a macro, if you want to *do* something, call this method.
+// The macro must exist in the config, and the name must match the key in the function map.
+// This converts the actionID to an int (if possible), if not then log the error
+func (mm *MacroManager) RunActionFromID(actionID string) error {
+	fmt.Printf("pressed: %s\n", actionID)
 
-// Open Task Manager by running CTRL + SHIFT + ESC
-func (mm *MacroManager) DoTaskManager(param string) error {
-	hkm := &keyboard.HotKeyModifiers{Shift: true, Control: true}
-	mm.Keeb.RunHotKey(mm.Config.Delay, hkm, keybd_event.VK_ESC)
-	return nil
-}
+	// Convert the button id to an int
+	iActionID, err := convertActionIDToInt(actionID)
+	if err != nil {
+		return err
+	}
 
-// DoShortcutAction will type a shortcut
-// param should be formatted as: "SHIFT+ENTER+c"
-func (mm *MacroManager) DoShortcutAction(param string) error {
-	keymods := &keyboard.HotKeyModifiers{}
-	keys := make([]int, 0)
-	// Generate HotKeyModifiers from the string
-	for _, word := range strings.Split(param, "+") {
-		switch word {
-		case "SHIFT":
-			keymods.Shift = true
-		case "CTRL":
-			keymods.Control = true
-		case "ALT":
-			keymods.Alt = true
-		case "SUPER":
-			keymods.Super = true
-		default:
-			iKey, err := keyboard.ConvertKeyName(word)
-			if err != nil {
-				return fmt.Errorf("could not convert %s to keyboard int", word)
+	// matchedMacro is a ptr to the config.Macros[iActionID] if it exists
+	// this will have relevant info to call a method from.
+	matchedMacro, ok := mm.Config.Macros[iActionID]
+	if !ok {
+		return ErrActionIDNotFoundInMacros{aID: iActionID, macros: mm.Config.Macros}
+	}
+
+	// Within a Macro, there's a list of Actions to run.
+	// we want to run each one in order here
+	for _, action := range matchedMacro.Actions {
+		// Get the key/vals from the action
+		for funcName, funcParam := range action {
+
+			// Run the function that was mapped, with the params given as a string
+			if err := mm.runFuncFromMap(funcName, funcParam); err != nil {
+				// Pass up error if there is one
+				return err
 			}
-			keys = append(keys, iKey)
+
+			// Delay between each Action that is ran
+			// TODO add ActionDelay to config, for now double the default delay
+			mm.DoDelay(fmt.Sprint(mm.Config.Delay))
+			mm.DoDelay(fmt.Sprint(mm.Config.Delay))
 		}
 	}
-
-	// Run the macro
-	mm.Keeb.RunHotKey(mm.Config.Delay, keymods, keys...)
-	return nil
-}
-
-// DoSendString will type a string that's passed
-func (mm *MacroManager) DoSendString(param string) error {
-	fmt.Println("RunSendString, ", param)
-	return mm.Keeb.RunSendString(param)
-
-}
-
-// DoDelay will time.sleep for the delay given if it can be parsed
-func (mm *MacroManager) DoDelay(param string) error {
-	delay, err := time.ParseDuration(param)
-	if err != nil {
-		return fmt.Errorf("could not parse delay duration %q, err: %s", param, err)
-	}
-	time.Sleep(delay)
-	return nil
-}
-
-// PressKeyAction converts the keyName & will press&hold it with mm.Config.Delay
-// keyName should be found in KeyMap
-func (mm *MacroManager) DoPressKeyAction(keyName string) error {
-	convertedName, err := keyboard.ConvertKeyName(keyName)
-	switch err.(type) {
-	case nil:
-		mm.Keeb.PressHold(mm.Config.Delay, convertedName)
-	case keyboard.ErrKeyNameIsMouseButton:
-		mm.Keeb.PressMouse(keyName, false)
-	default:
-		return fmt.Errorf("could not press key: %s", keyName)
-	}
-
-	return nil
-}
-
-// DoRepeatKey converts the keyName & will press & repeat it until the button is pressed again
-// keyName should be found in KeyMap
-func (mm *MacroManager) DoRepeatKey(param string) error {
-	// Generate keys from the string
-	words := strings.Split(param, "+")
-
-	repeatDelay, err := time.ParseDuration(words[1])
-	if err != nil {
-		return fmt.Errorf("could not parse delay duration %q, err: %s", words[1], err)
-	}
-
-	// Convert key name and see if it should be a button press
-	iKey, err := keyboard.ConvertKeyName(words[0])
-	if err == nil {
-		// Run the function async until isRepeating is true & this func is called again
-		go mm.Keeb.PressRepeat(repeatDelay, mm.Config.Delay, mm.repeatStopCh, iKey)
-	} else if iKey == -2 {
-		// TODO: Fix the error handling above! Use errors.As()
-		// Run the function async until isRepeating is true & this func is called again
-		go mm.Keeb.PressRepeatMouse(repeatDelay, mm.repeatStopCh, words[0])
-	} else {
-		return fmt.Errorf("could not press key: %s", words[0])
-	}
-
-	// If isRepeating is set to true and this function is called again, close stopCh
-	if mm.isRepeating {
-		close(mm.repeatStopCh)
-		mm.repeatStopCh = make(chan struct{})
-	}
-	mm.isRepeating = !mm.isRepeating
 	return nil
 }
 

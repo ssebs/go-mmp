@@ -120,6 +120,7 @@ Screenshot of mine below:
   - [x] fix serial device errors (serial port busy, nonexistent, etc)
   - [ ] more!
   - [ ] Figure out the "Fyne error:  GLFW poll event error: InvalidValue: Invalid scancode 144"
+- [ ] Spamkey should keep UI lit up until it's pressed again
 - [ ] Add unit tests!
   - Current Coverage: 
   - [ ] config tests
