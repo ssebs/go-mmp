@@ -14,13 +14,14 @@ If you have an arduino powered device, you could use this to run various keyboar
 - [WIP] Mouse button support
   - technically functional, but code should be refactored
 - [WIP] Clean code
-- [ ] Allow for GUI to pop up with a failed arduino connection
+- [x] Allow for GUI only mode
 - [ ] Cross platform (Windows + Mac)
 - [ ] Documentation for using it
 - [ ] Publish 
 - [ ] YT Video
 
 ## Usage
+- TBD CLI args
 - Connect an arduino/serial based device that sends [0-9] numbers over serial
   - See [arduino-mmp.ino](./arduino-mmp.ino) source code to see how I did this.
 - Run this GUI app

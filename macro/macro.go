@@ -66,6 +66,7 @@ func NewMacroManager() (*MacroManager, error) {
 // This converts the actionID to an int (if possible), if not then log the error
 func (mm *MacroManager) RunActionFromID(actionID string) error {
 	fmt.Printf("pressed: %s\n", actionID)
+
 	iActionID, err := convertActionIDToInt(actionID)
 	if err != nil {
 		return err

@@ -1,15 +1,17 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log/slog"
+	"os"
 	"time"
 
-	"fyne.io/fyne/v2/widget"
 	"github.com/ssebs/go-mmp/config"
 	"github.com/ssebs/go-mmp/gui"
 	"github.com/ssebs/go-mmp/macro"
 	"github.com/ssebs/go-mmp/serialdevice"
+	"github.com/ssebs/go-mmp/utils"
 )
 
 // Listen for data from a *SerialDevice, to be used in a goroutine
@@ -33,18 +35,42 @@ free:
 	}
 }
 
+// parseFlags will parse the CLI flags that may have been used.
+// Useful for disabling the serial listening functionality
+func parseFlags() CLIFlags {
+	// TODO: Allow for GUI to pop up with a failed arduino connection... might not be possible with fyne
+	// for now, let's use CLI flags
+	cliFlags := CLIFlags{}
+	flag.BoolVar(&cliFlags.IsGUIOnly, "gui-only", false, fmt.Sprintf("Open %s in GUI Only Mode. Useful if you don't have a working arduino.", utils.ProjectName))
+	flag.BoolVar(&cliFlags.DoResetConfig, "reset-config", false, "If you want to reset your mmpConfig.yml file.")
+
+	flag.Parse()
+	return cliFlags
+}
+
 func main() {
+	// CLI flags
+	cliFlags := parseFlags()
+
 	// Init MacroManager & Load config
 	macroMgr, err := macro.NewMacroManager()
 	if err != nil {
 		gui.ShowErrorDialogAndRun(err)
 	}
-	// fmt.Printf("Config: %s", macroMgr.Config)
 
 	// Init GUI from macroMgr
 	g := gui.NewGUI(macroMgr)
 
-	// TODO: Allow for GUI to pop up with a failed arduino connection
+	// If GUI only mode, ShowAndRun. This will block until the window is closed.
+	if cliFlags.IsGUIOnly {
+		g.RootWin.SetOnClosed(func() {
+			fmt.Println("gui only closed")
+			os.Exit(0)
+		})
+		g.ShowAndRun()
+	}
+
+	// Otherwise, connect to the serial device & init the listeners
 
 	// Connect Serial Device from the config
 	arduino, err := serialdevice.NewSerialDeviceFromConfig(macroMgr.Config, time.Millisecond*20)
@@ -53,9 +79,6 @@ func main() {
 		gui.ShowErrorDialogAndRunWithLink(err, path)
 	}
 	defer arduino.CloseConnection()
-
-	// Display button pressed
-	pressedLabel := widget.NewLabel("Button Pressed: ")
 
 	// Chans for listeners
 	btnch := make(chan string, 2)
@@ -74,17 +97,15 @@ func main() {
 		for {
 			select {
 			case btn := <-btnch:
-				// Set the button pressed to blank if we get blank data
-				pressedLabel.SetText(fmt.Sprintf("Button Pressed: %s", btn))
 				// Only run the function if it's not blank, tho
 				if btn != "" {
 					// send btn id to show the btn press
 					displayBtnch <- btn
+
 					// Run the action from the btn id
 					err := macroMgr.RunActionFromID(btn)
 					if err != nil {
 						slog.Warn(err.Error())
-						// close(quitch)
 					}
 				}
 			case <-quitch:
@@ -96,4 +117,10 @@ func main() {
 
 	// Finally, display the GUI once everything is loaded & loop
 	g.ShowAndRun()
+}
+
+// CLI flag values will be stored in this
+type CLIFlags struct {
+	IsGUIOnly     bool
+	DoResetConfig bool
 }
