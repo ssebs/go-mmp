@@ -1,6 +1,7 @@
 ---
 # Layout of the physical device
 MacroLayout:
+  # Rows/Cols of buttons
   SizeX: 3
   SizeY: 4
   # Size of the GUI
@@ -10,79 +11,76 @@ SerialDevice:
   # Serial Port name
   PortName: COM7
   BaudRate: 9600
-  # Timeout: 20ms
-Delay: 125ms # Delay for ShortCuts
-# List of Macros to
+Delay: 125ms # Delay for Shortcuts
+# List of Macros
 Macros:
+  # Position on display
   1:
+    # Text on button
     Name: nt
+    # List of stuff to do
     Actions:
-      - PressKey: VK_ENTER
-      - SendString: nt
-      - PressKey: VK_ENTER
+      # FuncName: param
+      - PressRelease: enter
+      - SendText: nt
+      - PressRelease: enter
   2:
     Name: nice
     Actions:
-      - Shortcut: ENTER
-      - SendString: nice
-      - Shortcut: ENTER
-  # Position on display
+      - PressRelease: enter
+      - SendText: nice
+      - PressRelease: enter
   3:
-    # Text on button
     Name: Open Task Mgr
-    # List of stuff to do
     Actions:
-      # FuncName: "param"
-      # - TaskMgr: ""
-      - Shortcut: "CTRL+SHIFT+ESC"
+      - Shortcut: CTRL+SHIFT+ESC
   4:
     Name: gg
     Actions:
-      - Shortcut: "SHIFT+ENTER"
-      - SendString: gg
-      - Shortcut: "ENTER"
+      - Shortcut: SHIFT+ENTER
+      - SendText: gg
+      - PressRelease: enter
   5:
     Name: ggwp
     Actions:
-      - Shortcut: "SHIFT+ENTER"
-      - SendString: ggwp
-      - Shortcut: "ENTER"
+      - Shortcut: SHIFT+ENTER
+      - SendText: ggwp
+      - PressRelease: enter
   6:
     Name: ggez
     Actions:
-      - Shortcut: "SHIFT+ENTER"
-      - SendString: ggez
-      - Shortcut: "ENTER"
+      - Shortcut: SHIFT+ENTER
+      - SendText: ggez
+      - PressRelease: enter
   7:
     Name: surf reset all
     Actions:
-      - Shortcut: "ENTER"
+      - PressRelease: enter
       - Delay: 100ms
-      - SendString: "/r"
+      - SendText: "/r"
       - Delay: 100ms
-      - Shortcut: "ENTER"
+      - PressRelease: enter
   8:
     Name: surf reset stage
     Actions:
-      - Shortcut: "ENTER"
+      - PressRelease: enter
       - Delay: 100ms
-      - SendString: "/rs"
+      - SendText: "/rs"
       - Delay: 100ms
-      - Shortcut: "ENTER"
+      - PressRelease: enter
   9:
-    Name: Spam click
+    Name: Spam Click
     Actions:
-      - RepeatKey: LMB+20ms
-  # Button 10
-  10:
+      - Repeat: LMB+100ms
+  11:
     Name: Skip song
     Actions:
-      - PressKey: VK_MEDIA_NEXT_TRACK
-  11:
+      - PressRelease: audio_next
+  10:
     Name: startup folder
     Actions:
-      - Shortcut: "SUPER+R"
+      - Shortcut: cmd+r
       - Delay: 100ms
-      - SendString: "shell:startup"
+      - SendText: "shell:startup"
       - Delay: 100ms
-      - Shortcut: "ENTER"
+      - PressRelease: enter

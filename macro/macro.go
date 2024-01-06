@@ -6,7 +6,6 @@ import (
 	"log/slog"
 
 	"github.com/ssebs/go-mmp/config"
-	"github.com/ssebs/go-mmp/keyboard"
 	"github.com/ssebs/go-mmp/utils"
 )
 
@@ -15,13 +14,9 @@ import (
 
 // For testing: Check out https://keyboard-test.space/
 
-// fn Function type, for use in functionMap
-type fn func(string) error
-
-// MacroManager creates a functionMap from the config, and has an instance of a keyboard.Keyboard to run the macros.
+// MacroManager creates a functionMap from the config, and is used to run Macros.
 // Use NewMacroManager to init!
 type MacroManager struct {
-	Keeb         *keyboard.Keyboard
 	Config       *config.Config
 	functionMap  map[string]fn
 	isRepeating  bool
@@ -30,23 +25,15 @@ type MacroManager struct {
 
 // NewMacroManager Creates a MacroManager, will load a Config from ${HOME}/mmpConfig.yml.
 // If the config file is missing, copy the default one there.
-// This also initializes the keyboard
 //
 // To run a macro, use the RunActionFromID func
 func NewMacroManager(doResetConfig bool) (*MacroManager, error) {
-	// Create Keyboard
-	kb, err := keyboard.NewKeyboard()
-	if err != nil {
-		return &MacroManager{}, err
-	}
-
 	// If the user wants to nuke their config
 	if doResetConfig {
 		if err := config.ResetDefaultConfig(); err != nil {
 			return &MacroManager{}, err
 		}
 	}
-
 	// Create/Load Config
 	path, err := config.GetConfigFilePath()
 	if err != nil {
@@ -61,7 +48,6 @@ func NewMacroManager(doResetConfig bool) (*MacroManager, error) {
 	// No reason for "4", just some rand size
 	mgr := &MacroManager{
 		Config:       conf,
-		Keeb:         kb,
 		functionMap:  make(map[string]fn, 4),
 		isRepeating:  false,
 		repeatStopCh: make(chan struct{}),
@@ -75,12 +61,11 @@ func NewMacroManager(doResetConfig bool) (*MacroManager, error) {
 // If you want to add a new macro type to use in the config, add it here too.
 func (mm *MacroManager) initFunctionMap() {
 	mm.functionMap = map[string]fn{
-		"TaskMgr":    mm.DoTaskManager,
-		"Shortcut":   mm.DoShortcutAction,
-		"SendString": mm.DoSendString,
-		"Delay":      mm.DoDelay,
-		"PressKey":   mm.DoPressKeyAction,
-		"RepeatKey":  mm.DoRepeatKey,
+		"Delay":        mm.DoDelayAction,
+		"PressRelease": mm.DoPressReleaseAction,
+		"SendText":     mm.DoSendTextAction,
+		"Shortcut":     mm.DoShortcutAction,
+		"Repeat":       mm.DoRepeatAction,
 	}
 }
 
@@ -89,7 +74,7 @@ func (mm *MacroManager) initFunctionMap() {
 // The macro must exist in the config, and the name must match the key in the function map.
 // This converts the actionID to an int (if possible), if not then log the error
 func (mm *MacroManager) RunActionFromID(actionID string) error {
-	fmt.Printf("pressed: %s\n", actionID)
+	fmt.Printf("Pressed: %s\n", actionID)
 
 	// Convert the button id to an int
 	iActionID, err := convertActionIDToInt(actionID)
@@ -109,17 +94,11 @@ func (mm *MacroManager) RunActionFromID(actionID string) error {
 	for _, action := range matchedMacro.Actions {
 		// Get the key/vals from the action
 		for funcName, funcParam := range action {
-
 			// Run the function that was mapped, with the params given as a string
 			if err := mm.runFuncFromMap(funcName, funcParam); err != nil {
 				// Pass up error if there is one
 				return err
 			}
-
-			// Delay between each Action that is ran
-			// TODO add ActionDelay to config, for now double the default delay
-			mm.DoDelay(fmt.Sprint(mm.Config.Delay))
-			mm.DoDelay(fmt.Sprint(mm.Config.Delay))
 		}
 	}
 	return nil
@@ -157,3 +136,6 @@ type ErrActionIDNotFoundInMacros struct {
 func (e ErrActionIDNotFoundInMacros) Error() string {
 	return fmt.Sprintf("could not find actionID: %d in mm.Config.Macros %+v", e.aID, e.macros)
 }
+
+// fn Function type, for use in functionMap
+type fn func(string) error
