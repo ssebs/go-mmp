@@ -72,11 +72,11 @@ Macros:
     Name: Spam Click
     Actions:
       - Repeat: LMB+100ms
-  11:
+  10:
     Name: Skip song
     Actions:
       - PressRelease: audio_next
-  10:
+  11:
     Name: startup folder
     Actions:
       - Shortcut: cmd+r
