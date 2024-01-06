@@ -13,8 +13,8 @@ Here's what the GUI looks like, you can click the buttons to run the macro, or u
 - [x] Clean code
 - [x] Allow for GUI only mode
 - [x] Documentation for using it
+- [x] Publish
 - [ ] Cross platform (Windows + Mac)?
-- [ ] Publish
 - [ ] YT Video
 
 
@@ -137,9 +137,13 @@ Example Actions:
   - The delay must be formatted as a duration string like above.
 
 ## Building
+#### Get the code
 - git clone https://github.com/ssebs/go-mmp
   - You'll need to install a C compiler. See https://developer.fyne.io/started/
   - If you want to use the Makefile on Windows, [install make from choco](https://stackoverflow.com/a/57042516)
+- `go get github.com/ssebs/go-mmp`
+
+#### Build the code
 - `make build` to build the go-mmp.exe file
 - `make run` to run the go-mmp.exe file
 - `make test` to run unit tests
@@ -153,7 +157,6 @@ Example Actions:
       - `$ fyne package -os darwin`
     - Linux:
       - `$ fyne package -os linux`
-
 
 > If you're curious, check out the older python code at https://github.com/ssebs/MiniMacroPad/
 
