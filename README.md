@@ -12,7 +12,7 @@ Here's what the GUI looks like, you can click the buttons to run the macro, or u
 - [x] Mouse button support
 - [x] Clean code
 - [x] Allow for GUI only mode
-- [ ] Documentation for using it
+- [x] Documentation for using it
 - [ ] Cross platform (Windows + Mac)
 - [ ] Publish 
 - [ ] YT Video
