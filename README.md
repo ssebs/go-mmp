@@ -13,8 +13,8 @@ Here's what the GUI looks like, you can click the buttons to run the macro, or u
 - [x] Clean code
 - [x] Allow for GUI only mode
 - [x] Documentation for using it
-- [ ] Cross platform (Windows + Mac)
-- [ ] Publish 
+- [ ] Cross platform (Windows + Mac)?
+- [ ] Publish
 - [ ] YT Video
 
 
