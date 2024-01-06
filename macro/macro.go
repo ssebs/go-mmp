@@ -6,7 +6,6 @@ import (
 	"log/slog"
 
 	"github.com/ssebs/go-mmp/config"
-	"github.com/ssebs/go-mmp/keyboard"
 	"github.com/ssebs/go-mmp/utils"
 )
 
@@ -15,10 +14,9 @@ import (
 
 // For testing: Check out https://keyboard-test.space/
 
-// MacroManager creates a functionMap from the config, and has an instance of a keyboard.Keyboard to run the macros.
+// MacroManager creates a functionMap from the config, and is used to run Macros.
 // Use NewMacroManager to init!
 type MacroManager struct {
-	Keeb         *keyboard.Keyboard
 	Config       *config.Config
 	functionMap  map[string]fn
 	isRepeating  bool
@@ -27,23 +25,15 @@ type MacroManager struct {
 
 // NewMacroManager Creates a MacroManager, will load a Config from ${HOME}/mmpConfig.yml.
 // If the config file is missing, copy the default one there.
-// This also initializes the keyboard
 //
 // To run a macro, use the RunActionFromID func
 func NewMacroManager(doResetConfig bool) (*MacroManager, error) {
-	// Create Keyboard
-	kb, err := keyboard.NewKeyboard()
-	if err != nil {
-		return &MacroManager{}, err
-	}
-
 	// If the user wants to nuke their config
 	if doResetConfig {
 		if err := config.ResetDefaultConfig(); err != nil {
 			return &MacroManager{}, err
 		}
 	}
-
 	// Create/Load Config
 	path, err := config.GetConfigFilePath()
 	if err != nil {
@@ -58,7 +48,6 @@ func NewMacroManager(doResetConfig bool) (*MacroManager, error) {
 	// No reason for "4", just some rand size
 	mgr := &MacroManager{
 		Config:       conf,
-		Keeb:         kb,
 		functionMap:  make(map[string]fn, 4),
 		isRepeating:  false,
 		repeatStopCh: make(chan struct{}),

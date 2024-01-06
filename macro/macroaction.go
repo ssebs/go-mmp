@@ -69,6 +69,9 @@ func (mm *MacroManager) DoShortcutAction(param string) error {
 // param should be formatted as: "LMB+100ms"
 // Only a single key and the delay between repeats should be in the string.
 func (mm *MacroManager) DoRepeatAction(param string) error {
+	// TODO: keep the button looking pressed in the GUI while
+	// mm.isRepeating is true
+
 	// Generate keys from the string
 	parts := strings.Split(param, "+")
 	keyOrBtn := parts[0]
@@ -126,10 +129,12 @@ free:
 
 // DoDelay will time.sleep for the delay if it can be parsed
 func (mm *MacroManager) DoDelayAction(param string) error {
+	// Try to parse the duration
 	delay, err := time.ParseDuration(param)
 	if err != nil {
 		return fmt.Errorf("could not parse delay duration %q, err: %s", param, err)
 	}
+	// Then sleep
 	time.Sleep(delay)
 	return nil
 }

@@ -4,9 +4,7 @@ go 1.21.1
 
 require (
 	fyne.io/fyne/v2 v2.4.1
-	git.tcp.direct/kayos/sendkeys v0.0.0-20211216174833-565f782ccf21
 	github.com/go-vgo/robotgo v0.110.0
-	github.com/micmonay/keybd_event v1.1.1
 	go.bug.st/serial v1.6.1
 	gopkg.in/yaml.v3 v3.0.1
 )
