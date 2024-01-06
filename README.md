@@ -5,19 +5,6 @@ If you have an arduino powered device, you could use this to run various keyboar
 Here's what the GUI looks like, you can click the buttons to run the macro, or use the arduino to press them.
 ![screenshot of gui](res/GUIScreenshot.png)
 
-## To Finish before moving on
-- [x] Save / Load config file
-- [x] Double check error handling for serial stuff
-- [x] Press to repeat ~~macro~~ key, press again to stop
-- [x] Mouse button support
-- [x] Clean code
-- [x] Allow for GUI only mode
-- [x] Documentation for using it
-- [x] Publish
-- [ ] Cross platform (Windows + Mac)?
-- [ ] YT Video
-
-
 ## What kind of macros can you make?
 - Shortcuts:
   - CTRL + C, CTRL + V, etc.
