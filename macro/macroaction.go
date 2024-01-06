@@ -44,12 +44,15 @@ func (mm *MacroManager) DoPressReleaseAction(param string) error {
 // This does NOT support mouse buttons
 // e.g. DoShortcutAction("CTRL+SHIFT+ESC")
 func (mm *MacroManager) DoShortcutAction(param string) error {
+	// fmt.Println("DoShortcutAction:", param)
+
 	// TODO: add option to delay between keydown/keyup
 	keys := strings.Split(param, "+")
 
 	// Hold down all keys
 	for _, key := range keys {
 		if err := robotgo.KeyDown(key); err != nil {
+			fmt.Println("error holding down keys:", err)
 			return err
 		}
 	}
@@ -59,6 +62,7 @@ func (mm *MacroManager) DoShortcutAction(param string) error {
 	// Release all keys
 	for _, key := range keys {
 		if err := robotgo.KeyUp(key); err != nil {
+			fmt.Println("error releasing keys:", err)
 			return err
 		}
 	}
