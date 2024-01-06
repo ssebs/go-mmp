@@ -6,8 +6,6 @@ import (
 	"time"
 
 	"github.com/go-vgo/robotgo"
-	"github.com/micmonay/keybd_event"
-	"github.com/ssebs/go-mmp/keyboard"
 )
 
 // macroaction.go is where the DoBlah functions are housed.
@@ -17,8 +15,9 @@ import (
  Below are the functions that provide the actual macro functionality
 */
 
-// MIGRATED TO ROBOTGO
 // DoSendString will type a string that's passed
+// param should be a string, this can be a letter, word, sentence, etc.
+// e.g. DoSendTextAction("foo bar")
 func (mm *MacroManager) DoSendTextAction(param string) error {
 	// fmt.Println("DoSendTextAction:", param)
 	robotgo.TypeStr(param)
@@ -26,15 +25,16 @@ func (mm *MacroManager) DoSendTextAction(param string) error {
 }
 
 // DoPressReleaseAction will press and release a key or mouse button
+// param should be a keyname or mouse btn name, see README.md
+// e.g. DoPressReleaseAction("enter") or DoPressReleaseAction("RMB")
 func (mm *MacroManager) DoPressReleaseAction(param string) error {
 	// fmt.Println("DoPressReleaseAction:", param)
 	// If it's a mouse button, pressMouse
 	if isKeyNameMouseBtn(param) {
-		pressMouse(param, false)
-		return nil
+		return pressMouse(param)
 	}
-	// Otherwise, KeyPress
-	return robotgo.KeyPress(param)
+	// Otherwise, press the Key
+	return pressKey(param)
 }
 
 // DoShortcutAction will type a shortcut out for you
@@ -42,6 +42,7 @@ func (mm *MacroManager) DoPressReleaseAction(param string) error {
 // After keys are held down, there's a delay defined in mm.Config.Delay,
 // then the keys will release
 // This does NOT support mouse buttons
+// e.g. DoShortcutAction("CTRL+SHIFT+ESC")
 func (mm *MacroManager) DoShortcutAction(param string) error {
 	// TODO: add option to delay between keydown/keyup
 	keys := strings.Split(param, "+")
@@ -65,80 +66,32 @@ func (mm *MacroManager) DoShortcutAction(param string) error {
 }
 
 // DoRepeatAction will...
+// param should be formatted as: "LMB+100ms"
+// Only a single key and the delay between repeats should be in the string.
 func (mm *MacroManager) DoRepeatAction(param string) error {
-	return nil
-}
-
-// OLD TO MIGRATE
-
-// PressKeyAction converts the keyName & will press&hold it with mm.Config.Delay
-// keyName should be found in KeyMap
-func (mm *MacroManager) DoPressKeyAction(keyName string) error {
-	convertedName, err := keyboard.ConvertKeyName(keyName)
-	switch err.(type) {
-	case nil:
-		mm.Keeb.PressHold(mm.Config.Delay, convertedName)
-	case keyboard.ErrKeyNameIsMouseButton:
-		mm.Keeb.PressMouse(keyName, false)
-	default:
-		return fmt.Errorf("could not press key: %s", keyName)
-	}
-
-	return nil
-}
-
-// // DoShortcutAction will type a shortcut
-// // param should be formatted as: "SHIFT+ENTER+c"
-// func (mm *MacroManager) DoShortcutAction(param string) error {
-// 	keymods := &keyboard.HotKeyModifiers{}
-// 	keys := make([]int, 0)
-// 	// Generate HotKeyModifiers from the string
-// 	for _, word := range strings.Split(param, "+") {
-// 		switch word {
-// 		case "SHIFT":
-// 			keymods.Shift = true
-// 		case "CTRL":
-// 			keymods.Control = true
-// 		case "ALT":
-// 			keymods.Alt = true
-// 		case "SUPER":
-// 			keymods.Super = true
-// 		default:
-// 			iKey, err := keyboard.ConvertKeyName(word)
-// 			if err != nil {
-// 				return fmt.Errorf("could not convert %s to keyboard int", word)
-// 			}
-// 			keys = append(keys, iKey)
-// 		}
-// 	}
-
-// 	// Run the macro
-// 	mm.Keeb.RunHotKey(mm.Config.Delay, keymods, keys...)
-// 	return nil
-// }
-
-// DoRepeatKey converts the keyName & will press & repeat it until the button is pressed again
-// keyName should be found in KeyMap
-func (mm *MacroManager) DoRepeatKeyAction(param string) error {
 	// Generate keys from the string
-	words := strings.Split(param, "+")
+	parts := strings.Split(param, "+")
+	keyOrBtn := parts[0]
 
-	repeatDelay, err := time.ParseDuration(words[1])
-	if err != nil {
-		return fmt.Errorf("could not parse delay duration %q, err: %s", words[1], err)
+	// Assert that we have the correct params
+	if len(parts) != 2 {
+		// TODO: convert this to an error type
+		return fmt.Errorf("config error: Repeat should only have 1 \"+\" between a keyname and the delay. expect format such as: \"LMB+100ms\", but got %s", param)
 	}
 
-	// Convert key name and see if it should be a button press
-	iKey, err := keyboard.ConvertKeyName(words[0])
-	if err == nil {
-		// Run the function async until isRepeating is true & this func is called again
-		go mm.Keeb.PressRepeat(repeatDelay, mm.Config.Delay, mm.repeatStopCh, iKey)
-	} else if iKey == -2 {
-		// TODO: Fix the error handling above! Use errors.As()
-		// Run the function async until isRepeating is true & this func is called again
-		go mm.Keeb.PressRepeatMouse(repeatDelay, mm.repeatStopCh, words[0])
+	// Verify the delay is parsable, parse and save it
+	repeatDelay, err := time.ParseDuration(parts[1])
+	if err != nil {
+		return fmt.Errorf("could not parse delay duration %q, err: %s", parts[1], err)
+	}
+
+	// If it's a mouse button, pressMouse
+	if isKeyNameMouseBtn(keyOrBtn) {
+		// goroutine will run until button is pressed again
+		go repeatFunc(pressMouse, keyOrBtn, repeatDelay, mm.repeatStopCh)
 	} else {
-		return fmt.Errorf("could not press key: %s", words[0])
+		// Otherwise, KeyPress
+		go repeatFunc(pressKey, keyOrBtn, repeatDelay, mm.repeatStopCh)
 	}
 
 	// If isRepeating is set to true and this function is called again, close stopCh
@@ -150,17 +103,28 @@ func (mm *MacroManager) DoRepeatKeyAction(param string) error {
 	return nil
 }
 
-// DoTaskManager - Open Task Manager by running CTRL + SHIFT + ESC
-// Deprecated, just create a shortcut instead
-func (mm *MacroManager) DoTaskManager(param string) error {
-	hkm := &keyboard.HotKeyModifiers{Shift: true, Control: true}
-	mm.Keeb.RunHotKey(mm.Config.Delay, hkm, keybd_event.VK_ESC)
-	return nil
+// repeatFunc will run f() until stopCh is closed
+// f is the function to run, param is the parameter to that function,
+// repeatDelay is the delay between repeats in the loop,
+// stopCh will break the loop when it's closed.
+func repeatFunc(f fn, param string, repeatDelay time.Duration, stopCh chan struct{}) {
+free:
+	for {
+		select {
+		case <-stopCh:
+			break free
+		default:
+			// Run fn over and over
+			if err := f(param); err != nil {
+				break free
+			}
+			// Sleep between repeats
+			time.Sleep(repeatDelay)
+		}
+	}
 }
 
-// MISC
-
-// DoDelay will time.sleep for the delay given if it can be parsed
+// DoDelay will time.sleep for the delay if it can be parsed
 func (mm *MacroManager) DoDelayAction(param string) error {
 	delay, err := time.ParseDuration(param)
 	if err != nil {
@@ -172,19 +136,25 @@ func (mm *MacroManager) DoDelayAction(param string) error {
 
 /* Helpers */
 
+// pressKey will press and release a single key.
+// If you want to press multiple, use robotgo.KeyPress
+func pressKey(key string) error {
+	return robotgo.KeyPress(key)
+}
+
 // pressMouse will press a mouse button down.
 // "button" is the button to press.
 // It can be either: LMB, RMB, or MMB
-// isDouble is if it's a double click
-func pressMouse(button string, isDouble bool) {
+func pressMouse(button string) error {
 	switch button {
 	case "LMB", "LEFTMOUSE", "LEFTMOUSEBUTTON", "LEFTCLICK":
-		robotgo.Click("left", isDouble)
+		robotgo.Click("left", false)
 	case "RMB", "RIGHTMOUSE", "RIGHTMOUSEBUTTON", "RIGHTCLICK":
-		robotgo.Click("right", isDouble)
+		robotgo.Click("right", false)
 	case "MMB", "MIDDLEMOUSE", "MIDDLEMOUSEBUTTON", "MIDDLECLICK":
-		robotgo.Click("center", isDouble)
+		robotgo.Click("center", false)
 	}
+	return nil
 }
 
 // isKeyNameMouseBtn checks if the keyname is a mouse button or not.

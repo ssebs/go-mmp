@@ -15,9 +15,6 @@ import (
 
 // For testing: Check out https://keyboard-test.space/
 
-// fn Function type, for use in functionMap
-type fn func(string) error
-
 // MacroManager creates a functionMap from the config, and has an instance of a keyboard.Keyboard to run the macros.
 // Use NewMacroManager to init!
 type MacroManager struct {
@@ -78,10 +75,8 @@ func (mm *MacroManager) initFunctionMap() {
 		"Delay":        mm.DoDelayAction,
 		"PressRelease": mm.DoPressReleaseAction,
 		"SendText":     mm.DoSendTextAction,
-
-		"Shortcut": mm.DoShortcutAction,
-		"Repeat":   mm.DoRepeatAction,
-		"TaskMgr":  mm.DoTaskManager,
+		"Shortcut":     mm.DoShortcutAction,
+		"Repeat":       mm.DoRepeatAction,
 	}
 }
 
@@ -152,3 +147,6 @@ type ErrActionIDNotFoundInMacros struct {
 func (e ErrActionIDNotFoundInMacros) Error() string {
 	return fmt.Sprintf("could not find actionID: %d in mm.Config.Macros %+v", e.aID, e.macros)
 }
+
+// fn Function type, for use in functionMap
+type fn func(string) error

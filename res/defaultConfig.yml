@@ -72,7 +72,7 @@ Macros:
   9:
     Name: Spam click
     Actions:
-      - RepeatKey: LMB+100ms
+      - Repeat: LMB+100ms
   # Button 10
   10:
     Name: Skip song
