@@ -23,12 +23,14 @@ Macros:
       # FuncName: param
       - PressRelease: enter
       - SendText: nt
+      - Delay: 250ms
       - PressRelease: enter
   2:
     Name: nice
     Actions:
       - PressRelease: enter
       - SendText: nice
+      - Delay: 250ms
       - PressRelease: enter
   3:
     Name: Open Task Mgr
@@ -39,12 +41,14 @@ Macros:
     Actions:
       - Shortcut: SHIFT+ENTER
       - SendText: gg
+      - Delay: 250ms
       - PressRelease: enter
   5:
     Name: ggwp
     Actions:
       - Shortcut: SHIFT+ENTER
       - SendText: ggwp
+      - Delay: 250ms
       - PressRelease: enter
   6:
     Name: ggez
