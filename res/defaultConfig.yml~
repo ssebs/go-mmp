@@ -51,7 +51,6 @@ Macros:
     Actions:
       - Shortcut: SHIFT+ENTER
       - SendText: ggez
-      - Delay: 250ms
       - PressRelease: enter
   7:
     Name: surf reset all
