@@ -24,6 +24,22 @@ func (mm *MacroManager) DoSendTextAction(param string) error {
 	return nil
 }
 
+// DoPressAction will press down a key and keep it held.
+// To release, use DoReleaseAction.
+// param should be a keyname, see README.md
+// e.g. DoPressAction("enter")
+func (mm *MacroManager) DoPressAction(param string) error {
+	return robotgo.KeyDown(param)
+}
+
+// DoReleaseAction will release a pressed key.
+// To press, use DoPressAction.
+// param should be a keyname, see README.md
+// e.g. DoReleaseAction("enter")
+func (mm *MacroManager) DoReleaseAction(param string) error {
+	return robotgo.KeyUp(param)
+}
+
 // DoPressReleaseAction will press and release a key or mouse button
 // param should be a keyname or mouse btn name, see README.md
 // e.g. DoPressReleaseAction("enter") or DoPressReleaseAction("RMB")
