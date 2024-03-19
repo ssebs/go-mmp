@@ -101,6 +101,14 @@ Example Actions:
 - e.g. `enter`, `a`, `alt`, `LMB`
 - Press and release a key or mouse button.
 
+#### Press
+- e.g. `enter`, `a`, `alt`, `LMB`
+- Press and hold a key, to release a key use "Release".
+
+#### Release
+- e.g. `enter`, `a`, `alt`, `LMB`
+- Release a key from being held.
+
 #### SendText
 - e.g. `ggez`, `Thanks, ssebs`, `git-gud`
 - Type out text from the keyboard.
