@@ -66,13 +66,15 @@ Macros:
       - Delay: 100ms
       - PressRelease: enter
   8:
-    Name: surf reset stage
+    Name: HD2 Reinforce
     Actions:
-      - PressRelease: enter
-      - Delay: 100ms
-      - SendText: "/rs"
-      - Delay: 100ms
-      - PressRelease: enter
+      - Press: alt
+      - PressRelease: up
+      - PressRelease: down
+      - PressRelease: right
+      - PressRelease: left
+      - PressRelease: up
+      - Release: alt
   9:
     Name: Spam Click
     Actions:
