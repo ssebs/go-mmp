@@ -188,13 +188,6 @@ Example Actions:
 - [ ] better instructions for hardware
 
 
-
-## Architecture Diagram
-> To update it, edit the [Architecture.drawio](./res/Architecture.drawio) file. I'm using [this](https://open-vsx.org/extension/hediet/vscode-drawio) VSCode extension.
- 
-![Architecture diagram](./res/Architecture.png).
-
-
 ## Docs / References:
 - GUI (fyne)
   - https://developer.fyne.io/
@@ -207,6 +200,13 @@ Example Actions:
   - https://github.com/ssebs/MiniMacroPad/
 - For testing macros, check out https://keyboard-test.space/
 
+<details>
+ <summary>Architecture / Flow Diagram</summary>
+
+To update it, edit the [Architecture.drawio](./res/Architecture.drawio) file. I'm using [this](https://open-vsx.org/extension/hediet/vscode-drawio) VSCode extension.
+ 
+![Diagram](./res/Architecture.png)
+</details>
 
 ## LICENSE
 [Apache 2 License](./LICENSE)
