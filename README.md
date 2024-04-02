@@ -1,6 +1,6 @@
-# Go-MMP
+# Mini Macro Pad (go-mmp)
 Macro Pad driver software, written in Golang. 
-If you have an arduino powered device, you could use this to run various keyboard shortcuts and other macros.
+If you have an arduino powered device, you could use this to run various keyboard shortcuts and other macros. No device? No problem! You can still click on the buttons to run the macros.
 
 Here's what the GUI looks like, you can click the buttons to run the macro, or use the arduino to press them.
 ![screenshot of gui](res/GUIScreenshot.png)
@@ -153,9 +153,14 @@ Example Actions:
     - Linux:
       - `$ fyne package -os linux`
 
-> If you're curious, check out the older python code at https://github.com/ssebs/MiniMacroPad/
+<hr/>
 
-## Goals / To-do (general)
+If you're curious, check out the older python code at https://github.com/ssebs/MiniMacroPad/
+
+<details>
+  <summary>Todo's</summary>
+
+### Goals / To-do (general)
 - [x] Get started
 - [x] Create basic UI
 - [x] Run keyboard macros
@@ -186,7 +191,7 @@ Example Actions:
 - [ ] Move main.go to a `cmd` pkg
 - [ ] wiring diagram
 - [ ] better instructions for hardware
-
+</details>
 
 ## Docs / References:
 - GUI (fyne)
