@@ -136,6 +136,8 @@ Example Actions:
 - git clone https://github.com/ssebs/go-mmp
   - You'll need to install a C compiler. See https://developer.fyne.io/started/
   - If you want to use the Makefile on Windows, [install make from choco](https://stackoverflow.com/a/57042516)
+  - If running on linux, add yourself to the `dialout` group
+    - `sudo usermod -aG dialout <username>`
 - `go get github.com/ssebs/go-mmp`
 
 #### Build the code
