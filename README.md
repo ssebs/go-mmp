@@ -164,6 +164,7 @@ If you're curious, check out the older python code at https://github.com/ssebs/M
 
 ### Goals / To-do (general)
 - [x] Get started
+- [ ] Add support for running a script / program on keypress
 - [x] Create basic UI
 - [x] Run keyboard macros
 - [x] Load buttons from config into GUI
