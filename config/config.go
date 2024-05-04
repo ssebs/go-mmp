@@ -2,6 +2,7 @@ package config
 
 import (
 	"errors"
+	"fmt"
 	"io"
 	"log"
 	"os"
@@ -82,25 +83,39 @@ func NewConfigFromFile(filename string) (*Config, error) {
 	return LoadConfig(f)
 }
 
-// GetConfigFilePath checks if a config file exists at ${HOME}/mmpConfig.yml,
-// and returns it if so. If not, copy the default config to there.
+// GetConfigFilePath will...
+// 1) Check if there's a neighboring mmpConfig.yml file
+// 2) Check if there's a ${HOME}/mmpConfig.yml
+// 3) Create default config at ${HOME}/mmpConfig.yml
+// 4) Return the full filepath as a string
 // If there's an error, return empty string and error.
 func GetConfigFilePath() (string, error) {
+	// Check for local ./mmpConfig.yml
+	if utils.CheckFileExists("./mmpConfig.yml") {
+		p, err := os.Getwd()
+		if err != nil {
+			return "", fmt.Errorf("could not get cwd: %s", err)
+		}
+		return filepath.FromSlash(p + "/mmpConfig.yml"), nil
+	}
+
 	// Get homePath string
 	homePath, err := getHomeConfigPath()
 	if err != nil {
 		return "", err
 	}
 
-	// Check if it exists, if not copy defaultconfig to homePath
-	if !utils.CheckFileExists(homePath) {
-		if err := utils.CopyFile("res/defaultConfig.yml", homePath); err != nil {
-			return homePath, err
+	// Check if homePath exists,
+	if utils.CheckFileExists(homePath) {
+		return homePath, nil
+	} else {
+		// if not, copy defaultconfig to homePath
+		err = utils.CopyFile("res/defaultConfig.yml", homePath)
+		if err != nil {
+			return homePath, fmt.Errorf("could not save defaultConfig: %s", err)
 		}
+		return homePath, nil
 	}
-
-	// fmt.Println("homePath:", homePath)
-	return homePath, nil
 }
 
 // ResetDefaultConfig will save the default config to ${HOME}/mmpConfig.yml
@@ -117,7 +132,7 @@ func ResetDefaultConfig() error {
 	return nil
 }
 
-// getHomeConfigPath will generate the ${HOME}/mmpConfig.yml path as a string
+// getHomeConfigPath will generate the ${HOME}/mmpConfig.yml full path as a string
 // Returns an error if we couldn't find the home dir.
 func getHomeConfigPath() (string, error) {
 	// TODO: don't use errors.New
