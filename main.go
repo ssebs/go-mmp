@@ -39,7 +39,7 @@ func main() {
 	// CLI flags
 	cliFlags := parseFlags()
 
-	// Init MacroManager & Load config
+	// Init MacroManager + Load config
 	macroMgr, err := macro.NewMacroManager(cliFlags.DoResetConfig)
 	if err != nil {
 		gui.ShowErrorDialogAndRun(err)
