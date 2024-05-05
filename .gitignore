@@ -2,6 +2,7 @@
 *.out
 *.tar.xz
 
+fyne-cross/
 tmp/usr/
 
 mmpConfig.yml

@@ -5,4 +5,4 @@ Website = "https://github.com/ssebs/go-mmp/"
   Name = "Go-MMP"
   ID = "com.ssebs.go-mmp"
   Version = "1.2.0"
-  Build = 3
+  Build = 4

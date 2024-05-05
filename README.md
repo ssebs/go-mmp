@@ -152,8 +152,11 @@ Example Actions:
 - To package:
   - Make sure `fyne` CLI is installed
     - `go install fyne.io/fyne/v2/cmd/fyne@latest`
+    - `go install github.com/fyne-io/fyne-cross@latest` for cross platform pkging
   - Windows:
     - `PS go-mmp> fyne package -os windows`
+      - Linux pkg for Win:
+        - `sudo fyne-cross windows`
   - Mac:
     - `$ fyne package -os darwin`
   - Linux:
