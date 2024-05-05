@@ -1,5 +1,8 @@
 *.exe
 *.out
 *.tar.xz
+
+tmp/usr/
+
 mmpConfig.yml
 go-mmp
