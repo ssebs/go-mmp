@@ -50,6 +50,7 @@ There are many available, but if you like the one I designed, check out my [than
   - You can edit this config from a text editor like Notepad, VSCode, or vim
     - All config changes must be made in this file, **this is how you create macros**
     - If someone would like to create a GUI based editor, please feel free 😁
+- You can also run `go-mmp.exe` with a `mmpConfig.yml` file in the same directory to load from that config instead of the `$HOME` file
 - In the config file, this is where you configure:
   - The MacroPad's layout (3x3 buttons)
   - The serial device info (portname, buad, etc)
