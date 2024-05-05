@@ -1,8 +1,8 @@
-Website = https://github.com/ssebs/go-mmp/
+Website = "https://github.com/ssebs/go-mmp/"
 
 [Details]
 Icon = "Icon.png"
 Name = "Go-MMP"
 ID = "com.ssebs.go-mmp"
-Version = "1.1.0"
+Version = "1.2.0"
 Build = 1
