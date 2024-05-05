@@ -157,6 +157,13 @@ Example Actions:
     - `$ fyne package -os darwin`
   - Linux:
     - `$ fyne package -os linux`
+- Updates:
+  - Make code changes 
+  - Run upgrades: `go get -u && go mod tidy`
+  - Update Version in `FyneApp.toml`
+  - Create Pull Request
+  - Once committed, git tag & push with same version from `FyneApp.toml`
+  - `go get github.com/ssebs/go-mmp@<version>`
 
 <hr/>
 
