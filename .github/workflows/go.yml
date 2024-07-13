@@ -1,0 +1,35 @@
+name: Go
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+
+jobs:
+  xgo:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: setup fyne
+        run: go install -tags k8s github.com/fyne-io/fyne-cross@latest
+
+      - name: Build
+        uses: crazy-max/ghaction-xgo@v3
+        with:
+          go_version: 1.22
+          dest: build
+          prefix: myapp
+          targets: windows/amd64,linux/amd64
+          race: false
+          ldflags: -s -w
+          buildmode: default
+          trimpath: true
+
+      - name: Print Output
+        id: output
+        run: echo "${{ steps.xgo.outputs.files }}"
