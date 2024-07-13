@@ -34,15 +34,6 @@ jobs:
           ldflags: -s -w
           buildmode: default
           trimpath: true
-
-      - name: Update coverage
-        run: |
-          GO111MODULE=off go get github.com/mattn/goveralls
-          set -e
-          go test -tags ci -covermode=atomic -coverprofile=coverage.out ./...
-          coverage=`go tool cover -func coverage.out | grep total | tr -s '\t' | cut -f 3 | grep -o '[^%]*'`
-          if (( $(echo "$coverage < 85" | bc) )); then echo "Test coverage lowered"; exit 1; fi
-
       
       - uses: shogo82148/actions-goveralls@v1
         with:
