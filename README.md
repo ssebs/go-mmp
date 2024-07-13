@@ -1,4 +1,6 @@
 # Mini Macro Pad (go-mmp)
+[![Go](https://github.com/ssebs/go-mmp/actions/workflows/go.yml/badge.svg?branch=main)](https://github.com/ssebs/go-mmp/actions/workflows/go.yml)
+
 Simplify task automation with an arduino and some 3D printing. This lets you create shortcuts and run them at the press of a button, customizable through a YAML config file.
 
 > No device? No problem! You can still click on the buttons to run the macros.
