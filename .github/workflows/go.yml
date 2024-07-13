@@ -16,7 +16,9 @@ jobs:
         uses: actions/checkout@v4
 
       - name: setup fyne
-        run: go install -tags k8s github.com/fyne-io/fyne-cross@latest
+        run: |
+          sudo apt-get install golang gcc libgl1-mesa-dev xorg-dev
+          go install -tags k8s github.com/fyne-io/fyne-cross@latest
 
       - name: Build
         uses: crazy-max/ghaction-xgo@v3
