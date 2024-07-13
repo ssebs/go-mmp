@@ -14,27 +14,6 @@ import (
 	"github.com/ssebs/go-mmp/utils"
 )
 
-// Listen for data from a *SerialDevice, to be used in a goroutine
-// Takes in a btnch to send data to when the serial connection gets something,
-// and a quitch if we need to stop the goroutine
-func Listen(btnch chan string, quitch chan struct{}, sd *serialdevice.SerialDevice) {
-free:
-	// Keep looping since sd.Listen() will return if no data is sent
-	for {
-		select {
-		case <-quitch:
-			break free
-		default:
-			// If we get data, send to chan
-			actionID, err := sd.Listen()
-			if err != nil {
-				slog.Debug("Listen err: ", err)
-			}
-			btnch <- actionID
-		}
-	}
-}
-
 func main() {
 	// CLI flags
 	cliFlags := parseFlags()
@@ -104,6 +83,27 @@ func main() {
 
 	// Finally, display the GUI once everything is loaded & loop
 	g.ShowAndRun()
+}
+
+// Listen for data from a *SerialDevice, to be used in a goroutine
+// Takes in a btnch to send data to when the serial connection gets something,
+// and a quitch if we need to stop the goroutine
+func Listen(btnch chan string, quitch chan struct{}, sd *serialdevice.SerialDevice) {
+free:
+	// Keep looping since sd.Listen() will return if no data is sent
+	for {
+		select {
+		case <-quitch:
+			break free
+		default:
+			// If we get data, send to chan
+			actionID, err := sd.Listen()
+			if err != nil {
+				slog.Debug("Listen err: ", err)
+			}
+			btnch <- actionID
+		}
+	}
 }
 
 // CLI flag values will be stored in this

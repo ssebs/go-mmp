@@ -1,6 +1,7 @@
 *.exe
 *.out
 *.tar.xz
+*.lnk
 
 fyne-cross/
 tmp/usr/

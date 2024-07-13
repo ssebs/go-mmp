@@ -1,9 +1,12 @@
 # Mini Macro Pad (go-mmp)
-Macro Pad driver software, written in Golang. 
-If you have an arduino powered device, you could use this to run various keyboard shortcuts and other macros. No device? No problem! You can still click on the buttons to run the macros.
+Simplify task automation with an arduino and some 3D printing. This lets you create shortcuts and run them at the press of a button, customizable through a YAML config file.
+
+> No device? No problem! You can still click on the buttons to run the macros.
 
 Here's what the GUI looks like, you can click the buttons to run the macro, or use the arduino to press them.
 ![screenshot of gui](res/GUIScreenshot.png)
+
+Most of my keybinds are for an FPS shooter, for example typing "gg" in the chat. 
 
 ## What kind of macros can you make?
 - Shortcuts:
@@ -12,7 +15,7 @@ Here's what the GUI looks like, you can click the buttons to run the macro, or u
   - Skip song, type "enter", etc.
 - Repeat keypresses (or mouse button presses)
   - Playing cookie clicker? Press your macro to repeatedly press your mouse button down until you click the macro again
-- More? 
+- Whatever you can think of, feel free to submit PRs!
 
 ### You can add multiple "actions" to a macro
 If you want a single button to type "ggez" for you in VALORANT or CS, you can!
@@ -35,7 +38,7 @@ There are many available, but if you like the one I designed, check out my [than
 
 <!-- TODO: Add video of it -->
 
-## Usage
+## Getting started
 - You'll need an arduino/serial based device that sends [0-9] numbers over a serial connection.
   - See [arduino-mmp.ino](./arduino-mmp.ino) source code to see how I did this.
   - Connecting and understanding baudrate, etc. is out of the scope of this guide.
@@ -70,7 +73,7 @@ You can still run this in GUI only mode, but you'll need to open up a terminal
 Open a terminal to where the go-mmp.exe file is
 - Run `PS> go-mmp.exe --gui-only` and hit enter.
 
-CLI Usage:
+### CLI Usage:
 > Not sure why, but the print statements stop working after I export to exe, so no help message.
 ```
 Usage of go-mmp.exe:
@@ -134,12 +137,15 @@ Example Actions:
 
 ## Building
 #### Get the code
-- git clone https://github.com/ssebs/go-mmp
-  - You'll need to install a C compiler. See https://developer.fyne.io/started/
-  - If you want to use the Makefile on Windows, [install make from choco](https://stackoverflow.com/a/57042516)
-  - If running on linux, add yourself to the `dialout` group
-    - `sudo usermod -aG dialout <username>`
-- `go get github.com/ssebs/go-mmp`
+- Source:
+  - Git clone https://github.com/ssebs/go-mmp
+    - Install [Golang](https://go.dev/doc/install)
+    - Follow the install docs at https://docs.fyne.io/started/
+      - This takes a while but is required to get this working.
+    - If running on linux, add yourself to the `dialout` group
+      - `sudo usermod -aG dialout <username>`
+- Go pkg
+  - `go get github.com/ssebs/go-mmp`
 
 #### Build the code
 - `go build main.go` to build the go-mmp.exe file
@@ -209,6 +215,7 @@ If you're curious, check out the older python code at https://github.com/ssebs/M
 - [ ] Move main.go to a `cmd` pkg
 - [ ] wiring diagram
 - [ ] better instructions for hardware
+- [ ] Github actions
 </details>
 
 ## Docs / References:
