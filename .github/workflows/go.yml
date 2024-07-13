@@ -17,8 +17,11 @@ jobs:
 
       - name: setup fyne
         run: |
-          sudo apt-get install golang gcc libgl1-mesa-dev xorg-dev
+          sudo apt-get update && sudo apt-get install gcc libgl1-mesa-dev libegl1-mesa-dev libgles2-mesa-dev libx11-dev xorg-dev bc
           go install -tags k8s github.com/fyne-io/fyne-cross@latest
+
+      - name: run tests
+      - run: go test -v -coverprofile=profile.cov ./...
 
       - name: Build
         uses: crazy-max/ghaction-xgo@v3
@@ -32,6 +35,15 @@ jobs:
           buildmode: default
           trimpath: true
 
-      - name: Print Output
-        id: output
-        run: echo "${{ steps.xgo.outputs.files }}"
+      - name: Update coverage
+        run: |
+          GO111MODULE=off go get github.com/mattn/goveralls
+          set -e
+          go test -tags ci -covermode=atomic -coverprofile=coverage.out ./...
+          coverage=`go tool cover -func coverage.out | grep total | tr -s '\t' | cut -f 3 | grep -o '[^%]*'`
+          if (( $(echo "$coverage < 85" | bc) )); then echo "Test coverage lowered"; exit 1; fi
+
+      
+      - uses: shogo82148/actions-goveralls@v1
+        with:
+          path-to-profile: profile.cov
