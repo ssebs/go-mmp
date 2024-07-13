@@ -21,7 +21,7 @@ jobs:
           go install -tags k8s github.com/fyne-io/fyne-cross@latest
 
       - name: run tests
-      - run: go test -v -coverprofile=profile.cov ./...
+        run: go test -v -coverprofile=profile.cov ./...
 
       - name: Build
         uses: crazy-max/ghaction-xgo@v3
