@@ -217,7 +217,7 @@ If you're curious, check out the older python code at https://github.com/ssebs/M
 - [ ] Move main.go to a `cmd` pkg
 - [ ] wiring diagram
 - [ ] better instructions for hardware
-- [ ] Github actions
+- [x] Github actions
 </details>
 
 ## Docs / References:
