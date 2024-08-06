@@ -163,6 +163,12 @@ Example Actions:
   - The delay must be formatted as a duration string like above.
 
 ## Building
+### Installing binary version
+- Download latest release from https://github.com/ssebs/go-mmp/releases
+  - Download either the .exe.zip for Windows or .tar.xz if you're on Linux.
+- If you have fyne installed and setup, you can run
+  - `go install github.com/ssebs/go-mmp@latest`
+
 #### Get the code
 - Source:
   - Git clone https://github.com/ssebs/go-mmp
@@ -175,8 +181,7 @@ Example Actions:
   - `go get github.com/ssebs/go-mmp`
 
 #### Build the code
-- `go build main.go` to build the go-mmp.exe file
-- `go run main.go`  to run the go-mmp.exe file
+- `go run main.go`  to run go-mmp file
 - Unit tests:
   - `go test ./...`
 - Coverage
@@ -236,7 +241,7 @@ If you're curious, check out the older python code at https://github.com/ssebs/M
 - [x] GUI button should run the macro
 - [ ] Make the config file easier to edit
   - [x] Save default config to $HOME/mmpConfig.yml
-  - [ ] Support portable mode (load from ./mmpConfig.yml)
+  - [x] Support portable mode (load from ./mmpConfig.yml)
   - [ ] Support more than 1 device?
   - [ ] UI for CRUD'ing these macros
 - [ ] Move main.go to a `cmd` pkg
