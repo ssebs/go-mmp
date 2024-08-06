@@ -2,7 +2,7 @@ Website = "https://github.com/ssebs/go-mmp/"
 
 [Details]
   Icon = "Icon.png"
-  Name = "Go-MMP"
+  Name = "Mini Macro Pad"
   ID = "com.ssebs.go-mmp"
-  Version = "1.2.0"
-  Build = 5
+  Version = "1.2.1"
+  Build = 8

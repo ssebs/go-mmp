@@ -23,6 +23,9 @@ func main() {
 	if err != nil {
 		gui.ShowErrorDialogAndRun(err)
 	}
+	if macroMgr.Config.GuiOnly {
+		cliFlags.IsGUIOnly = macroMgr.Config.GuiOnly
+	}
 
 	// Init GUI from macroMgr
 	g := gui.NewGUI(macroMgr)
@@ -99,7 +102,7 @@ free:
 			// If we get data, send to chan
 			actionID, err := sd.Listen()
 			if err != nil {
-				slog.Debug("Listen err: ", err)
+				slog.Debug(fmt.Sprint("Listen err: ", err))
 			}
 			btnch <- actionID
 		}
