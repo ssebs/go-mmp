@@ -12,6 +12,7 @@ SerialDevice:
   PortName: COM7
   BaudRate: 9600
 Delay: 125ms # Delay for Shortcuts
+GUIOnly: true # Run without serial device connected
 # List of Macros
 Macros:
   # Position on display

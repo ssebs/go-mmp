@@ -63,8 +63,8 @@ func (mm *MacroManager) initFunctionMap() {
 	mm.functionMap = map[string]fn{
 		"Delay":        mm.DoDelayAction,
 		"PressRelease": mm.DoPressReleaseAction,
-		"Press": 		mm.DoPressAction,
-		"Release": 		mm.DoReleaseAction,
+		"Press":        mm.DoPressAction,
+		"Release":      mm.DoReleaseAction,
 		"SendText":     mm.DoSendTextAction,
 		"Shortcut":     mm.DoShortcutAction,
 		"Repeat":       mm.DoRepeatAction,
@@ -123,7 +123,7 @@ func convertActionIDToInt(actionID string) (iActionID int, err error) {
 		// do nothing if an empty string was passed
 		return -1, err
 	} else if err != nil {
-		slog.Warn("convertActionIDToInt err: ", err)
+		slog.Warn(fmt.Sprint("convertActionIDToInt err: ", err))
 		return -1, err
 	}
 	return iActionID, nil

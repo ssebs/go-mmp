@@ -10,6 +10,31 @@ Here's what the GUI looks like, you can click the buttons to run the macro, or u
 
 Most of my keybinds are for an FPS shooter, for example typing "gg" in the chat. 
 
+- [Mini Macro Pad (go-mmp)](#mini-macro-pad-go-mmp)
+  - [What kind of macros can you make?](#what-kind-of-macros-can-you-make)
+    - [You can add multiple "actions" to a macro](#you-can-add-multiple-actions-to-a-macro)
+  - [Hardware](#hardware)
+  - [3D Printed housing](#3d-printed-housing)
+  - [Getting started](#getting-started)
+    - [Don't have an arduino but still want to run macros?](#dont-have-an-arduino-but-still-want-to-run-macros)
+    - [CLI Usage:](#cli-usage)
+  - [Actions:](#actions)
+    - [The following Actions are available:](#the-following-actions-are-available)
+      - [PressRelease](#pressrelease)
+      - [Press](#press)
+      - [Release](#release)
+      - [SendText](#sendtext)
+      - [Shortcut](#shortcut)
+      - [Delay](#delay)
+      - [Repeat](#repeat)
+  - [Building](#building)
+      - [Get the code](#get-the-code)
+      - [Build the code](#build-the-code)
+    - [Goals / To-do (general)](#goals--to-do-general)
+  - [Docs / References:](#docs--references)
+  - [LICENSE](#license)
+
+
 ## What kind of macros can you make?
 - Shortcuts:
   - CTRL + C, CTRL + V, etc.
