@@ -40,7 +40,7 @@ type Config struct {
 	SerialDevice SerialDevice  `yaml:"SerialDevice"`
 	Macros       map[int]Macro `yaml:"Macros"`
 	Delay        time.Duration `yaml:"Delay"`
-	GuiOnly      bool          `yaml:"GUIOnly"`
+	GuiMode      utils.GUIMode `yaml:"GUIMode"`
 }
 
 // TODO: Rewrite Config save/loading using io interfaces

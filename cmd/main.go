@@ -1,7 +1,6 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"log/slog"
 	"os"
@@ -16,17 +15,24 @@ import (
 
 func main() {
 	// CLI flags
-	cliFlags := parseFlags()
+	cliFlags := utils.ParseFlags()
 
 	// Init MacroManager + Load config
-	macroMgr, err := macro.NewMacroManager(cliFlags.DoResetConfig)
+	macroMgr, err := macro.NewMacroManager(cliFlags.ResetConfig)
 	if err != nil {
 		gui.ShowErrorDialogAndRun(err)
 	}
-	if macroMgr.Config.GuiOnly {
-		cliFlags.IsGUIOnly = macroMgr.Config.GuiOnly
+	// Set GUIMode to flag val
+	switch m := cliFlags.Mode; m {
+	case utils.GUIOnly:
+		macroMgr.Config.GuiMode = utils.GUIOnly
+	case utils.CLIOnly:
+		macroMgr.Config.GuiMode = utils.CLIOnly
+	case utils.CLIGUI:
+		// the default, use macroMgr.Config.GuiMode loaded from config file
+	default:
+		gui.ShowErrorDialogAndRun(fmt.Errorf("%s is not a valid GUIMode.", m))
 	}
-
 	// Init GUI from macroMgr
 	g := gui.NewGUI(macroMgr)
 
@@ -107,23 +113,4 @@ free:
 			btnch <- actionID
 		}
 	}
-}
-
-// CLI flag values will be stored in this
-type CLIFlags struct {
-	IsGUIOnly     bool
-	DoResetConfig bool
-}
-
-// parseFlags will parse the CLI flags that may have been used.
-// Useful for disabling the serial listening functionality
-func parseFlags() CLIFlags {
-	// TODO: Allow for GUI to pop up with a failed arduino connection... might not be possible with fyne
-	// for now, let's use CLI flags
-	cliFlags := CLIFlags{}
-	flag.BoolVar(&cliFlags.IsGUIOnly, "gui-only", false, fmt.Sprintf("Open %s in GUI Only Mode. Useful if you don't have a working arduino.", utils.ProjectName))
-	flag.BoolVar(&cliFlags.DoResetConfig, "reset-config", false, "If you want to reset your mmpConfig.yml file.")
-
-	flag.Parse()
-	return cliFlags
 }

@@ -12,7 +12,7 @@ SerialDevice:
   PortName: COM7
   BaudRate: 9600
 Delay: 125ms # Delay for Shortcuts
-GUIOnly: true # Run without serial device connected
+GUIMode: GUIOnly # Could be GUIOnly (no serial device), CLIOnly (no gui), or CLIGUI (both serial and device, full functionality)
 # List of Macros
 Macros:
   # Position on display

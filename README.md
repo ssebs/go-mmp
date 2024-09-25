@@ -28,8 +28,9 @@ Most of my keybinds are for an FPS shooter, for example typing "gg" in the chat.
       - [Delay](#delay)
       - [Repeat](#repeat)
   - [Building](#building)
-      - [Get the code](#get-the-code)
-      - [Build the code](#build-the-code)
+    - [Installing binary version](#installing-binary-version)
+    - [Get the code](#get-the-code)
+    - [Build the code](#build-the-code)
     - [Goals / To-do (general)](#goals--to-do-general)
   - [Docs / References:](#docs--references)
   - [LICENSE](#license)
@@ -114,7 +115,7 @@ Usage of go-mmp.exe:
 All the available actions are listed below, the format is:
   ```yaml
   Actions:
-    # FuncName: parameter
+    - FuncName: parameter
   ```
 
 Example Actions:
@@ -169,7 +170,7 @@ Example Actions:
 - If you have fyne installed and setup, you can run
   - `go install github.com/ssebs/go-mmp@latest`
 
-#### Get the code
+### Get the code
 - Source:
   - Git clone https://github.com/ssebs/go-mmp
     - Install [Golang](https://go.dev/doc/install)
@@ -180,7 +181,7 @@ Example Actions:
 - Go pkg
   - `go get github.com/ssebs/go-mmp`
 
-#### Build the code
+### Build the code
 - `go run main.go`  to run go-mmp file
 - Unit tests:
   - `go test ./...`
