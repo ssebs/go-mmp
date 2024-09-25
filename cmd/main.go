@@ -33,6 +33,7 @@ func main() {
 	default:
 		gui.ShowErrorDialogAndRun(fmt.Errorf("%s is not a valid GUIMode.", m))
 	}
+
 	// Init GUI from macroMgr
 	g := gui.NewGUI(macroMgr)
 
