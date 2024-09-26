@@ -198,7 +198,15 @@ func (c *MacroLayout) String() string {
 func (g *GUIMode) String() string {
 	return fmt.Sprint(*g)
 }
-
+func (g *GUIMode) Type() string {
+	switch *g {
+	case NORMAL:
+		return "NORMAL"
+	case GUIOnly:
+		return "GUIOnly"
+	}
+	return ""
+}
 func (g *GUIMode) Set(m string) error {
 	switch strings.ToUpper(m) {
 	case "NORMAL":
@@ -210,16 +218,6 @@ func (g *GUIMode) Set(m string) error {
 	}
 	return fmt.Errorf("could not find mode %s", m)
 }
-func (g *GUIMode) Type() string {
-	switch *g {
-	case NORMAL:
-		return "NORMAL"
-	case GUIOnly:
-		return "GUIOnly"
-	}
-	return ""
-}
-
 func (g *GUIMode) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	var modeString string
 	if err := unmarshal(&modeString); err != nil {
