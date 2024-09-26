@@ -6,47 +6,62 @@ import (
 	"os"
 	"time"
 
+	flag "github.com/spf13/pflag"
 	"github.com/ssebs/go-mmp/config"
 	"github.com/ssebs/go-mmp/gui"
 	"github.com/ssebs/go-mmp/macro"
 	"github.com/ssebs/go-mmp/serialdevice"
-	"github.com/ssebs/go-mmp/utils"
 )
 
-func main() {
-	// CLI flags
-	cliFlags := utils.ParseFlags()
+// CLI flag values will be stored in this
+type CLIFlags struct {
+	GUIMode     config.GUIMode
+	ResetConfig bool
+}
 
-	// Init MacroManager + Load config
+// parseFlags will parse the CLI flags that may have been used.
+// Useful for disabling the serial listening functionality
+func parseFlags() CLIFlags {
+	cliFlags := CLIFlags{}
+
+	flag.VarP(&cliFlags.GUIMode, "mode", "m", "GUI Mode, defaults to 'NORMAL', use 'GUIOnly' to run without a serial device.")
+	flag.BoolVarP(&cliFlags.ResetConfig, "reset-config", "r", false, "Reset your ~/mmpConfig.yml file to default. If using config-path, reset that file.")
+	// TODO: implement configPath flag
+	// TODO: implement verbose flag
+
+	flag.Parse()
+	return cliFlags
+}
+
+func main() {
+	cliFlags := parseFlags()
+
+	// Init MacroManager & Load config
 	macroMgr, err := macro.NewMacroManager(cliFlags.ResetConfig)
 	if err != nil {
+		fmt.Fprintln(os.Stderr, err.Error())
 		gui.ShowErrorDialogAndRun(err)
 	}
-	// Set GUIMode to flag val
-	switch m := cliFlags.Mode; m {
-	case utils.GUIOnly:
-		macroMgr.Config.GuiMode = utils.GUIOnly
-	case utils.CLIOnly:
-		macroMgr.Config.GuiMode = utils.CLIOnly
-	case utils.CLIGUI:
-		// the default, use macroMgr.Config.GuiMode loaded from config file
-	default:
-		gui.ShowErrorDialogAndRun(fmt.Errorf("%s is not a valid GUIMode.", m))
+
+	if cliFlags.GUIMode != config.NOTSET {
+		macroMgr.Config.GUIMode = cliFlags.GUIMode
 	}
 
-	// Init GUI from macroMgr
+	// TODO: refactor this section to support daemon / CLI only
 	g := gui.NewGUI(macroMgr)
 
-	// If GUI only mode, ShowAndRun. This will block until the window is closed.
-	if cliFlags.IsGUIOnly {
+	// If GUI only mode, ShowAndRun instead of continuing with serial stuff.
+	// This will "block" until the window is closed, then exit
+	if macroMgr.Config.GUIMode == config.GUIOnly {
 		g.RootWin.SetOnClosed(func() {
 			fmt.Println("gui only closed")
 			os.Exit(0)
 		})
 		g.ShowAndRun()
+		return
 	}
 
-	// Otherwise, connect to the serial device & init the listeners
+	// Else, do the serial stuff
 
 	// Connect Serial Device from the config
 	arduino, err := serialdevice.NewSerialDeviceFromConfig(macroMgr.Config, time.Millisecond*20)
@@ -56,18 +71,20 @@ func main() {
 	}
 	defer arduino.CloseConnection()
 
-	// Chans for listeners
+	// listeners
 	btnch := make(chan string, 2)
 	quitch := make(chan struct{})
 	displayBtnch := make(chan string, 1)
 
 	// Run Serial Listener
+	// TODO: rename this
 	go Listen(btnch, quitch, arduino)
 
 	// Visible button press listener
 	go g.ListenForDisplayButtonPress(displayBtnch, quitch)
 
 	// Do something when btnch gets data
+	// TODO: move to func
 	go func() {
 	free:
 		for {

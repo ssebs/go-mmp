@@ -31,7 +31,6 @@ Most of my keybinds are for an FPS shooter, for example typing "gg" in the chat.
     - [Installing binary version](#installing-binary-version)
     - [Get the code](#get-the-code)
     - [Build the code](#build-the-code)
-    - [Goals / To-do (general)](#goals--to-do-general)
   - [Docs / References:](#docs--references)
   - [LICENSE](#license)
 
@@ -211,45 +210,6 @@ Example Actions:
 <hr/>
 
 If you're curious, check out the older python code at https://github.com/ssebs/MiniMacroPad/
-
-<details>
-  <summary>Todo's</summary>
-
-### Goals / To-do (general)
-- [x] Get started
-- [ ] Add support for running a script / program on keypress
-- [x] Create basic UI
-- [x] Run keyboard macros
-- [x] Load buttons from config into GUI
-- [x] Listen for Serial data
-  - [x] Take action from this data
-  - [x] Add support for shortcuts/hotkeys
-  - [x] Add support for running single keys
-  - [x] Add support for strings
-  - [ ] Clear whatever is coming in when we first open the app
-    - [ ] !if someone pressed a button before opening the app, it will run it asap!
-  - [x] Add support for LMB/RMB/MMB clicks
-    - [x] Support repeat press while holding btn down
-- [WIP] Error handling
-  - [x] GUI
-  - [x] fix serial device errors (serial port busy, nonexistent, etc)
-  - [ ] more!
-  - [ ] Figure out the "Fyne error:  GLFW poll event error: InvalidValue: Invalid scancode 144"
-- [ ] Spamkey should keep UI lit up until it's pressed again
-- [ ] Add more tests!
-- [x] CLI flag for GUI only, and non-GUI modes
-- [x] GUI button should depress when matching Serial btn is pressed
-- [x] GUI button should run the macro
-- [ ] Make the config file easier to edit
-  - [x] Save default config to $HOME/mmpConfig.yml
-  - [x] Support portable mode (load from ./mmpConfig.yml)
-  - [ ] Support more than 1 device?
-  - [ ] UI for CRUD'ing these macros
-- [ ] Move main.go to a `cmd` pkg
-- [ ] wiring diagram
-- [ ] better instructions for hardware
-- [x] Github actions
-</details>
 
 ## Docs / References:
 - GUI (fyne)
