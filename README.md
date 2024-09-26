@@ -3,6 +3,14 @@
 
 Simplify task automation with an arduino and some 3D printing. This lets you create shortcuts and run them at the press of a button, customizable through a YAML config file.
 
+
+
+FIX CONFIG 
+
+
+
+
+
 > No device? No problem! You can still click on the buttons to run the macros.
 
 Here's what the GUI looks like, you can click the buttons to run the macro, or use the arduino to press them.

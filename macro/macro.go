@@ -23,18 +23,17 @@ type MacroManager struct {
 	repeatStopCh chan struct{}
 }
 
-// NewMacroManager Creates a MacroManager, will load a Config from ${HOME}/mmpConfig.yml.
+// NewMacroManager Uses CLIFlags to load / reset a Config.
 // If the config file is missing, copy the default one there.
-//
-// To run a macro, use the RunActionFromID func
-func NewMacroManager(doResetConfig bool) (*MacroManager, error) {
-	// If the user wants to nuke their config
-	if doResetConfig {
+func NewMacroManager(cliFlags *config.CLIFlags) (*MacroManager, error) {
+
+	if cliFlags.ResetConfig {
 		if err := config.ResetDefaultConfig(); err != nil {
 			return &MacroManager{}, err
 		}
 	}
 	// Create/Load Config
+	// TODO: MOVE
 	path, err := config.GetConfigFilePath()
 	if err != nil {
 		return &MacroManager{}, err

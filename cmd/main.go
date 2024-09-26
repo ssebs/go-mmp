@@ -6,38 +6,18 @@ import (
 	"os"
 	"time"
 
-	flag "github.com/spf13/pflag"
 	"github.com/ssebs/go-mmp/config"
 	"github.com/ssebs/go-mmp/gui"
 	"github.com/ssebs/go-mmp/macro"
 	"github.com/ssebs/go-mmp/serialdevice"
 )
 
-// CLI flag values will be stored in this
-type CLIFlags struct {
-	GUIMode     config.GUIMode
-	ResetConfig bool
-}
-
-// parseFlags will parse the CLI flags that may have been used.
-// Useful for disabling the serial listening functionality
-func parseFlags() CLIFlags {
-	cliFlags := CLIFlags{}
-
-	flag.VarP(&cliFlags.GUIMode, "mode", "m", "GUI Mode, defaults to 'NORMAL', use 'GUIOnly' to run without a serial device.")
-	flag.BoolVarP(&cliFlags.ResetConfig, "reset-config", "r", false, "Reset your ~/mmpConfig.yml file to default. If using config-path, reset that file.")
-	// TODO: implement configPath flag
-	// TODO: implement verbose flag
-
-	flag.Parse()
-	return cliFlags
-}
-
 func main() {
-	cliFlags := parseFlags()
+	cliFlags := config.ParseFlags()
 
+	// TODO: create config, then pass ptr around instead of creating in NewMacroManager
 	// Init MacroManager & Load config
-	macroMgr, err := macro.NewMacroManager(cliFlags.ResetConfig)
+	macroMgr, err := macro.NewMacroManager(cliFlags)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err.Error())
 		gui.ShowErrorDialogAndRun(err)

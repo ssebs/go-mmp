@@ -1,26 +1,15 @@
 package config
 
 import (
-	"errors"
 	"fmt"
 	"io"
 	"log"
 	"os"
 	"path/filepath"
-	"strings"
 	"time"
 
 	"github.com/ssebs/go-mmp/utils"
 	"gopkg.in/yaml.v3"
-)
-
-type GUIMode int
-
-const (
-	NOTSET GUIMode = iota // For use in comparing cli flags
-	NORMAL                // Serial listener + GUI
-	GUIOnly
-	// CLIOnly
 )
 
 // SerialDevice object
@@ -110,51 +99,31 @@ func GetConfigFilePath() (string, error) {
 		return filepath.FromSlash(p + "/mmpConfig.yml"), nil
 	}
 
-	// Get homePath string
-	homePath, err := getHomeConfigPath()
-	if err != nil {
-		return "", err
-	}
+	// TODO: REVIEW THIS LOGIC
 
-	// Check if homePath exists,
-	if utils.CheckFileExists(homePath) {
-		return homePath, nil
+	// Get homeConfigPath string
+	homeDir, _ := os.UserHomeDir()
+	homeConfigPath := filepath.FromSlash(homeDir + "/mmpConfig.yml")
+
+	if utils.CheckFileExists(homeConfigPath) {
+		return homeConfigPath, nil
 	} else {
-		// if not, copy defaultconfig to homePath
-		err = utils.CopyFile("res/defaultConfig.yml", homePath)
-		if err != nil {
-			return homePath, fmt.Errorf("could not save defaultConfig: %s", err)
-		}
-		return homePath, nil
+		ResetDefaultConfig()
+		return homeConfigPath, nil
 	}
 }
 
 // ResetDefaultConfig will save the default config to ${HOME}/mmpConfig.yml
 func ResetDefaultConfig() error {
-	// Get homePath string
-	homePath, err := getHomeConfigPath()
-	if err != nil {
-		return err
-	}
+	homeDir, _ := os.UserHomeDir()
+	homeConfigPath := filepath.FromSlash(homeDir + "/mmpConfig.yml")
+
 	// Copy file, if we get an error then return it
-	if err := utils.CopyFile("res/defaultConfig.yml", homePath); err != nil {
-		return err
+	if err := utils.CopyFile("res/defaultConfig.yml", homeConfigPath); err != nil {
+		// TODO: will this work? how is this file pkgd?
+		return fmt.Errorf("failed to save defaultconfig. ", err)
 	}
 	return nil
-}
-
-// getHomeConfigPath will generate the ${HOME}/mmpConfig.yml full path as a string
-// Returns an error if we couldn't find the home dir.
-func getHomeConfigPath() (string, error) {
-	// TODO: don't use errors.New
-	homeDir, err := os.UserHomeDir()
-	if err != nil {
-		// TODO: change this error so we can check for it.
-		return "", errors.New("could not get user home dir: " + err.Error())
-	}
-
-	homePath := filepath.FromSlash(homeDir + "/mmpConfig.yml")
-	return homePath, nil
 }
 
 /* Stringers */
@@ -192,45 +161,4 @@ func (c *MacroLayout) String() string {
 		log.Fatal(err)
 	}
 	return string(data)
-}
-
-/* GUIMode pflag.Value implementation */
-func (g *GUIMode) String() string {
-	return fmt.Sprint(*g)
-}
-func (g *GUIMode) Type() string {
-	switch *g {
-	case NORMAL:
-		return "NORMAL"
-	case GUIOnly:
-		return "GUIOnly"
-	}
-	return ""
-}
-func (g *GUIMode) Set(m string) error {
-	switch strings.ToUpper(m) {
-	case "NORMAL":
-		*g = NORMAL
-		return nil
-	case "GUIONLY":
-		*g = GUIOnly
-		return nil
-	}
-	return fmt.Errorf("could not find mode %s", m)
-}
-func (g *GUIMode) UnmarshalYAML(unmarshal func(interface{}) error) error {
-	var modeString string
-	if err := unmarshal(&modeString); err != nil {
-		return err
-	}
-
-	switch strings.ToUpper(modeString) {
-	case "NORMAL":
-		*g = NORMAL
-	case "GUIONLY":
-		*g = GUIOnly
-	default:
-		return fmt.Errorf("invalid GUIMode: %s", modeString)
-	}
-	return nil
 }
