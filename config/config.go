@@ -1,6 +1,7 @@
 package config
 
 import (
+	_ "embed"
 	"fmt"
 	"io"
 	"log"
@@ -11,6 +12,9 @@ import (
 	"github.com/ssebs/go-mmp/utils"
 	"gopkg.in/yaml.v3"
 )
+
+//go:embed defaultConfig.yml
+var defaultConfigFile []byte
 
 // SerialDevice object
 type SerialDevice struct {
@@ -47,11 +51,22 @@ type Config struct {
 func NewConfig(flags *CLIFlags) (*Config, error) {
 	c := &Config{}
 
-	// Get the correct fullpath
-	if err := c.getAndSetConfigPathFromCLIFlagsTODORename(flags); err != nil {
+	// Get the correct fullpath and set it
+	if err := c.getAndSetConfigPathFromCLIFlagsTODORename(flags.ConfigPath); err != nil {
 		return c, err
 	}
 
+	if flags.ResetConfig {
+		if err := c.resetConfig(); err != nil {
+			return c, fmt.Errorf("could not reset config, %e", err)
+		}
+	}
+
+	if flags.GUIMode != c.GUIMode {
+		c.GUIMode = flags.GUIMode
+	}
+
+	// Load up the config from disk
 	f, err := os.Open(c.ConfigFullPath)
 	if err != nil {
 		return c, err
@@ -61,7 +76,7 @@ func NewConfig(flags *CLIFlags) (*Config, error) {
 	return loadConfig(f)
 }
 
-func (c *Config) getAndSetConfigPathFromCLIFlagsTODORename(flags *CLIFlags) error {
+func (c *Config) getAndSetConfigPathFromCLIFlagsTODORename(configPath string) error {
 
 	// Get the fullpath of the default config
 	hd, _ := os.UserHomeDir()
@@ -71,7 +86,7 @@ func (c *Config) getAndSetConfigPathFromCLIFlagsTODORename(flags *CLIFlags) erro
 	}
 
 	// if the user doesn't set a --path arg
-	if flags.ConfigPath == ConfigPathShortName {
+	if configPath == ConfigPathShortName {
 
 		if !utils.CheckFileExists(defaultFullPath) {
 			fmt.Printf("writing default config to %s\n", defaultFullPath)
@@ -87,9 +102,9 @@ func (c *Config) getAndSetConfigPathFromCLIFlagsTODORename(flags *CLIFlags) erro
 	}
 
 	// Get the full --path
-	fullConfigPath, err := filepath.Abs(flags.ConfigPath)
+	fullConfigPath, err := filepath.Abs(configPath)
 	if err != nil {
-		return fmt.Errorf("failed to expand %s to a full path, %e", flags.ConfigPath, err)
+		return fmt.Errorf("failed to expand %s to a full path, %e", configPath, err)
 	}
 
 	if !utils.CheckFileExists(fullConfigPath) {
@@ -102,6 +117,19 @@ func (c *Config) getAndSetConfigPathFromCLIFlagsTODORename(flags *CLIFlags) erro
 
 	c.ConfigFullPath = fullConfigPath
 	return nil
+}
+
+// Save the defaultconfig at c.ConfigFullPath
+func (c *Config) resetConfig() error {
+	f, err := os.Create(c.ConfigFullPath)
+	if err != nil {
+		return fmt.Errorf("could not open file %s, %e", c.ConfigFullPath, err)
+	}
+	_, err = f.Write(defaultConfigFile)
+	if err != nil {
+		return fmt.Errorf("could not write file, %e", err)
+	}
+	return err
 }
 
 // ResetDefaultConfig will save the default config to ${HOME}/mmpConfig.yml
