@@ -47,23 +47,59 @@ type Config struct {
 func NewConfig(flags *CLIFlags) (*Config, error) {
 	c := &Config{}
 
-	c.getAndSetConfigPathFromCLIFlagsTODORename()
+	// Get the correct fullpath
+	if err := c.getAndSetConfigPathFromCLIFlagsTODORename(flags); err != nil {
+		return c, err
+	}
 
-	return c, nil
+	f, err := os.Open(c.configFullPath)
+	if err != nil {
+		return c, err
+	}
+	defer f.Close()
 
-	// old
-	// func NewConfigFromFile(filename string) (*Config, error) {
-	// 	f, err := os.Open(filename)
-	// 	if err != nil {
-	// 		return &Config{}, err
-	// 	}
-	// 	defer f.Close()
-	// 	return loadConfig(f)
-	// }
+	return loadConfig(f)
 }
 
-func (c *Config) getAndSetConfigPathFromCLIFlagsTODORename() {
+func (c *Config) getAndSetConfigPathFromCLIFlagsTODORename(flags *CLIFlags) error {
 
+	// Get the full defaultpath
+	defaultFullPath, err := filepath.Abs(os.ExpandEnv(DefaultConfigPath))
+	if err != nil {
+		return fmt.Errorf("failed to expand ~/mmpConfig.yml to a full path, %e", err)
+	}
+
+	// if the user doesn't set a --path arg
+	if flags.ConfigPath == DefaultConfigPath {
+
+		if !utils.CheckFileExists(DefaultConfigPath) {
+			fmt.Printf("writing default config to %s", defaultFullPath)
+
+			if err = utils.CopyFile("res/defaultConfig.yml", defaultFullPath); err != nil {
+				return fmt.Errorf("failed to save defaultconfig. %e", err)
+			}
+		}
+
+		c.configFullPath = defaultFullPath
+		return nil
+	}
+
+	// Get the full --path
+	fullConfigPath, err := filepath.Abs(os.ExpandEnv(flags.ConfigPath))
+	if err != nil {
+		return fmt.Errorf("failed to expand %s to a full path, %e", flags.ConfigPath, err)
+	}
+
+	if !utils.CheckFileExists(fullConfigPath) {
+		fmt.Printf("--path %s does not exist, writing default config to %s", fullConfigPath, fullConfigPath)
+
+		if err = utils.CopyFile("res/defaultConfig.yml", fullConfigPath); err != nil {
+			return fmt.Errorf("failed to save defaultconfig. %e", err)
+		}
+	}
+
+	c.configFullPath = fullConfigPath
+	return nil
 }
 
 // GetConfigFilePath will...

@@ -7,10 +7,12 @@ import (
 	flag "github.com/spf13/pflag"
 )
 
+const DefaultConfigPath string = "~/mmpConfig.yml"
+
 // CLI flag values will be stored in this
 type CLIFlags struct {
 	GUIMode     GUIMode
-	ConfigPath  string // fullpath
+	ConfigPath  string
 	ResetConfig bool
 }
 
@@ -19,9 +21,12 @@ type CLIFlags struct {
 func ParseFlags() *CLIFlags {
 	cliFlags := &CLIFlags{}
 
-	flag.VarP(&cliFlags.GUIMode, "mode", "m", "GUI Mode, defaults to 'NORMAL', use 'GUIOnly' to run without a serial device.")
-	flag.BoolVarP(&cliFlags.ResetConfig, "reset-config", "r", false, "Reset your ~/mmpConfig.yml file to default. If using config-path, reset that file.")
-	// TODO: implement configPath flag
+	flag.VarP(&cliFlags.GUIMode, "mode", "m",
+		"GUI Mode, defaults to 'NORMAL', use 'GUIOnly' to run without a serial device.")
+	flag.BoolVarP(&cliFlags.ResetConfig, "reset-config", "r", false,
+		"Reset your $HOME/mmpConfig.yml file to default. If using config-path, reset that file.")
+	flag.StringVarP(&cliFlags.ConfigPath, "path", "p", DefaultConfigPath,
+		"Path to your mmpConfig.yml. If used with reset-config, the specifified file will be reset.")
 	// TODO: implement verbose flag
 
 	flag.Parse()
@@ -35,6 +40,7 @@ const (
 	NORMAL                // Serial listener + GUI
 	GUIOnly
 	// CLIOnly
+	TESTING
 )
 
 /* GUIMode pflag.Value implementation */
