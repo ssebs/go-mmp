@@ -193,7 +193,7 @@ Example Actions:
   - Windows:
     - `PS go-mmp> fyne package -os windows`
       - Linux pkg for Win:
-        - `sudo fyne-cross windows`
+        - `fyne-cross windows`
   - Mac:
     - `$ fyne package -os darwin`
   - Linux:

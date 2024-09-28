@@ -9,7 +9,7 @@ import (
 func TestLoadConfig(t *testing.T) {
 	cliFlags := &CLIFlags{
 		GUIMode:     TESTING,
-		ConfigPath:  "../res/defaultConfig.yml",
+		ConfigPath:  "../config/defaultConfig.yml",
 		ResetConfig: false,
 	}
 
