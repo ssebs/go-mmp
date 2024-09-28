@@ -5,6 +5,8 @@
 
 fyne-cross/
 tmp/usr/
+tmp/*.yml
+__debug*
 
 mmpConfig.yml
 go-mmp

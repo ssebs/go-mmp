@@ -29,7 +29,7 @@ func NewMacroManager(conf *config.Config) (*MacroManager, error) {
 	// Create the MacroManager
 	mgr := &MacroManager{
 		Config:       conf,
-		functionMap:  make(map[string]fn), // No reason for "4", I rolled a dice
+		functionMap:  make(map[string]fn),
 		isRepeating:  false,
 		repeatStopCh: make(chan struct{}),
 	}
