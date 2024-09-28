@@ -7,7 +7,8 @@ import (
 	flag "github.com/spf13/pflag"
 )
 
-const DefaultConfigPath string = "~/mmpConfig.yml"
+// Will be used as /home/user/mmpConfig.yml, or C:\Users\user\mmpConfig.yml
+const ConfigPathShortName string = "mmpConfig.yml"
 
 // CLI flag values will be stored in this
 type CLIFlags struct {
@@ -24,8 +25,8 @@ func ParseFlags() *CLIFlags {
 	flag.VarP(&cliFlags.GUIMode, "mode", "m",
 		"GUI Mode, defaults to 'NORMAL', use 'GUIOnly' to run without a serial device.")
 	flag.BoolVarP(&cliFlags.ResetConfig, "reset-config", "r", false,
-		"Reset your $HOME/mmpConfig.yml file to default. If using config-path, reset that file.")
-	flag.StringVarP(&cliFlags.ConfigPath, "path", "p", DefaultConfigPath,
+		"Reset your ~/mmpConfig.yml file to default. If using config-path, reset that file.")
+	flag.StringVarP(&cliFlags.ConfigPath, "path", "p", ConfigPathShortName,
 		"Path to your mmpConfig.yml. If used with reset-config, the specifified file will be reset.")
 	// TODO: implement verbose flag
 

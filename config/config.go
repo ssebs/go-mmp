@@ -63,16 +63,17 @@ func NewConfig(flags *CLIFlags) (*Config, error) {
 
 func (c *Config) getAndSetConfigPathFromCLIFlagsTODORename(flags *CLIFlags) error {
 
-	// Get the full defaultpath
-	defaultFullPath, err := filepath.Abs(os.ExpandEnv(DefaultConfigPath))
+	// Get the fullpath of the default config
+	hd, _ := os.UserHomeDir()
+	defaultFullPath, err := filepath.Abs(filepath.Join(hd, ConfigPathShortName))
 	if err != nil {
-		return fmt.Errorf("failed to expand ~/mmpConfig.yml to a full path, %e", err)
+		return fmt.Errorf("failed to expand ${HOME}/mmpConfig.yml to a full path, %e", err)
 	}
 
 	// if the user doesn't set a --path arg
-	if flags.ConfigPath == DefaultConfigPath {
+	if flags.ConfigPath == defaultFullPath {
 
-		if !utils.CheckFileExists(DefaultConfigPath) {
+		if !utils.CheckFileExists(defaultFullPath) {
 			fmt.Printf("writing default config to %s\n", defaultFullPath)
 
 			// TODO: Move / fix this!
@@ -86,7 +87,7 @@ func (c *Config) getAndSetConfigPathFromCLIFlagsTODORename(flags *CLIFlags) erro
 	}
 
 	// Get the full --path
-	fullConfigPath, err := filepath.Abs(os.ExpandEnv(flags.ConfigPath))
+	fullConfigPath, err := filepath.Abs(flags.ConfigPath)
 	if err != nil {
 		return fmt.Errorf("failed to expand %s to a full path, %e", flags.ConfigPath, err)
 	}
@@ -108,11 +109,14 @@ func (c *Config) getAndSetConfigPathFromCLIFlagsTODORename(flags *CLIFlags) erro
 // TODO: Rename to resetConfig and use the path
 // TODO: make sure copyfile works with fyne exporting, how do resources work??
 func ResetDefaultConfig() error {
-	homeDir, _ := os.UserHomeDir()
-	homeConfigPath := filepath.FromSlash(homeDir + "/mmpConfig.yml")
+	hd, _ := os.UserHomeDir()
+	defaultFullPath, err := filepath.Abs(filepath.Join(hd, ConfigPathShortName))
+	if err != nil {
+		return fmt.Errorf("failed to expand ${HOME}/mmpConfig.yml to a full path, %e", err)
+	}
 
 	// Copy file, if we get an error then return it
-	if err := utils.CopyFile("res/defaultConfig.yml", homeConfigPath); err != nil {
+	if err := utils.CopyFile("res/defaultConfig.yml", defaultFullPath); err != nil {
 		return fmt.Errorf("failed to save defaultconfig. %e", err)
 	}
 	return nil
@@ -134,14 +138,14 @@ func loadConfig(f io.Reader) (*Config, error) {
 	return c, nil
 }
 
-func (c Config) saveConfig(destFilename string) error {
-	f, err := os.Create(destFilename)
-	if err != nil {
-		return err
-	}
-	_, err = f.WriteString(c.String())
-	return err
-}
+// func (c Config) saveConfig(destFilename string) error {
+// 	f, err := os.Create(destFilename)
+// 	if err != nil {
+// 		return err
+// 	}
+// 	_, err = f.WriteString(c.String())
+// 	return err
+// }
 
 /* Stringers */
 func (c *Config) String() string {
