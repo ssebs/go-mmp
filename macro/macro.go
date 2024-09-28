@@ -25,32 +25,15 @@ type MacroManager struct {
 
 // NewMacroManager Uses CLIFlags to load / reset a Config.
 // If the config file is missing, copy the default one there.
-func NewMacroManager(cliFlags *config.CLIFlags) (*MacroManager, error) {
-
-	if cliFlags.ResetConfig {
-		if err := config.ResetDefaultConfig(); err != nil {
-			return &MacroManager{}, err
-		}
-	}
-	// Create/Load Config
-	// TODO: MOVE
-	path, err := config.GetConfigFilePath()
-	if err != nil {
-		return &MacroManager{}, err
-	}
-	conf, err := config.NewConfigFromFile(path)
-	if err != nil {
-		return &MacroManager{}, err
-	}
-
+func NewMacroManager(conf *config.Config) (*MacroManager, error) {
 	// Create the MacroManager
-	// No reason for "4", just some rand size
 	mgr := &MacroManager{
 		Config:       conf,
-		functionMap:  make(map[string]fn, 4),
+		functionMap:  make(map[string]fn, 4), // No reason for "4", I rolled a dice
 		isRepeating:  false,
 		repeatStopCh: make(chan struct{}),
 	}
+
 	mgr.initFunctionMap()
 	return mgr, nil
 }

@@ -22,7 +22,7 @@ func TestLoadConfig(t *testing.T) {
 			t.Fatalf("could not open file for test, err: %s. %+v", err, f)
 		}
 		defer f.Close()
-		c2, err := LoadConfig(f)
+		c2, err := loadConfig(f)
 		if err != nil {
 			t.Fatalf("expected no error, got %s", err)
 		}
@@ -30,5 +30,24 @@ func TestLoadConfig(t *testing.T) {
 		if !reflect.DeepEqual(c, c2) {
 			t.Fatalf("expected NewConfigFromFile('') to load res/defaultconfig.yml. got %+v, want %+v", c2, c)
 		}
+	})
+
+	t.Run("test various cliflags to confirm correct paths", func(t *testing.T) {
+		// with --path, no defaultconfig
+
+		// with invalid --path, no defaultconfig
+
+		// without --path, no defaultconfig
+
+		// with --path, has defaultconfig
+
+		// with invalid --path, has defaultconfig
+
+		// without --path, has defaultconfig
+
+	})
+
+	t.Run("test loading file to confirm error handling", func(t *testing.T) {
+
 	})
 }

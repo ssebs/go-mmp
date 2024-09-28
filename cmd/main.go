@@ -15,12 +15,16 @@ import (
 func main() {
 	cliFlags := config.ParseFlags()
 
-	// TODO: create config, then pass ptr around instead of creating in NewMacroManager
-	// Init MacroManager & Load config
-	macroMgr, err := macro.NewMacroManager(cliFlags)
+	conf, err := config.NewConfig(cliFlags)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err.Error())
-		gui.ShowErrorDialogAndRun(err)
+		gui.ShowErrorDialogAndRun(err) // TODO: only if GUIMode is not set to daemon
+	}
+
+	macroMgr, err := macro.NewMacroManager(conf)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err.Error())
+		gui.ShowErrorDialogAndRun(err) // TODO: only if GUIMode is not set to daemon
 	}
 
 	if cliFlags.GUIMode != config.NOTSET {
@@ -32,7 +36,7 @@ func main() {
 
 	// If GUI only mode, ShowAndRun instead of continuing with serial stuff.
 	// This will "block" until the window is closed, then exit
-	if macroMgr.Config.GUIMode == config.GUIOnly {
+	if conf.GUIMode == config.GUIOnly {
 		g.RootWin.SetOnClosed(func() {
 			fmt.Println("gui only closed")
 			os.Exit(0)
@@ -44,7 +48,7 @@ func main() {
 	// Else, do the serial stuff
 
 	// Connect Serial Device from the config
-	arduino, err := serialdevice.NewSerialDeviceFromConfig(macroMgr.Config, time.Millisecond*20)
+	arduino, err := serialdevice.NewSerialDeviceFromConfig(conf, time.Millisecond*20)
 	if err != nil {
 		path, _ := config.GetConfigFilePath()
 		gui.ShowErrorDialogAndRunWithLink(err, path)
