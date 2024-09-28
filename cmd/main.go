@@ -50,8 +50,7 @@ func main() {
 	// Connect Serial Device from the config
 	arduino, err := serialdevice.NewSerialDeviceFromConfig(conf, time.Millisecond*20)
 	if err != nil {
-		path, _ := config.GetConfigFilePath()
-		gui.ShowErrorDialogAndRunWithLink(err, path)
+		gui.ShowErrorDialogAndRunWithLink(err, conf.ConfigFullPath)
 	}
 	defer arduino.CloseConnection()
 

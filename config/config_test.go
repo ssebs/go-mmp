@@ -2,6 +2,7 @@ package config
 
 import (
 	"os"
+	"path/filepath"
 	"reflect"
 	"testing"
 )
@@ -53,6 +54,26 @@ func TestLoadConfig(t *testing.T) {
 	})
 
 	t.Run("test loading file to confirm error handling", func(t *testing.T) {
+
+	})
+
+	t.Run("test expansion of ~/mmpConfig.yml", func(t *testing.T) {
+		home, _ := os.UserHomeDir()
+		short := "~/mmpConfig.yml"
+		expected := filepath.Clean(filepath.FromSlash(home) + "/mmpConfig.yml")
+
+		if short != DefaultConfigPath {
+			t.Fatal("DefaultConfigPath has changed from ~/mmpConfig.yml")
+		}
+
+		defaultFullPath, err := filepath.Abs(os.ExpandEnv(DefaultConfigPath))
+		if err != nil {
+			t.Fatalf("failed to expand ~/mmpConfig.yml to a full path, %e", err)
+		}
+
+		if expected != defaultFullPath {
+			t.Fatalf("expanded home env not as expected. got %s, want %s", defaultFullPath, expected)
+		}
 
 	})
 }

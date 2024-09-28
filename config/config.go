@@ -40,7 +40,7 @@ type Config struct {
 	Macros         map[int]Macro `yaml:"Macros"`
 	Delay          time.Duration `yaml:"Delay"`
 	GUIMode        GUIMode       `yaml:"GUIMode"`
-	configFullPath string
+	ConfigFullPath string
 }
 
 // NewConfig takes in CLIFlags to figure out the correct path and whether or not to reset the file.
@@ -52,7 +52,7 @@ func NewConfig(flags *CLIFlags) (*Config, error) {
 		return c, err
 	}
 
-	f, err := os.Open(c.configFullPath)
+	f, err := os.Open(c.ConfigFullPath)
 	if err != nil {
 		return c, err
 	}
@@ -73,14 +73,15 @@ func (c *Config) getAndSetConfigPathFromCLIFlagsTODORename(flags *CLIFlags) erro
 	if flags.ConfigPath == DefaultConfigPath {
 
 		if !utils.CheckFileExists(DefaultConfigPath) {
-			fmt.Printf("writing default config to %s", defaultFullPath)
+			fmt.Printf("writing default config to %s\n", defaultFullPath)
 
+			// TODO: Move / fix this!
 			if err = utils.CopyFile("res/defaultConfig.yml", defaultFullPath); err != nil {
 				return fmt.Errorf("failed to save defaultconfig. %e", err)
 			}
 		}
 
-		c.configFullPath = defaultFullPath
+		c.ConfigFullPath = defaultFullPath
 		return nil
 	}
 
@@ -91,45 +92,15 @@ func (c *Config) getAndSetConfigPathFromCLIFlagsTODORename(flags *CLIFlags) erro
 	}
 
 	if !utils.CheckFileExists(fullConfigPath) {
-		fmt.Printf("--path %s does not exist, writing default config to %s", fullConfigPath, fullConfigPath)
+		fmt.Printf("--path %s does not exist, writing default config to %s\n", fullConfigPath, fullConfigPath)
 
 		if err = utils.CopyFile("res/defaultConfig.yml", fullConfigPath); err != nil {
 			return fmt.Errorf("failed to save defaultconfig. %e", err)
 		}
 	}
 
-	c.configFullPath = fullConfigPath
+	c.ConfigFullPath = fullConfigPath
 	return nil
-}
-
-// GetConfigFilePath will...
-// 1) Check if there's a neighboring mmpConfig.yml file
-// 2) Check if there's a ${HOME}/mmpConfig.yml
-// 3) Create default config at ${HOME}/mmpConfig.yml
-// 4) Return the full filepath as a string
-// If there's an error, return empty string and error.
-func GetConfigFilePath() (string, error) {
-	// Check for local ./mmpConfig.yml
-	if utils.CheckFileExists("./mmpConfig.yml") {
-		p, err := os.Getwd()
-		if err != nil {
-			return "", fmt.Errorf("could not get cwd: %s", err)
-		}
-		return filepath.FromSlash(p + "/mmpConfig.yml"), nil
-	}
-
-	// TODO: REVIEW THIS LOGIC
-
-	// Get homeConfigPath string
-	homeDir, _ := os.UserHomeDir()
-	homeConfigPath := filepath.FromSlash(homeDir + "/mmpConfig.yml")
-
-	if utils.CheckFileExists(homeConfigPath) {
-		return homeConfigPath, nil
-	} else {
-		ResetDefaultConfig()
-		return homeConfigPath, nil
-	}
 }
 
 // ResetDefaultConfig will save the default config to ${HOME}/mmpConfig.yml
