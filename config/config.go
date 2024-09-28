@@ -71,7 +71,7 @@ func (c *Config) getAndSetConfigPathFromCLIFlagsTODORename(flags *CLIFlags) erro
 	}
 
 	// if the user doesn't set a --path arg
-	if flags.ConfigPath == defaultFullPath {
+	if flags.ConfigPath == ConfigPathShortName {
 
 		if !utils.CheckFileExists(defaultFullPath) {
 			fmt.Printf("writing default config to %s\n", defaultFullPath)
