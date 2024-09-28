@@ -9,10 +9,10 @@ MacroLayout:
   Height: 200
 SerialDevice:
   # Serial Port name
-  PortName: COM7
+  PortName: COM1
   BaudRate: 9600
 Delay: 125ms # Delay for Shortcuts
-GUIOnly: true # Run without serial device connected
+GUIMode: NORMAL # NORMAL or GUIOnly
 # List of Macros
 Macros:
   # Position on display

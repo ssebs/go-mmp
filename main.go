@@ -1,7 +1,6 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"log/slog"
 	"os"
@@ -11,56 +10,64 @@ import (
 	"github.com/ssebs/go-mmp/gui"
 	"github.com/ssebs/go-mmp/macro"
 	"github.com/ssebs/go-mmp/serialdevice"
-	"github.com/ssebs/go-mmp/utils"
 )
 
 func main() {
-	// CLI flags
-	cliFlags := parseFlags()
+	cliFlags := config.ParseFlags()
 
-	// Init MacroManager + Load config
-	macroMgr, err := macro.NewMacroManager(cliFlags.DoResetConfig)
+	conf, err := config.NewConfig(cliFlags)
 	if err != nil {
-		gui.ShowErrorDialogAndRun(err)
-	}
-	if macroMgr.Config.GuiOnly {
-		cliFlags.IsGUIOnly = macroMgr.Config.GuiOnly
+		fmt.Fprintln(os.Stderr, err.Error())
+		gui.ShowErrorDialogAndRun(err) // TODO: only if GUIMode is not set to daemon
 	}
 
-	// Init GUI from macroMgr
+	macroMgr, err := macro.NewMacroManager(conf)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err.Error())
+		gui.ShowErrorDialogAndRun(err) // TODO: only if GUIMode is not set to daemon
+	}
+
+	if cliFlags.GUIMode != config.NOTSET {
+		macroMgr.Config.GUIMode = cliFlags.GUIMode
+	}
+
+	// TODO: refactor this section to support daemon / CLI only
 	g := gui.NewGUI(macroMgr)
 
-	// If GUI only mode, ShowAndRun. This will block until the window is closed.
-	if cliFlags.IsGUIOnly {
+	// If GUI only mode, ShowAndRun instead of continuing with serial stuff.
+	// This will "block" until the window is closed, then exit
+	if conf.GUIMode == config.GUIOnly {
 		g.RootWin.SetOnClosed(func() {
 			fmt.Println("gui only closed")
 			os.Exit(0)
 		})
 		g.ShowAndRun()
+		return
 	}
 
-	// Otherwise, connect to the serial device & init the listeners
+	// Else, do the serial stuff
 
 	// Connect Serial Device from the config
-	arduino, err := serialdevice.NewSerialDeviceFromConfig(macroMgr.Config, time.Millisecond*20)
+	arduino, err := serialdevice.NewSerialDeviceFromConfig(conf, time.Millisecond*20)
 	if err != nil {
-		path, _ := config.GetConfigFilePath()
-		gui.ShowErrorDialogAndRunWithLink(err, path)
+		gui.ShowErrorDialogAndRunWithLink(err, conf.ConfigFullPath)
 	}
 	defer arduino.CloseConnection()
 
-	// Chans for listeners
+	// listeners
 	btnch := make(chan string, 2)
 	quitch := make(chan struct{})
 	displayBtnch := make(chan string, 1)
 
 	// Run Serial Listener
+	// TODO: rename this
 	go Listen(btnch, quitch, arduino)
 
 	// Visible button press listener
 	go g.ListenForDisplayButtonPress(displayBtnch, quitch)
 
 	// Do something when btnch gets data
+	// TODO: move to func
 	go func() {
 	free:
 		for {
@@ -107,23 +114,4 @@ free:
 			btnch <- actionID
 		}
 	}
-}
-
-// CLI flag values will be stored in this
-type CLIFlags struct {
-	IsGUIOnly     bool
-	DoResetConfig bool
-}
-
-// parseFlags will parse the CLI flags that may have been used.
-// Useful for disabling the serial listening functionality
-func parseFlags() CLIFlags {
-	// TODO: Allow for GUI to pop up with a failed arduino connection... might not be possible with fyne
-	// for now, let's use CLI flags
-	cliFlags := CLIFlags{}
-	flag.BoolVar(&cliFlags.IsGUIOnly, "gui-only", false, fmt.Sprintf("Open %s in GUI Only Mode. Useful if you don't have a working arduino.", utils.ProjectName))
-	flag.BoolVar(&cliFlags.DoResetConfig, "reset-config", false, "If you want to reset your mmpConfig.yml file.")
-
-	flag.Parse()
-	return cliFlags
 }
