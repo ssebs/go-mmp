@@ -59,6 +59,8 @@ func main() {
 	quitch := make(chan struct{})
 	displayBtnch := make(chan string, 1)
 
+	g.QuitCh = quitch
+
 	// Run Serial Listener
 	// TODO: rename this
 	go Listen(btnch, quitch, arduino)
