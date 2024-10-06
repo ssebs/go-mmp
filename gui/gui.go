@@ -146,6 +146,7 @@ func ShowErrorDialogAndRunWithLink(err error, link string) {
 	w.SetContent(container)
 	w.SetOnClosed(errFunc)
 	w.CenterOnScreen()
+	// TODO: Make this work after gui is initialized
 	w.ShowAndRun()
 }
 
@@ -165,4 +166,9 @@ func (g *GUI) SetContent(c fyne.CanvasObject) {
 // Run GUI.RootWin.ShowAndRun()
 func (g *GUI) ShowAndRun() {
 	g.RootWin.ShowAndRun()
+}
+
+// Run GUI.RootWin.Show()
+func (g *GUI) Show() {
+	g.RootWin.Show()
 }
