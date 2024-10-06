@@ -100,18 +100,10 @@ func ShowPressedAnimation(delay time.Duration, btn *widget.Button) {
 	btn.Refresh()
 }
 
-/* Usefull stuff from the demo app:
-- Containers
-	- Grid
-	- Split (colors look good)
-- Collections
-	- GridWrap
-- Data Binding
-- Widgets
-	- Text (RichText Heading)
-	- Button
-- Windows
-*/
+func (g *GUI) Quit() {
+	fmt.Println("Quitting")
+	close(g.QuitCh)
+}
 
 /* Dialogs */
 
