@@ -11,18 +11,7 @@
             "mode": "auto",
             "program": "${workspaceFolder}/main.go",
             "args": [
-                "--mode",
-                "NORMAL"
-            ]
-        },
-        {
-            "name": "GUI Only",
-            "type": "go",
-            "request": "launch",
-            "mode": "auto",
-            "program": "${workspaceFolder}/main.go",
-            "args": [
-                "--gui-only"
+                
             ]
         },
         {

@@ -15,7 +15,7 @@ import (
 // For testing: Check out https://keyboard-test.space/
 
 // MacroManager creates a functionMap from the config, and is used to run Macros.
-// Use NewMacroManager to init!
+// Use NewMacroManager to create!
 type MacroManager struct {
 	Config       *config.Config
 	functionMap  map[string]fn
@@ -23,10 +23,8 @@ type MacroManager struct {
 	repeatStopCh chan struct{}
 }
 
-// NewMacroManager Uses CLIFlags to load / reset a Config.
-// If the config file is missing, copy the default one there.
+// NewMacroManager creates a functionMap from the config, and is used to run Macros.
 func NewMacroManager(conf *config.Config) (*MacroManager, error) {
-	// Create the MacroManager
 	mgr := &MacroManager{
 		Config:       conf,
 		functionMap:  make(map[string]fn),
@@ -34,28 +32,32 @@ func NewMacroManager(conf *config.Config) (*MacroManager, error) {
 		repeatStopCh: make(chan struct{}),
 	}
 
-	mgr.initFunctionMap()
+	mgr.functionMap = map[string]fn{
+		"Delay":        mgr.DoDelayAction,
+		"PressRelease": mgr.DoPressReleaseAction,
+		"Press":        mgr.DoPressAction,
+		"Release":      mgr.DoReleaseAction,
+		"SendText":     mgr.DoSendTextAction,
+		"Shortcut":     mgr.DoShortcutAction,
+		"Repeat":       mgr.DoRepeatAction,
+	}
 	return mgr, nil
 }
 
-// initFunctionMap will create function map from string to actual method
-// This is needed for RunActionFromID to work
-// If you want to add a new macro type to use in the config, add it here too.
-func (mm *MacroManager) initFunctionMap() {
-	mm.functionMap = map[string]fn{
-		"Delay":        mm.DoDelayAction,
-		"PressRelease": mm.DoPressReleaseAction,
-		"Press":        mm.DoPressAction,
-		"Release":      mm.DoReleaseAction,
-		"SendText":     mm.DoSendTextAction,
-		"Shortcut":     mm.DoShortcutAction,
-		"Repeat":       mm.DoRepeatAction,
+func (mm *MacroManager) GetFunctionMapActions() []string {
+	keys := make([]string, 0, len(mm.functionMap))
+	for k := range mm.functionMap {
+		keys = append(keys, k)
 	}
+
+	return keys
 }
 
 // RunActionFromID - Run Actions from the matching ID in Config.Macros (loaded from yml)
 // This is the method to call a macro, if you want to *do* something, call this method.
 // The macro must exist in the config, and the name must match the key in the function map.
+// Use GetFunctionMapActions() to get a slice of function key names
+//
 // This converts the actionID to an int (if possible), if not then log the error
 func (mm *MacroManager) RunActionFromID(actionID string) error {
 	fmt.Printf("Pressed: %s\n", actionID)
