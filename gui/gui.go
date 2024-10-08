@@ -59,7 +59,7 @@ func (g *GUI) initMacroGrid() {
 		// Create btn with lambda to run function
 		btn := widget.NewButton(macro.Name, func() {
 			// Runs the macro from the btn id that was clicked
-			g.macroManager.RunActionFromID(fmt.Sprint(p))
+			g.macroManager.RunActionFromID(p)
 		})
 		// Add to the grid
 		g.grid.Add(btn)

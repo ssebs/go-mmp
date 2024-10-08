@@ -27,17 +27,16 @@ func (g *GUI) EditConfig() {
 
 	// Create window
 	editor := g.App.NewWindow("Config Editor")
+	grid := container.NewGridWithColumns(g.config.MacroLayout.SizeX)
 
-	grid := container.NewGridWithColumns(g.config.MacroLayout.SizeX,
-		widget.NewButton("First", func() { fmt.Println("clicked") }),
-		widget.NewButton("Second", func() { fmt.Println("clicked") }),
-		widget.NewButton("Third", func() { fmt.Println("clicked") }),
-		widget.NewButton("Fourth", func() { fmt.Println("clicked") }),
-		widget.NewButton("Number", func() { fmt.Println("clicked") }),
-		widget.NewButton("Number", func() { fmt.Println("clicked") }),
-		widget.NewButton("Number", func() { fmt.Println("clicked") }),
-		widget.NewButton("Number", func() { fmt.Println("clicked") }),
-	)
+	for btnId, macro := range g.config.Macros {
+		// TODO: sort this properly
+		grid.Add(widget.NewButton(
+			macro.Name,
+			func() { g.macroManager.RunActionFromID(btnId - 1) },
+		),
+		)
+	}
 
 	editor.SetContent(grid)
 	editor.CenterOnScreen()

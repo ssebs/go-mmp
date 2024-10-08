@@ -81,7 +81,7 @@ func main() {
 					displayBtnch <- btn
 
 					// Run the action from the btn id
-					err := macroMgr.RunActionFromID(btn)
+					err := macroMgr.RunActionFromStrID(btn)
 					if err != nil {
 						slog.Warn(err.Error())
 					}

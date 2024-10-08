@@ -53,13 +53,7 @@ func (mm *MacroManager) GetFunctionMapActions() []string {
 	return keys
 }
 
-// RunActionFromID - Run Actions from the matching ID in Config.Macros (loaded from yml)
-// This is the method to call a macro, if you want to *do* something, call this method.
-// The macro must exist in the config, and the name must match the key in the function map.
-// Use GetFunctionMapActions() to get a slice of function key names
-//
-// This converts the actionID to an int (if possible), if not then log the error
-func (mm *MacroManager) RunActionFromID(actionID string) error {
+func (mm *MacroManager) RunActionFromStrID(actionID string) error {
 	fmt.Printf("Pressed: %s\n", actionID)
 
 	// Convert the button id to an int
@@ -67,12 +61,23 @@ func (mm *MacroManager) RunActionFromID(actionID string) error {
 	if err != nil {
 		return err
 	}
+	return mm.RunActionFromID(iActionID)
+}
 
-	// matchedMacro is a ptr to the config.Macros[iActionID] if it exists
+// RunActionFromID - Run Actions from the matching ID in Config.Macros (loaded from yml)
+// This is the method to call a macro, if you want to *do* something, call this method.
+// The macro must exist in the config, and the name must match the key in the function map.
+// Use GetFunctionMapActions() to get a slice of function key names
+//
+// This converts the actionID to an int (if possible), if not then log the error
+func (mm *MacroManager) RunActionFromID(actionID int) error {
+	fmt.Printf("Pressed: %d\n", actionID)
+
+	// matchedMacro is a ptr to the config.Macros[actionID] if it exists
 	// this will have relevant info to call a method from.
-	matchedMacro, ok := mm.Config.Macros[iActionID]
+	matchedMacro, ok := mm.Config.Macros[actionID]
 	if !ok {
-		return ErrActionIDNotFoundInMacros{aID: iActionID, macros: mm.Config.Macros}
+		return ErrActionIDNotFoundInMacros{aID: actionID, macros: mm.Config.Macros}
 	}
 
 	// Within a Macro, there's a list of Actions to run.
