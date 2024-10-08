@@ -26,21 +26,24 @@ type GUI struct {
 	macroManager *macro.MacroManager
 	config       *config.Config
 	grid         *fyne.Container
+	menu         *fyne.MainMenu
+	QuitCh       chan struct{}
 }
 
 // Create a new GUI, given a MacroManager ptr
 func NewGUI(mm *macro.MacroManager) *GUI {
 	gs := fyne.NewSize(float32(mm.Config.MacroLayout.Width), float32(mm.Config.MacroLayout.Height))
-	gui := &GUI{Size: gs, config: mm.Config, macroManager: mm}
+	mainGUI := &GUI{Size: gs, config: mm.Config, macroManager: mm}
 
-	gui.App = app.New()
-	gui.RootWin = gui.App.NewWindow(utils.ProjectName)
-	gui.RootWin.Resize(gs)
-	gui.RootWin.CenterOnScreen()
+	mainGUI.App = app.New()
+	mainGUI.RootWin = mainGUI.App.NewWindow(utils.ProjectName)
+	mainGUI.RootWin.Resize(gs)
+	mainGUI.RootWin.CenterOnScreen()
 
-	gui.initMacroGrid()
+	mainGUI.initMenu()
+	mainGUI.initMacroGrid()
 
-	return gui
+	return mainGUI
 }
 
 // initMacroGrid will generate grid from g.config.MacroLayout.SizeX & number of Macros
@@ -56,7 +59,7 @@ func (g *GUI) initMacroGrid() {
 		// Create btn with lambda to run function
 		btn := widget.NewButton(macro.Name, func() {
 			// Runs the macro from the btn id that was clicked
-			g.macroManager.RunActionFromID(fmt.Sprint(p))
+			g.macroManager.RunActionFromID(p)
 		})
 		// Add to the grid
 		g.grid.Add(btn)
@@ -68,6 +71,7 @@ func (g *GUI) initMacroGrid() {
 
 // ListenForDisplayButtonPress will listen for a button press then visibly update
 // the button so it looks like it was pressed
+// Should be ran in a goroutine
 func (g *GUI) ListenForDisplayButtonPress(displayBtnch chan string, quitch chan struct{}) {
 free:
 	for {
@@ -96,18 +100,10 @@ func ShowPressedAnimation(delay time.Duration, btn *widget.Button) {
 	btn.Refresh()
 }
 
-/* Usefull stuff from the demo app:
-- Containers
-	- Grid
-	- Split (colors look good)
-- Collections
-	- GridWrap
-- Data Binding
-- Widgets
-	- Text (RichText Heading)
-	- Button
-- Windows
-*/
+func (g *GUI) Quit() {
+	fmt.Println("Quitting")
+	close(g.QuitCh)
+}
 
 /* Dialogs */
 
@@ -150,6 +146,7 @@ func ShowErrorDialogAndRunWithLink(err error, link string) {
 	w.SetContent(container)
 	w.SetOnClosed(errFunc)
 	w.CenterOnScreen()
+	// TODO: Make this work after gui is initialized
 	w.ShowAndRun()
 }
 
@@ -169,4 +166,9 @@ func (g *GUI) SetContent(c fyne.CanvasObject) {
 // Run GUI.RootWin.ShowAndRun()
 func (g *GUI) ShowAndRun() {
 	g.RootWin.ShowAndRun()
+}
+
+// Run GUI.RootWin.Show()
+func (g *GUI) Show() {
+	g.RootWin.Show()
 }
