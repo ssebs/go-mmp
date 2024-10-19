@@ -46,43 +46,32 @@ func NewGUI(mm *macro.MacroManager) *GUI {
 	return mainGUI
 }
 
-// initMacroGrid will generate grid from g.config.MacroLayout.SizeX & number of Macros
+// initMacroGrid will generate grid from g.config.MacroLayout.SizeX
+// & number of Macros
 func (g *GUI) initMacroGrid() {
-	g.grid = container.New(layout.NewGridLayout(g.config.MacroLayout.SizeX))
+	g.grid = container.New(layout.NewGridLayoutWithColumns(g.config.MacroLayout.SizeX))
 
 	for pos := 1; pos <= len(g.config.Macros); pos++ {
 		macro := g.config.Macros[config.BtnId(pos)]
-		// fmt.Println(pos, ":", macro)
 
-		// Copy pos to p so it doesn't get set to the len of Macros
-		p := pos
-		// Create btn with lambda to run function
-		btn := widget.NewButton(macro.Name, func() {
-			// Runs the macro from the btn id that was clicked
-			g.macroManager.RunActionFromID(config.BtnId(p))
-		})
-		// Add to the grid
-		g.grid.Add(btn)
+		g.grid.Add(widget.NewButton(macro.Name, func() {
+			g.macroManager.RunActionFromID(config.BtnId(pos))
+		}))
 	}
 
-	// Add grid to g.RootWin
 	g.RootWin.SetContent(g.grid)
 }
 
 // ListenForDisplayButtonPress will listen for a button press then visibly update
 // the button so it looks like it was pressed
-// Should be ran in a goroutine
 func (g *GUI) ListenForDisplayButtonPress(displayBtnch chan string, quitch chan struct{}) {
 free:
 	for {
 		select {
 		case btnStr := <-displayBtnch:
-			// fmt.Printf("~~DISPLAY BTN %s~~\n", btnStr)
-			// If you can convert the btnstr into an int
 			if iBtn, err := utils.StringToInt(btnStr); err == nil {
 				// Since the buttons start at 1 in the Config, get the btn - 1
 				btn := g.grid.Objects[iBtn-1].(*widget.Button)
-				// Display the button press
 				ShowPressedAnimation(g.macroManager.Config.Delay, btn)
 			}
 		case <-quitch:
