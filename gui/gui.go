@@ -51,7 +51,7 @@ func (g *GUI) initMacroGrid() {
 	g.grid = container.New(layout.NewGridLayout(g.config.MacroLayout.SizeX))
 
 	for pos := 1; pos <= len(g.config.Macros); pos++ {
-		macro := g.config.Macros[pos]
+		macro := g.config.Macros[config.BtnId(pos)]
 		// fmt.Println(pos, ":", macro)
 
 		// Copy pos to p so it doesn't get set to the len of Macros
@@ -59,7 +59,7 @@ func (g *GUI) initMacroGrid() {
 		// Create btn with lambda to run function
 		btn := widget.NewButton(macro.Name, func() {
 			// Runs the macro from the btn id that was clicked
-			g.macroManager.RunActionFromID(p)
+			g.macroManager.RunActionFromID(config.BtnId(p))
 		})
 		// Add to the grid
 		g.grid.Add(btn)

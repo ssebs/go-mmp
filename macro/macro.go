@@ -57,7 +57,7 @@ func (mm *MacroManager) RunActionFromStrID(actionID string) error {
 	fmt.Printf("Pressed: %s\n", actionID)
 
 	// Convert the button id to an int
-	iActionID, err := convertActionIDToInt(actionID)
+	iActionID, err := convertActionID(actionID)
 	if err != nil {
 		return err
 	}
@@ -70,7 +70,7 @@ func (mm *MacroManager) RunActionFromStrID(actionID string) error {
 // Use GetFunctionMapActions() to get a slice of function key names
 //
 // This converts the actionID to an int (if possible), if not then log the error
-func (mm *MacroManager) RunActionFromID(actionID int) error {
+func (mm *MacroManager) RunActionFromID(actionID config.BtnId) error {
 	fmt.Printf("Pressed: %d\n", actionID)
 
 	// matchedMacro is a ptr to the config.Macros[actionID] if it exists
@@ -104,10 +104,10 @@ func (mm *MacroManager) runFuncFromMap(funcName string, funcParams string) error
 	return mm.functionMap[funcName](funcParams)
 }
 
-// convertActionIDToInt converts a string to an int
+// convertActionID converts a string to a BtnId (int)
 // checks for empty string error, returns -1 if there's an error.
-func convertActionIDToInt(actionID string) (iActionID int, err error) {
-	iActionID, err = utils.StringToInt(actionID)
+func convertActionID(actionID string) (config.BtnId, error) {
+	iActionID, err := utils.StringToInt(actionID)
 	if errors.Is(err, &utils.ErrCannotParseIntFromEmptyString{}) {
 		// do nothing if an empty string was passed
 		return -1, err
@@ -115,13 +115,13 @@ func convertActionIDToInt(actionID string) (iActionID int, err error) {
 		slog.Warn(fmt.Sprint("convertActionIDToInt err: ", err))
 		return -1, err
 	}
-	return iActionID, nil
+	return config.BtnId(iActionID), nil
 }
 
 /* Errors */
 type ErrActionIDNotFoundInMacros struct {
-	aID    int
-	macros map[int]config.Macro
+	aID    config.BtnId
+	macros map[config.BtnId]config.Macro
 }
 
 func (e ErrActionIDNotFoundInMacros) Error() string {
