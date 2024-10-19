@@ -2,8 +2,10 @@ package gui
 
 import (
 	"fmt"
+	"image/color"
 
 	"fyne.io/fyne/v2"
+	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
@@ -34,7 +36,7 @@ func (g *GUI) initGUI(win fyne.Window) {
 		cont := container.NewBorder(
 			// Top right 'x' button
 			container.NewHBox(
-				widget.NewLabel(macro.Name),
+				widget.NewLabelWithStyle(macro.Name, fyne.TextAlignLeading, fyne.TextStyle{Bold: true}),
 				layout.NewSpacer(),
 				// TODO: maybe I shouldn't use a lambda here...
 				func(callback func()) *widget.Button {
@@ -59,8 +61,19 @@ func (g *GUI) initGUI(win fyne.Window) {
 
 		)
 		cont.Resize(fyne.NewSize(80, 80))
+		// contBorder := container.NewBorder(widget.NewSeparator(), widget.NewSeparator(), widget.NewSeparator(), widget.NewSeparator(), cont)
+		contBorder := container.NewStack(
+			func() *canvas.Rectangle {
+				r := canvas.NewRectangle(color.Black)
+				r.Resize(fyne.NewSize(90, 90))
+				// TODO: MAKE THIS CLICKABLE
+				// TODO: Make colored button widget
+				return r
+			}(),
+			cont,
+		)
 
-		grid.Add(cont)
+		grid.Add(contBorder)
 	}
 	vbox.Add(grid)
 	saveBtn := widget.NewButton("Save", func() {
