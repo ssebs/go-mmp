@@ -3,12 +3,14 @@ package macro
 import (
 	"fmt"
 	"testing"
+
+	"github.com/ssebs/go-mmp/config"
 )
 
 func TestConvertActionIDToInt(t *testing.T) {
-	const testNum int = 2
+	const testNum config.BtnId = 2
 	t.Run("test int in string", func(t *testing.T) {
-		got, err := convertActionIDToInt(fmt.Sprintf("%d", testNum))
+		got, err := convertActionID(fmt.Sprintf("%d", testNum))
 		if err != nil {
 			t.Fatalf(err.Error())
 		}
@@ -18,7 +20,7 @@ func TestConvertActionIDToInt(t *testing.T) {
 
 	})
 	t.Run("test float in string", func(t *testing.T) {
-		got, err := convertActionIDToInt(fmt.Sprintf("%f", float32(testNum)))
+		got, err := convertActionID(fmt.Sprintf("%f", float32(testNum)))
 		if err == nil {
 			t.Fatalf("%d should have errored", got)
 		}
@@ -27,7 +29,7 @@ func TestConvertActionIDToInt(t *testing.T) {
 		}
 	})
 	t.Run("test non-number in string", func(t *testing.T) {
-		got, err := convertActionIDToInt("fail here")
+		got, err := convertActionID("fail here")
 		if err == nil {
 			t.Fatalf("%d should have errored", got)
 		}
