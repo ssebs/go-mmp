@@ -30,9 +30,12 @@ func (g *GUI) initGUI(win fyne.Window) {
 	vbox := container.NewVBox(widget.NewLabelWithStyle("Edit Macros", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}))
 	grid := container.NewGridWithColumns(g.config.MacroLayout.SizeX)
 
-	vbox.Add(NewDragBoxWidget("title", g.config, color.Black, color.White, func() {
+	dragBox := NewDragBoxWidget("title", g.config, color.RGBA{255, 0, 0, 255}, color.White, func() {
 		fmt.Println("Edit button pressed")
-	}))
+	})
+	dragBox.Resize(dragBox.MinSize().AddWidthHeight(120, 120))
+
+	vbox.Add(dragBox)
 
 	for pos := 1; pos <= len(g.config.Macros); pos++ {
 		macro := g.config.Macros[config.BtnId(pos)]

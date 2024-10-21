@@ -13,34 +13,35 @@ import (
 
 type DragBoxWidget struct {
 	widget.BaseWidget
-	BGRect  *canvas.Rectangle
-	BGColor color.Color
-	FGColor color.Color
-	Title   *widget.Label
-	EditBtn *widget.Button
-	Config  *config.Config
-	Cols    int
-	Grid    []*fyne.Container
+	BGRect         *canvas.Rectangle
+	BGColor        color.Color
+	FGColor        color.Color
+	Title          *widget.Label
+	EditBtn        *widget.Button
+	Config         *config.Config
+	Cols           int
+	Grid           []*fyne.Container
+	draggedItemIdx int
 }
 
 func NewDragBoxWidget(title string, conf *config.Config, bgcolor, fgcolor color.Color, editCallback func()) *DragBoxWidget {
 	dbw := &DragBoxWidget{
-		BGColor: bgcolor,
-		FGColor: fgcolor,
-		BGRect:  canvas.NewRectangle(bgcolor),
-		Title:   widget.NewLabelWithStyle(title, fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
-		EditBtn: widget.NewButton("Edit", editCallback),
-		Config:  conf,
-		Cols:    conf.MacroLayout.SizeX,
-		Grid:    make([]*fyne.Container, len(conf.Macros)),
+		BGColor:        bgcolor,
+		FGColor:        fgcolor,
+		BGRect:         canvas.NewRectangle(bgcolor),
+		Title:          widget.NewLabelWithStyle(title, fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
+		EditBtn:        widget.NewButton("Edit", editCallback),
+		Config:         conf,
+		Cols:           conf.MacroLayout.SizeX,
+		Grid:           make([]*fyne.Container, len(conf.Macros)),
+		draggedItemIdx: -1,
 	}
 
 	// Fill the grid with widgets gen'd from Macros
 	for pos := 0; pos < len(dbw.Config.Macros); pos++ {
 		macro := dbw.Config.Macros[config.BtnId(pos+1)]
 		dbw.Grid[pos] = container.NewStack(canvas.NewRectangle(color.Gray{0x20}), widget.NewLabel(macro.Name))
-		dbw.Grid[pos].Resize(fyne.NewSquareSize(500))
-		dbw.Grid[pos].Objects[1].Resize(fyne.NewSquareSize(64))
+		// dbw.Grid[pos].Objects[1].Resize(fyne.NewSquareSize(64))
 	}
 
 	dbw.Title.Truncation = fyne.TextTruncateEllipsis
@@ -50,12 +51,12 @@ func NewDragBoxWidget(title string, conf *config.Config, bgcolor, fgcolor color.
 
 func (dbw *DragBoxWidget) CreateRenderer() fyne.WidgetRenderer {
 	// vb := container.NewVBox(dbw.Title, dbw.EditBtn)
+	// TODO: move to struct
 	g := container.NewGridWithColumns(dbw.Cols)
 	for _, item := range dbw.Grid {
 		g.Add(item)
 	}
 	c := container.NewStack(dbw.BGRect, g)
-	c.Resize(g.Size().AddWidthHeight(120, 120))
 	return widget.NewSimpleRenderer(c)
 }
 
@@ -67,11 +68,41 @@ func (dbw *DragBoxWidget) Dragged(e *fyne.DragEvent) {
 	fmt.Println("dragged, epos:", e.Position)
 	// fmt.Println("dragged, edrag:", e.Dragged)
 
-	// if e pos is over a grid item (loop thru items and check item.pos + item.size..)
-	// check if e.pos is
+	mousePosX := e.Position.X
+	mousePosY := e.Position.Y
 
-	dbw.Move(dbw.Position().AddXY(e.Dragged.DX, e.Dragged.DY))
+	if dbw.draggedItemIdx != -1 {
+		dbw.Grid[dbw.draggedItemIdx].Move(dbw.Grid[dbw.draggedItemIdx].Position().AddXY(e.Dragged.DX, e.Dragged.DY))
+		return
+	}
+
+	// find which item we're clicking
+	for i, item := range dbw.Grid {
+		itemStartPosX := item.Position().X
+		itemStartPosY := item.Position().Y
+		itemEndPosX := itemStartPosX + item.MinSize().Width
+		itemEndPosY := itemStartPosY + item.MinSize().Height
+
+		// TODO: FIX FIRST ELEMENT NOT BEING DRAGGABLE
+		if mousePosX >= itemStartPosX && mousePosX <= itemEndPosX {
+			fmt.Println("X val matches", dbw.Config.Macros[config.BtnId(i+1)].Name)
+
+			if mousePosY >= itemStartPosY && mousePosY <= itemEndPosY {
+				fmt.Println("Y val matches", dbw.Config.Macros[config.BtnId(i+1)].Name)
+				dbw.draggedItemIdx = i
+				dbw.Grid[i].Move(dbw.Grid[i].Position().AddXY(e.Dragged.DX, e.Dragged.DY))
+			}
+		}
+
+	}
+
+	// if e pos is over a grid item (loop thru items and check item.pos + item.size..)
+
+	// swap: move items in dbw.grid, and reset grid objects
+
+	// dbw.Move(dbw.Position().AddXY(e.Dragged.DX, e.Dragged.DY))
 }
 func (dbw *DragBoxWidget) DragEnd() {
 	fmt.Println("drag end")
+	dbw.draggedItemIdx = -1
 }
