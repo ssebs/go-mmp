@@ -22,6 +22,7 @@ type DragBoxWidget struct {
 	Cols           int
 	Grid           []*fyne.Container
 	draggedItemIdx int
+	latestItemIdx  int
 }
 
 func NewDragBoxWidget(title string, conf *config.Config, bgcolor, fgcolor color.Color, editCallback func()) *DragBoxWidget {
@@ -62,9 +63,9 @@ func (dbw *DragBoxWidget) CreateRenderer() fyne.WidgetRenderer {
 
 func (dbw *DragBoxWidget) Tapped(e *fyne.PointEvent) {
 	fmt.Println("tapped, e:", e.Position)
-	dbw.draggedItemIdx = dbw.getItemInPosition(e.Position)
-	if dbw.draggedItemIdx != -1 {
-		fmt.Printf("hit the %s item\n", dbw.getMacroFromIdx(dbw.draggedItemIdx).Name)
+	hitItem := dbw.getItemInPosition(e.Position)
+	if hitItem != -1 {
+		fmt.Printf("hit the %s item\n", dbw.getMacroFromIdx(hitItem).Name)
 	}
 }
 
@@ -72,45 +73,36 @@ func (dbw *DragBoxWidget) Dragged(e *fyne.DragEvent) {
 	fmt.Println("dragged, epos:", e.Position)
 	// fmt.Println("dragged, edrag:", e.Dragged)
 
-	mousePosX := e.Position.X
-	mousePosY := e.Position.Y
+	// FIX: only works on last element in list. 2nd elem can hover over 1st, 3rd can hover over 2nd and 1st
 
-	if dbw.draggedItemIdx != -1 {
+	// Use dbw.latestItemIdx for box being hovered over (update every time)
+	dbw.latestItemIdx = dbw.getItemInPosition(e.Position) // slow
+	fmt.Println("lastItemIdx:", dbw.latestItemIdx)
 
-		// See if we're over another box
-
-		// Move dragged item
-		dbw.Grid[dbw.draggedItemIdx].Move(dbw.Grid[dbw.draggedItemIdx].Position().AddXY(e.Dragged.DX, e.Dragged.DY))
-		return
-	}
-
-	// find which item we're clicking
-	for i, item := range dbw.Grid {
-		itemStartPosX := item.Position().X
-		itemStartPosY := item.Position().Y
-		itemEndPosX := itemStartPosX + item.Size().Width
-		itemEndPosY := itemStartPosY + item.Size().Height
-
-		if mousePosX >= itemStartPosX && mousePosX <= itemEndPosX {
-			if mousePosY >= itemStartPosY && mousePosY <= itemEndPosY {
-				fmt.Println("Hovering over ", dbw.Config.Macros[config.BtnId(i+1)].Name)
-				dbw.draggedItemIdx = i
-				dbw.Grid[i].Move(dbw.Grid[i].Position().AddXY(e.Dragged.DX, e.Dragged.DY))
-				return
-			}
+	// Use dbw.draggedItemIdx for box being dragged (update only after letting go)
+	if dbw.draggedItemIdx == -1 {
+		if dbw.latestItemIdx != -1 {
+			dbw.draggedItemIdx = dbw.latestItemIdx
+			fmt.Println("dragging the", dbw.getMacroFromIdx(dbw.draggedItemIdx).Name, " item.")
 		}
-
+	} else {
+		dbw.Grid[dbw.draggedItemIdx].Move(dbw.Grid[dbw.draggedItemIdx].Position().AddXY(e.Dragged.DX, e.Dragged.DY))
 	}
 
-	// if e pos is over a grid item (loop thru items and check item.pos + item.size..)
+	if dbw.latestItemIdx != -1 {
+		fmt.Println("hovering over", dbw.getMacroFromIdx(dbw.latestItemIdx).Name)
+	}
 
-	// swap: move items in dbw.grid, and reset grid objects
-
-	// dbw.Move(dbw.Position().AddXY(e.Dragged.DX, e.Dragged.DY))
 }
 func (dbw *DragBoxWidget) DragEnd() {
 	fmt.Println("drag end")
+
+	if dbw.latestItemIdx != -1 {
+		fmt.Printf("released over %s\n", dbw.getMacroFromIdx(dbw.latestItemIdx).Name)
+	}
+
 	dbw.draggedItemIdx = -1
+	dbw.latestItemIdx = -1
 }
 
 // return -1 if no match
