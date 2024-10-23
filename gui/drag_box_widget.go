@@ -36,6 +36,7 @@ func NewDragBoxWidget(title string, conf *config.Config, bgcolor, fgcolor color.
 		Cols:           conf.MacroLayout.SizeX,
 		Grid:           make([]*fyne.Container, len(conf.Macros)),
 		draggedItemIdx: -1,
+		latestItemIdx:  -1,
 	}
 
 	// Fill the grid with widgets gen'd from Macros
