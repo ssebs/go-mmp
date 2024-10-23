@@ -117,6 +117,9 @@ func (dbw *DragBoxWidget) getItemInPosition(mousePos fyne.Position) int {
 
 		if mousePos.X >= itemStartPosX && mousePos.X <= itemEndPosX {
 			if mousePos.Y >= itemStartPosY && mousePos.Y <= itemEndPosY {
+		                if dbw.draggedItemIdx == i {
+                		    continue
+				} 
 				return i
 			}
 		}
