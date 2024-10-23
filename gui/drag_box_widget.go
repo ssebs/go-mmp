@@ -62,6 +62,10 @@ func (dbw *DragBoxWidget) CreateRenderer() fyne.WidgetRenderer {
 
 func (dbw *DragBoxWidget) Tapped(e *fyne.PointEvent) {
 	fmt.Println("tapped, e:", e.Position)
+	dbw.draggedItemIdx = dbw.getItemInPosition(e.Position)
+	if dbw.draggedItemIdx != -1 {
+		fmt.Printf("hit the %s item\n", dbw.getMacroFromIdx(dbw.draggedItemIdx).Name)
+	}
 }
 
 func (dbw *DragBoxWidget) Dragged(e *fyne.DragEvent) {
@@ -72,6 +76,10 @@ func (dbw *DragBoxWidget) Dragged(e *fyne.DragEvent) {
 	mousePosY := e.Position.Y
 
 	if dbw.draggedItemIdx != -1 {
+
+		// See if we're over another box
+
+		// Move dragged item
 		dbw.Grid[dbw.draggedItemIdx].Move(dbw.Grid[dbw.draggedItemIdx].Position().AddXY(e.Dragged.DX, e.Dragged.DY))
 		return
 	}
@@ -80,17 +88,15 @@ func (dbw *DragBoxWidget) Dragged(e *fyne.DragEvent) {
 	for i, item := range dbw.Grid {
 		itemStartPosX := item.Position().X
 		itemStartPosY := item.Position().Y
-		itemEndPosX := itemStartPosX + item.MinSize().Width
-		itemEndPosY := itemStartPosY + item.MinSize().Height
+		itemEndPosX := itemStartPosX + item.Size().Width
+		itemEndPosY := itemStartPosY + item.Size().Height
 
-		// TODO: FIX FIRST ELEMENT NOT BEING DRAGGABLE
 		if mousePosX >= itemStartPosX && mousePosX <= itemEndPosX {
-			fmt.Println("X val matches", dbw.Config.Macros[config.BtnId(i+1)].Name)
-
 			if mousePosY >= itemStartPosY && mousePosY <= itemEndPosY {
-				fmt.Println("Y val matches", dbw.Config.Macros[config.BtnId(i+1)].Name)
+				fmt.Println("Hovering over ", dbw.Config.Macros[config.BtnId(i+1)].Name)
 				dbw.draggedItemIdx = i
 				dbw.Grid[i].Move(dbw.Grid[i].Position().AddXY(e.Dragged.DX, e.Dragged.DY))
+				return
 			}
 		}
 
@@ -105,4 +111,27 @@ func (dbw *DragBoxWidget) Dragged(e *fyne.DragEvent) {
 func (dbw *DragBoxWidget) DragEnd() {
 	fmt.Println("drag end")
 	dbw.draggedItemIdx = -1
+}
+
+// return -1 if no match
+func (dbw *DragBoxWidget) getItemInPosition(mousePos fyne.Position) int {
+	// find which item we're clicking
+	for i, item := range dbw.Grid {
+		itemStartPosX := item.Position().X
+		itemStartPosY := item.Position().Y
+		itemEndPosX := itemStartPosX + item.Size().Width
+		itemEndPosY := itemStartPosY + item.Size().Height
+
+		if mousePos.X >= itemStartPosX && mousePos.X <= itemEndPosX {
+			if mousePos.Y >= itemStartPosY && mousePos.Y <= itemEndPosY {
+				return i
+			}
+		}
+	}
+	return -1
+}
+
+// idx is from 0, but the macro is from 1. Use the 0 as idx
+func (dbw *DragBoxWidget) getMacroFromIdx(idx int) config.Macro {
+	return dbw.Config.Macros[config.BtnId(idx+1)]
 }
