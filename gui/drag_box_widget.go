@@ -26,6 +26,11 @@ type DragBoxWidget struct {
 	g              *fyne.Container
 }
 
+// Force compile error if we don't implement the interface
+var _ fyne.Widget = (*DragBoxWidget)(nil)
+var _ fyne.WidgetRenderer = (*DragBoxWidget)(nil) // TODO: create a renderer for this!
+// https://docs.fyne.io/extend/custom-widget.html
+
 func NewDragBoxWidget(title string, conf *config.Config, bgcolor, fgcolor color.Color, editCallback func()) *DragBoxWidget {
 	dbw := &DragBoxWidget{
 		BGColor:        bgcolor,
