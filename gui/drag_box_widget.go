@@ -39,12 +39,7 @@ func NewDragBoxWidget(title string, conf *config.Config, bgcolor, fgcolor color.
 		latestItemIdx:  -1,
 	}
 
-	// Fill the grid with widgets gen'd from Macros
-	for pos := 0; pos < len(dbw.Config.Macros); pos++ {
-		macro := dbw.Config.Macros[config.BtnId(pos+1)]
-		dbw.Grid[pos] = container.NewStack(canvas.NewRectangle(color.Gray{0x20}), widget.NewLabel(macro.Name))
-		// dbw.Grid[pos].Objects[1].Resize(fyne.NewSquareSize(64))
-	}
+	dbw.genGrid()
 
 	dbw.Title.Truncation = fyne.TextTruncateEllipsis
 	dbw.ExtendBaseWidget(dbw)
@@ -52,14 +47,21 @@ func NewDragBoxWidget(title string, conf *config.Config, bgcolor, fgcolor color.
 }
 
 func (dbw *DragBoxWidget) CreateRenderer() fyne.WidgetRenderer {
-	// vb := container.NewVBox(dbw.Title, dbw.EditBtn)
-	// TODO: move to struct
 	g := container.NewGridWithColumns(dbw.Cols)
 	for _, item := range dbw.Grid {
 		g.Add(item)
 	}
 	c := container.NewStack(dbw.BGRect, g)
 	return widget.NewSimpleRenderer(c)
+}
+
+func (dbw *DragBoxWidget) genGrid() {
+	// Fill the grid with widgets gen'd from Macros
+	for pos := 0; pos < len(dbw.Config.Macros); pos++ {
+		macro := dbw.Config.Macros[config.BtnId(pos+1)]
+		dbw.Grid[pos] = container.NewStack(canvas.NewRectangle(color.Gray{0x20}), widget.NewLabel(macro.Name))
+		// dbw.Grid[pos].Objects[1].Resize(fyne.NewSquareSize(64))
+	}
 }
 
 func (dbw *DragBoxWidget) Tapped(e *fyne.PointEvent) {
@@ -71,39 +73,59 @@ func (dbw *DragBoxWidget) Tapped(e *fyne.PointEvent) {
 }
 
 func (dbw *DragBoxWidget) Dragged(e *fyne.DragEvent) {
-	fmt.Println("dragged, epos:", e.Position)
+	// fmt.Println("dragged, epos:", e.Position)
 	// fmt.Println("dragged, edrag:", e.Dragged)
 
 	// FIX: only works on last element in list. 2nd elem can hover over 1st, 3rd can hover over 2nd and 1st
 
 	// Use dbw.latestItemIdx for box being hovered over (update every time)
 	dbw.latestItemIdx = dbw.getItemInPosition(e.Position) // slow
-	fmt.Println("lastItemIdx:", dbw.latestItemIdx)
+	// fmt.Println("lastItemIdx:", dbw.latestItemIdx)
 
 	// Use dbw.draggedItemIdx for box being dragged (update only after letting go)
 	if dbw.draggedItemIdx == -1 {
 		if dbw.latestItemIdx != -1 {
 			dbw.draggedItemIdx = dbw.latestItemIdx
-			fmt.Println("dragging the", dbw.getMacroFromIdx(dbw.draggedItemIdx).Name, " item.")
+			fmt.Println("dragging the", dbw.getMacroFromIdx(dbw.draggedItemIdx).Name, "item.")
 		}
 	} else {
 		dbw.Grid[dbw.draggedItemIdx].Move(dbw.Grid[dbw.draggedItemIdx].Position().AddXY(e.Dragged.DX, e.Dragged.DY))
 	}
 
-	if dbw.latestItemIdx != -1 {
-		fmt.Println("hovering over", dbw.getMacroFromIdx(dbw.latestItemIdx).Name)
-	}
+	// if dbw.latestItemIdx != -1 {
+	// 	fmt.Println("hovering over", dbw.getMacroFromIdx(dbw.latestItemIdx).Name)
+	// }
 
 }
 func (dbw *DragBoxWidget) DragEnd() {
-	fmt.Println("drag end")
+	// fmt.Println("drag end")
 
 	if dbw.latestItemIdx != -1 {
 		fmt.Printf("released over %s\n", dbw.getMacroFromIdx(dbw.latestItemIdx).Name)
+
+		if dbw.draggedItemIdx != dbw.latestItemIdx {
+			dbw.swapMacros(dbw.draggedItemIdx, dbw.latestItemIdx)
+		}
 	}
 
 	dbw.draggedItemIdx = -1
 	dbw.latestItemIdx = -1
+}
+
+func (dbw *DragBoxWidget) swapMacros(first, second int) {
+	tmp := dbw.Config.Macros[config.BtnId(first+1)]
+	dbw.Config.Macros[config.BtnId(first+1)] = dbw.Config.Macros[config.BtnId(second+1)]
+	dbw.Config.Macros[config.BtnId(second+1)] = tmp
+
+	// tmp2 := dbw.Grid[first]
+	// dbw.Grid[first] = dbw.Grid[second]
+	// dbw.Grid[second] = tmp2
+
+	// dbw.genGrid()
+	// for _, item := range dbw.Grid {
+	// 	item.Refresh()
+	// }
+	dbw.Refresh()
 }
 
 // return -1 if no match
@@ -117,9 +139,9 @@ func (dbw *DragBoxWidget) getItemInPosition(mousePos fyne.Position) int {
 
 		if mousePos.X >= itemStartPosX && mousePos.X <= itemEndPosX {
 			if mousePos.Y >= itemStartPosY && mousePos.Y <= itemEndPosY {
-		                if dbw.draggedItemIdx == i {
-                		    continue
-				} 
+				if dbw.draggedItemIdx == i {
+					continue
+				}
 				return i
 			}
 		}
