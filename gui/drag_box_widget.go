@@ -23,6 +23,7 @@ type DragBoxWidget struct {
 	Grid           []*fyne.Container
 	draggedItemIdx int
 	latestItemIdx  int
+	g              *fyne.Container
 }
 
 func NewDragBoxWidget(title string, conf *config.Config, bgcolor, fgcolor color.Color, editCallback func()) *DragBoxWidget {
@@ -40,19 +41,26 @@ func NewDragBoxWidget(title string, conf *config.Config, bgcolor, fgcolor color.
 	}
 
 	dbw.genGrid()
+	dbw.genG()
 
 	dbw.Title.Truncation = fyne.TextTruncateEllipsis
 	dbw.ExtendBaseWidget(dbw)
 	return dbw
 }
 
+// TODO: Implement fyne.WidgetRenderer
 func (dbw *DragBoxWidget) CreateRenderer() fyne.WidgetRenderer {
-	g := container.NewGridWithColumns(dbw.Cols)
-	for _, item := range dbw.Grid {
-		g.Add(item)
-	}
-	c := container.NewStack(dbw.BGRect, g)
+	dbw.genG()
+	c := container.NewStack(dbw.BGRect, dbw.g)
 	return widget.NewSimpleRenderer(c)
+}
+
+func (dbw *DragBoxWidget) genG() {
+	dbw.g = container.NewGridWithColumns(dbw.Cols)
+	for _, item := range dbw.Grid {
+		dbw.g.Add(item)
+	}
+	dbw.g.Refresh()
 }
 
 func (dbw *DragBoxWidget) genGrid() {
@@ -81,22 +89,22 @@ func (dbw *DragBoxWidget) Dragged(e *fyne.DragEvent) {
 	// Use dbw.latestItemIdx for box being hovered over (update every time)
 	dbw.latestItemIdx = dbw.getItemInPosition(e.Position) // slow
 	// fmt.Println("lastItemIdx:", dbw.latestItemIdx)
+	// if dbw.latestItemIdx != -1 {
+	// 	fmt.Println("hovering over", dbw.getMacroFromIdx(dbw.latestItemIdx).Name)
+	// }
 
 	// Use dbw.draggedItemIdx for box being dragged (update only after letting go)
 	if dbw.draggedItemIdx == -1 {
 		if dbw.latestItemIdx != -1 {
 			dbw.draggedItemIdx = dbw.latestItemIdx
 			fmt.Println("dragging the", dbw.getMacroFromIdx(dbw.draggedItemIdx).Name, "item.")
+			dbw.Grid[dbw.draggedItemIdx].Move(dbw.Grid[dbw.draggedItemIdx].Position().AddXY(e.Dragged.DX, e.Dragged.DY))
 		}
 	} else {
 		dbw.Grid[dbw.draggedItemIdx].Move(dbw.Grid[dbw.draggedItemIdx].Position().AddXY(e.Dragged.DX, e.Dragged.DY))
 	}
-
-	// if dbw.latestItemIdx != -1 {
-	// 	fmt.Println("hovering over", dbw.getMacroFromIdx(dbw.latestItemIdx).Name)
-	// }
-
 }
+
 func (dbw *DragBoxWidget) DragEnd() {
 	// fmt.Println("drag end")
 
@@ -113,19 +121,24 @@ func (dbw *DragBoxWidget) DragEnd() {
 }
 
 func (dbw *DragBoxWidget) swapMacros(first, second int) {
+	// Update Macro data internally in config
+	// TODO: Move to setter function
 	tmp := dbw.Config.Macros[config.BtnId(first+1)]
 	dbw.Config.Macros[config.BtnId(first+1)] = dbw.Config.Macros[config.BtnId(second+1)]
 	dbw.Config.Macros[config.BtnId(second+1)] = tmp
+	// TODO: config.save()
+
+	// dbw.genGrid() // <- breaks it!
+	// Update UI
 
 	// tmp2 := dbw.Grid[first]
 	// dbw.Grid[first] = dbw.Grid[second]
-	// dbw.Grid[second] = tmp2
+	// dbw.Grid[first].Refresh()
 
-	// dbw.genGrid()
-	// for _, item := range dbw.Grid {
-	// 	item.Refresh()
-	// }
-	dbw.Refresh()
+	// dbw.Grid[second] = tmp2
+	// dbw.Grid[second].Refresh()
+	dbw.g.Refresh()
+
 }
 
 // return -1 if no match
