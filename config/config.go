@@ -39,13 +39,14 @@ type Macro struct {
 // Config object
 // Stores related configuration details. No side effects here.
 type Config struct {
-	MacroLayout    MacroLayout   `yaml:"MacroLayout"`
-	SerialDevice   SerialDevice  `yaml:"SerialDevice"`
-	Macros         map[int]Macro `yaml:"Macros"`
-	Delay          time.Duration `yaml:"Delay"`
-	GUIMode        GUIMode       `yaml:"GUIMode"`
+	MacroLayout    MacroLayout     `yaml:"MacroLayout"`
+	SerialDevice   SerialDevice    `yaml:"SerialDevice"`
+	Macros         map[BtnId]Macro `yaml:"Macros"`
+	Delay          time.Duration   `yaml:"Delay"`
+	GUIMode        GUIMode         `yaml:"GUIMode"`
 	ConfigFullPath string
 }
+type BtnId int
 
 // NewConfig takes in CLIFlags to figure out the correct path and whether or not to reset the file.
 func NewConfig(flags *CLIFlags) (*Config, error) {

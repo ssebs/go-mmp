@@ -59,6 +59,8 @@ func main() {
 	quitch := make(chan struct{})
 	displayBtnch := make(chan string, 1)
 
+	g.QuitCh = quitch
+
 	// Run Serial Listener
 	// TODO: rename this
 	go Listen(btnch, quitch, arduino)
@@ -79,7 +81,7 @@ func main() {
 					displayBtnch <- btn
 
 					// Run the action from the btn id
-					err := macroMgr.RunActionFromID(btn)
+					err := macroMgr.RunActionFromStrID(btn)
 					if err != nil {
 						slog.Warn(err.Error())
 					}
