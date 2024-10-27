@@ -28,7 +28,7 @@ func (g *GUI) initGUI(win fyne.Window) {
 	vbox := container.NewVBox(widget.NewLabelWithStyle("Edit Macros", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}))
 	grid := container.NewGridWithColumns(g.config.MacroLayout.SizeX)
 
-	dragBox := NewDragBoxWidget("title", g.config, color.RGBA{255, 0, 0, 255}, color.White, func() {
+	dragBox := NewDragBoxWidget("title", g.config, color.RGBA{20, 20, 20, 255}, color.White, func() {
 		fmt.Println("Edit button pressed")
 	})
 
