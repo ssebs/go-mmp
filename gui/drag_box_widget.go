@@ -28,7 +28,7 @@ type DragBoxWidget struct {
 
 // Force compile error if we don't implement the interface
 var _ fyne.Widget = (*DragBoxWidget)(nil)
-var _ fyne.WidgetRenderer = (*DragBoxWidget)(nil) // TODO: create a renderer for this!
+var _ fyne.WidgetRenderer = (*DragBoxRenderer)(nil) // TODO: create a renderer for this!
 // https://docs.fyne.io/extend/custom-widget.html
 
 func NewDragBoxWidget(title string, conf *config.Config, bgcolor, fgcolor color.Color, editCallback func()) *DragBoxWidget {
@@ -56,8 +56,10 @@ func NewDragBoxWidget(title string, conf *config.Config, bgcolor, fgcolor color.
 // TODO: Implement fyne.WidgetRenderer
 func (dbw *DragBoxWidget) CreateRenderer() fyne.WidgetRenderer {
 	dbw.genG()
-	c := container.NewStack(dbw.BGRect, dbw.g)
-	return widget.NewSimpleRenderer(c)
+	return &DragBoxRenderer{
+		dbw:     dbw,
+		objects: []fyne.CanvasObject{dbw.BGRect, dbw.g},
+	}
 }
 
 func (dbw *DragBoxWidget) genG() {
@@ -77,6 +79,52 @@ func (dbw *DragBoxWidget) genGrid() {
 	}
 }
 
+func (dbw *DragBoxWidget) swapMacros(first, second int) {
+	// Update Macro data internally in config
+	// TODO: Move to setter function
+	tmp := dbw.Config.Macros[config.BtnId(first+1)]
+	dbw.Config.Macros[config.BtnId(first+1)] = dbw.Config.Macros[config.BtnId(second+1)]
+	dbw.Config.Macros[config.BtnId(second+1)] = tmp
+	// TODO: config.save()
+
+	// Update UI
+
+	dbw.Grid[first], dbw.Grid[second] = dbw.Grid[second], dbw.Grid[first]
+	dbw.genG()
+	dbw.g.Refresh()
+
+	// HACK
+	currentSize := dbw.Size()
+	dbw.Resize(currentSize.Add(fyne.NewSize(1, 1))) // Add a slight offset to force layout
+	dbw.Resize(currentSize)
+}
+
+// return -1 if no match
+func (dbw *DragBoxWidget) getItemInPosition(mousePos fyne.Position) int {
+	// find which item we're clicking
+	for i, item := range dbw.Grid {
+		itemStartPosX := item.Position().X
+		itemStartPosY := item.Position().Y
+		itemEndPosX := itemStartPosX + item.Size().Width
+		itemEndPosY := itemStartPosY + item.Size().Height
+
+		if mousePos.X >= itemStartPosX && mousePos.X <= itemEndPosX {
+			if mousePos.Y >= itemStartPosY && mousePos.Y <= itemEndPosY {
+				if dbw.draggedItemIdx == i {
+					continue
+				}
+				return i
+			}
+		}
+	}
+	return -1
+}
+
+// idx is from 0, but the macro is from 1. Use the 0 as idx
+func (dbw *DragBoxWidget) getMacroFromIdx(idx int) config.Macro {
+	return dbw.Config.Macros[config.BtnId(idx+1)]
+}
+
 func (dbw *DragBoxWidget) Tapped(e *fyne.PointEvent) {
 	fmt.Println("tapped, e:", e.Position)
 	hitItem := dbw.getItemInPosition(e.Position)
@@ -88,8 +136,6 @@ func (dbw *DragBoxWidget) Tapped(e *fyne.PointEvent) {
 func (dbw *DragBoxWidget) Dragged(e *fyne.DragEvent) {
 	// fmt.Println("dragged, epos:", e.Position)
 	// fmt.Println("dragged, edrag:", e.Dragged)
-
-	// FIX: only works on last element in list. 2nd elem can hover over 1st, 3rd can hover over 2nd and 1st
 
 	// Use dbw.latestItemIdx for box being hovered over (update every time)
 	dbw.latestItemIdx = dbw.getItemInPosition(e.Position) // slow
@@ -125,49 +171,37 @@ func (dbw *DragBoxWidget) DragEnd() {
 	dbw.latestItemIdx = -1
 }
 
-func (dbw *DragBoxWidget) swapMacros(first, second int) {
-	// Update Macro data internally in config
-	// TODO: Move to setter function
-	tmp := dbw.Config.Macros[config.BtnId(first+1)]
-	dbw.Config.Macros[config.BtnId(first+1)] = dbw.Config.Macros[config.BtnId(second+1)]
-	dbw.Config.Macros[config.BtnId(second+1)] = tmp
-	// TODO: config.save()
-
-	// dbw.genGrid() // <- breaks it!
-	// Update UI
-
-	// tmp2 := dbw.Grid[first]
-	// dbw.Grid[first] = dbw.Grid[second]
-	// dbw.Grid[first].Refresh()
-
-	// dbw.Grid[second] = tmp2
-	// dbw.Grid[second].Refresh()
-	dbw.g.Refresh()
-
+// DragBoxRenderer handles the rendering of DragBoxWidget
+type DragBoxRenderer struct {
+	dbw     *DragBoxWidget
+	objects []fyne.CanvasObject
 }
 
-// return -1 if no match
-func (dbw *DragBoxWidget) getItemInPosition(mousePos fyne.Position) int {
-	// find which item we're clicking
-	for i, item := range dbw.Grid {
-		itemStartPosX := item.Position().X
-		itemStartPosY := item.Position().Y
-		itemEndPosX := itemStartPosX + item.Size().Width
-		itemEndPosY := itemStartPosY + item.Size().Height
+// Layout arranges the objects within the DragBoxWidget
+func (r *DragBoxRenderer) Layout(size fyne.Size) {
+	r.dbw.BGRect.Resize(size)
+	r.dbw.g.Resize(size)
+}
 
-		if mousePos.X >= itemStartPosX && mousePos.X <= itemEndPosX {
-			if mousePos.Y >= itemStartPosY && mousePos.Y <= itemEndPosY {
-				if dbw.draggedItemIdx == i {
-					continue
-				}
-				return i
-			}
-		}
+// MinSize returns the minimum size of the DragBoxWidget
+func (r *DragBoxRenderer) MinSize() fyne.Size {
+	return r.dbw.g.MinSize()
+}
+
+// Refresh redraws the DragBoxWidget
+func (r *DragBoxRenderer) Refresh() {
+	r.dbw.BGRect.FillColor = r.dbw.BGColor
+	r.dbw.BGRect.Refresh()
+	for _, item := range r.dbw.Grid {
+		item.Refresh()
 	}
-	return -1
+	r.dbw.g.Refresh()
 }
 
-// idx is from 0, but the macro is from 1. Use the 0 as idx
-func (dbw *DragBoxWidget) getMacroFromIdx(idx int) config.Macro {
-	return dbw.Config.Macros[config.BtnId(idx+1)]
+// Objects returns the objects to be drawn
+func (r *DragBoxRenderer) Objects() []fyne.CanvasObject {
+	return r.objects
 }
+
+// Destroy cleans up any resources
+func (r *DragBoxRenderer) Destroy() {}
