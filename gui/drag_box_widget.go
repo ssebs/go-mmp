@@ -134,6 +134,8 @@ func (dbw *DragBoxWidget) swapMacros(first, second int) {
 	dbw.Config.Macros[config.BtnId(second+1)] = tmp
 
 	dbw.Grid[first], dbw.Grid[second] = dbw.Grid[second], dbw.Grid[first]
+	//TODO: Update btnId in callback
+
 	dbw.updateGrid()
 }
 
