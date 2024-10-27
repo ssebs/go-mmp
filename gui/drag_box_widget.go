@@ -16,7 +16,7 @@ type DragBoxWidget struct {
 	widget.BaseWidget
 	BGRect         *canvas.Rectangle
 	Title          *widget.Label
-	EditBtn        *widget.Button
+	EditCallback   func(config.BtnId)
 	Config         *config.Config
 	Cols           int
 	Grid           []*fyne.Container
@@ -32,13 +32,13 @@ var _ fyne.Widget = (*DragBoxWidget)(nil)
 var _ fyne.WidgetRenderer = (*DragBoxRenderer)(nil)
 
 // NewDragBoxWidget creates a new DragBoxWidget with the specified configuration.
-func NewDragBoxWidget(title string, conf *config.Config, bgcolor, fgcolor color.Color, editCallback func()) *DragBoxWidget {
+func NewDragBoxWidget(title string, conf *config.Config, bgcolor, fgcolor color.Color, editCallback func(config.BtnId)) *DragBoxWidget {
 	dbw := &DragBoxWidget{
 		BGColor:        bgcolor,
 		FGColor:        fgcolor,
 		BGRect:         canvas.NewRectangle(bgcolor),
 		Title:          widget.NewLabelWithStyle(title, fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
-		EditBtn:        widget.NewButton("Edit", editCallback),
+		EditCallback:   editCallback,
 		Config:         conf,
 		Cols:           conf.MacroLayout.SizeX,
 		Grid:           make([]*fyne.Container, len(conf.Macros)),
@@ -52,19 +52,21 @@ func NewDragBoxWidget(title string, conf *config.Config, bgcolor, fgcolor color.
 	return dbw
 }
 
-// CreateRenderer sets up the widget's custom renderer.
-func (dbw *DragBoxWidget) CreateRenderer() fyne.WidgetRenderer {
-	return &DragBoxRenderer{
-		dbw:     dbw,
-		objects: []fyne.CanvasObject{dbw.BGRect, dbw.g},
-	}
-}
-
 // initializeGrid initializes the Grid field with containers for each macro.
 func (dbw *DragBoxWidget) initializeGrid() {
 	for pos := 0; pos < len(dbw.Config.Macros); pos++ {
-		macro := dbw.Config.Macros[config.BtnId(pos+1)]
-		dbw.Grid[pos] = container.NewStack(canvas.NewRectangle(color.Gray{0x20}), widget.NewLabel(macro.Name))
+		macroPos := config.BtnId(pos + 1)
+		macro := dbw.Config.Macros[macroPos]
+		dbw.Grid[pos] = container.NewStack(
+			canvas.NewRectangle(color.Gray{0x20}),
+			container.NewBorder(
+				nil,
+				// TODO: update this when regeneration position!
+				widget.NewButton("Edit", func() { dbw.EditCallback(macroPos) }),
+				nil, nil,
+				widget.NewLabel(macro.Name),
+			),
+		)
 	}
 }
 
@@ -76,7 +78,46 @@ func (dbw *DragBoxWidget) initializeContainer() {
 	}
 }
 
-// updateGrid swaps and refreshes grid items.
+// Tapped is triggered when the widget is tapped.
+func (dbw *DragBoxWidget) Tapped(e *fyne.PointEvent) {
+	if hitItem := dbw.getItemInPosition(e.Position); hitItem != -1 {
+		fmt.Printf("Tapped item: %s\n", dbw.getMacroFromIdx(hitItem).Name)
+	}
+}
+
+// Dragged handles dragging events within the widget.
+func (dbw *DragBoxWidget) Dragged(e *fyne.DragEvent) {
+	dbw.latestItemIdx = dbw.getItemInPosition(e.Position)
+
+	if dbw.draggedItemIdx == -1 && dbw.latestItemIdx != -1 {
+		dbw.draggedItemIdx = dbw.latestItemIdx
+		fmt.Printf("Dragging item: %s\n", dbw.getMacroFromIdx(dbw.draggedItemIdx).Name)
+	}
+
+	if dbw.draggedItemIdx != -1 {
+		dbw.Grid[dbw.draggedItemIdx].Move(dbw.Grid[dbw.draggedItemIdx].Position().AddXY(e.Dragged.DX, e.Dragged.DY))
+	}
+}
+
+// DragEnd finalizes a drag operation, swapping items if necessary.
+func (dbw *DragBoxWidget) DragEnd() {
+	if dbw.latestItemIdx != -1 && dbw.draggedItemIdx != dbw.latestItemIdx {
+		fmt.Printf("Released over %s\n", dbw.getMacroFromIdx(dbw.latestItemIdx).Name)
+		dbw.swapMacros(dbw.draggedItemIdx, dbw.latestItemIdx)
+	}
+	dbw.draggedItemIdx, dbw.latestItemIdx = -1, -1
+	dbw.updateGrid()
+}
+
+// CreateRenderer sets up the widget's custom renderer.
+func (dbw *DragBoxWidget) CreateRenderer() fyne.WidgetRenderer {
+	return &DragBoxRenderer{
+		dbw:     dbw,
+		objects: []fyne.CanvasObject{dbw.BGRect, dbw.g},
+	}
+}
+
+// updateGrid regenerates and refreshes grid items.
 func (dbw *DragBoxWidget) updateGrid() {
 	dbw.initializeContainer()
 	dbw.g.Refresh()
@@ -114,37 +155,6 @@ func withinBounds(point, pos fyne.Position, size fyne.Size) bool {
 // getMacroFromIdx retrieves the macro at the specified index.
 func (dbw *DragBoxWidget) getMacroFromIdx(idx int) config.Macro {
 	return dbw.Config.Macros[config.BtnId(idx+1)]
-}
-
-// Tapped is triggered when the widget is tapped.
-func (dbw *DragBoxWidget) Tapped(e *fyne.PointEvent) {
-	if hitItem := dbw.getItemInPosition(e.Position); hitItem != -1 {
-		fmt.Printf("Tapped item: %s\n", dbw.getMacroFromIdx(hitItem).Name)
-	}
-}
-
-// Dragged handles dragging events within the widget.
-func (dbw *DragBoxWidget) Dragged(e *fyne.DragEvent) {
-	dbw.latestItemIdx = dbw.getItemInPosition(e.Position)
-
-	if dbw.draggedItemIdx == -1 && dbw.latestItemIdx != -1 {
-		dbw.draggedItemIdx = dbw.latestItemIdx
-		fmt.Printf("Dragging item: %s\n", dbw.getMacroFromIdx(dbw.draggedItemIdx).Name)
-	}
-
-	if dbw.draggedItemIdx != -1 {
-		dbw.Grid[dbw.draggedItemIdx].Move(dbw.Grid[dbw.draggedItemIdx].Position().AddXY(e.Dragged.DX, e.Dragged.DY))
-	}
-}
-
-// DragEnd finalizes a drag operation, swapping items if necessary.
-func (dbw *DragBoxWidget) DragEnd() {
-	if dbw.latestItemIdx != -1 && dbw.draggedItemIdx != dbw.latestItemIdx {
-		fmt.Printf("Released over %s\n", dbw.getMacroFromIdx(dbw.latestItemIdx).Name)
-		dbw.swapMacros(dbw.draggedItemIdx, dbw.latestItemIdx)
-	}
-	dbw.draggedItemIdx, dbw.latestItemIdx = -1, -1
-	dbw.updateGrid()
 }
 
 // DragBoxRenderer manages rendering for DragBoxWidget.

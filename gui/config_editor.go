@@ -8,6 +8,7 @@ import (
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
+	"github.com/ssebs/go-mmp/config"
 )
 
 // Open a new Window and use it to edit the config
@@ -28,8 +29,8 @@ func (g *GUI) initGUI(win fyne.Window) {
 	vbox := container.NewVBox(widget.NewLabelWithStyle("Edit Macros", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}))
 	grid := container.NewGridWithColumns(g.config.MacroLayout.SizeX)
 
-	dragBox := NewDragBoxWidget("title", g.config, color.RGBA{20, 20, 20, 255}, color.White, func() {
-		fmt.Println("Edit button pressed")
+	dragBox := NewDragBoxWidget("title", g.config, color.RGBA{20, 20, 20, 255}, color.White, func(btnId config.BtnId) {
+		fmt.Println("Edit", g.config.Macros[btnId].Name)
 	})
 
 	vbox.Add(dragBox)
