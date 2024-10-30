@@ -13,6 +13,8 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+// TODO: SET GUIONLY IN CONFIG IF CLI FLAG IS SET ON DEFAULT
+
 //go:embed defaultConfig.yml
 var defaultConfigFile []byte
 

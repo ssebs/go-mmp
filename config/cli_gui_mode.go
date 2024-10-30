@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	flag "github.com/spf13/pflag"
+	"gopkg.in/yaml.v3"
 )
 
 // Will be used as /home/user/mmpConfig.yml, or C:\Users\user\mmpConfig.yml
@@ -36,6 +37,8 @@ func ParseFlags() *CLIFlags {
 
 type GUIMode int
 
+var _ yaml.Marshaler = (*GUIMode)(nil)
+
 const (
 	NOTSET GUIMode = iota // For use in comparing cli flags
 	NORMAL                // Serial listener + GUI
@@ -66,6 +69,7 @@ func (g *GUIMode) Set(m string) error {
 		*g = GUIOnly
 		return nil
 	}
+
 	return fmt.Errorf("could not find mode %s", m)
 }
 func (g *GUIMode) UnmarshalYAML(unmarshal func(interface{}) error) error {
@@ -84,3 +88,19 @@ func (g *GUIMode) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	}
 	return nil
 }
+
+func (g *GUIMode) MarshalYAML() (interface{}, error) {
+	// Want to save int val as string
+	fmt.Println(*g)
+
+	switch *g {
+	case NORMAL:
+		return "NORMAL", nil
+	case GUIOnly:
+		return "GUIOnly", nil
+	}
+	return "", nil
+}
+
+// try and convert string to int, when saving config it saves as an int
+// fmt.Println("guimode marshal set")
