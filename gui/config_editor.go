@@ -33,7 +33,7 @@ func (g *GUI) initGUI(win fyne.Window) {
 	vbox.Add(layout.NewSpacer())
 
 	saveBtn := widget.NewButton("Save", func() {
-		fmt.Println("SAVE")
+		g.config.SaveConfig("")
 	})
 	saveBtn.Importance = widget.HighImportance
 
@@ -46,10 +46,6 @@ func (g *GUI) initGUI(win fyne.Window) {
 	win.SetContent(vbox)
 }
 
-// Save and Load configs, and refresh current running config
-func (g *GUI) SaveConfig() {
-	fmt.Println("SAVE CONFIG...")
-}
 func (g *GUI) OpenConfig() {
 	fmt.Println("OPEN CONFIG")
 }

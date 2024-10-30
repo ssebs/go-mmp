@@ -100,7 +100,12 @@ func (g *GUI) Quit() {
 // Takes in an error, and an optional link. If the link is added, a hyperlink will be created
 // at the bottom so the user can click on it.
 func ShowErrorDialogAndRunWithLink(err error, link string) {
-	w := fyne.CurrentApp().NewWindow("Error!")
+	curApp := fyne.CurrentApp()
+	if curApp == nil {
+		curApp = app.New()
+	}
+
+	w := curApp.NewWindow("Error!")
 
 	// What to do if the button / close btn are pressed
 	errFunc := func() {

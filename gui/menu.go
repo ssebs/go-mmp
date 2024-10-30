@@ -7,7 +7,6 @@ import (
 func (g *GUI) initMenu() {
 	fileMenu := fyne.NewMenu("File",
 		fyne.NewMenuItem("Open Config", g.OpenConfig),
-		fyne.NewMenuItem("Save Config", g.SaveConfig),
 		fyne.NewMenuItemSeparator(),
 		fyne.NewMenuItem("Quit", g.Quit),
 	)

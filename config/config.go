@@ -24,7 +24,7 @@ type Config struct {
 	Macros         map[BtnId]Macro `yaml:"Macros"`
 	Delay          time.Duration   `yaml:"Delay"`
 	GUIMode        GUIMode         `yaml:"GUIMode"`
-	ConfigFullPath string
+	ConfigFullPath string          `yaml:"-"`
 }
 type BtnId int
 
@@ -69,14 +69,29 @@ func (c *Config) loadConfig() error {
 	return parseConfig(f, c)
 }
 
-// func (c Config) saveConfig(destFilename string) error {
-// 	f, err := os.Create(destFilename)
-// 	if err != nil {
-// 		return err
-// 	}
-// 	_, err = f.WriteString(c.String())
-// 	return err
-// }
+// Save config to file. If destFullPath is empty, use c.ConfigFullPath
+func (c Config) SaveConfig(destFullPath string) error {
+	if destFullPath == "" {
+		destFullPath = c.ConfigFullPath
+	} else {
+		// confirm is full path and path exists
+		fmt.Println("destFullPath:", destFullPath)
+
+	}
+	fmt.Println("Saving Config to", destFullPath)
+
+	f, err := os.Create(destFullPath)
+	if err != nil {
+		return fmt.Errorf("could not write file %s, %e", destFullPath, err)
+	}
+	defer f.Close()
+
+	_, err = f.Write([]byte(c.String()))
+	if err != nil {
+		return fmt.Errorf("could not write file, %e", err)
+	}
+	return err
+}
 
 // depending on CLI args, and what files already exist, save default config if needed, and set c.ConfigFullPath
 func (c *Config) figureOutConfigPath(configPath string) error {
