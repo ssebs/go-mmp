@@ -78,6 +78,28 @@ func (dbw *DragBoxWidget) initializeContainer() {
 	}
 }
 
+// updateGrid regenerates and refreshes grid items.
+func (dbw *DragBoxWidget) updateGrid() {
+	dbw.initializeContainer()
+	dbw.g.Refresh()
+
+	currentSize := dbw.Size()
+	dbw.Resize(currentSize.Add(fyne.NewSize(1, 1))) // Force a slight resize to refresh layout.
+	dbw.Resize(currentSize)
+}
+
+// swapMacros swaps macros in the configuration and updates the UI.
+func (dbw *DragBoxWidget) swapMacros(first, second int) {
+	tmp := dbw.Config.Macros[config.BtnId(first+1)]
+	dbw.Config.Macros[config.BtnId(first+1)] = dbw.Config.Macros[config.BtnId(second+1)]
+	dbw.Config.Macros[config.BtnId(second+1)] = tmp
+
+	dbw.Grid[first], dbw.Grid[second] = dbw.Grid[second], dbw.Grid[first]
+	//TODO: Update btnId in callback
+
+	dbw.updateGrid()
+}
+
 // Tapped is triggered when the widget is tapped.
 func (dbw *DragBoxWidget) Tapped(e *fyne.PointEvent) {
 	if hitItem := dbw.getItemInPosition(e.Position); hitItem != -1 {
@@ -115,28 +137,6 @@ func (dbw *DragBoxWidget) CreateRenderer() fyne.WidgetRenderer {
 		dbw:     dbw,
 		objects: []fyne.CanvasObject{dbw.BGRect, dbw.g},
 	}
-}
-
-// updateGrid regenerates and refreshes grid items.
-func (dbw *DragBoxWidget) updateGrid() {
-	dbw.initializeContainer()
-	dbw.g.Refresh()
-
-	currentSize := dbw.Size()
-	dbw.Resize(currentSize.Add(fyne.NewSize(1, 1))) // Force a slight resize to refresh layout.
-	dbw.Resize(currentSize)
-}
-
-// swapMacros swaps macros in the configuration and updates the UI.
-func (dbw *DragBoxWidget) swapMacros(first, second int) {
-	tmp := dbw.Config.Macros[config.BtnId(first+1)]
-	dbw.Config.Macros[config.BtnId(first+1)] = dbw.Config.Macros[config.BtnId(second+1)]
-	dbw.Config.Macros[config.BtnId(second+1)] = tmp
-
-	dbw.Grid[first], dbw.Grid[second] = dbw.Grid[second], dbw.Grid[first]
-	//TODO: Update btnId in callback
-
-	dbw.updateGrid()
 }
 
 // getItemInPosition returns the index of the item at a given mouse position or -1 if none.
