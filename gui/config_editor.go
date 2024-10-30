@@ -8,7 +8,7 @@ import (
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
-	"github.com/ssebs/go-mmp/config"
+	"github.com/ssebs/go-mmp/widgets"
 )
 
 // Open a new Window and use it to edit the config
@@ -29,58 +29,15 @@ func (g *GUI) initGUI(win fyne.Window) {
 	vbox := container.NewVBox(widget.NewLabelWithStyle("Edit Macros", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}))
 	grid := container.NewGridWithColumns(g.config.MacroLayout.SizeX)
 
-	dragBox := NewDragBoxWidget("title", g.config, color.RGBA{20, 20, 20, 255}, color.White, func(btnId config.BtnId) {
-		fmt.Println("Edit", g.config.Macros[btnId].Name)
-	})
+	// dragBox := widgets.NewDragBoxWidget("title", g.config, color.RGBA{20, 20, 20, 255}, color.White, func(btnId config.BtnId) {
+	// 	fmt.Println("Edit", g.config.Macros[btnId].Name)
+	// })
+	dragBox := widgets.NewDragBox(g.config, color.RGBA{20, 20, 20, 255}, color.White)
 
 	vbox.Add(dragBox)
 	vbox.Add(layout.NewSpacer())
-
-	// for pos := 1; pos <= len(g.config.Macros); pos++ {
-	// 	macro := g.config.Macros[config.BtnId(pos)]
-
-	// 	cont := container.NewBorder(
-	// 		// Top right 'x' button
-	// 		container.NewHBox(
-	// 			widget.NewLabelWithStyle(macro.Name, fyne.TextAlignLeading, fyne.TextStyle{Bold: true}),
-	// 			layout.NewSpacer(),
-	// 			// TODO: maybe I shouldn't use a lambda here...
-	// 			func(callback func()) *widget.Button {
-	// 				xbtn := widget.NewButton("x", callback)
-	// 				xbtn.Importance = widget.DangerImportance
-	// 				return xbtn
-	// 			}(func() {
-	// 				fmt.Println("Del ", macro.Name)
-	// 			}),
-	// 		),
-	// 		// Bottom Edit btn
-	// 		container.NewHBox(
-	// 			layout.NewSpacer(),
-	// 			widget.NewButton("Edit", func() {
-	// 				fmt.Println("Edit actions")
-	// 			}),
-	// 			layout.NewSpacer(),
-	// 		),
-	// 		nil,
-	// 		nil,
-	// 		// Main content
-	// 	)
-	// 	cont.Resize(fyne.NewSize(80, 80))
-	// 	// contBorder := container.NewBorder(widget.NewSeparator(), widget.NewSeparator(), widget.NewSeparator(), widget.NewSeparator(), cont)
-	// 	contBorder := container.NewStack(
-	// 		func() *canvas.Rectangle {
-	// 			r := canvas.NewRectangle(color.Black)
-	// 			r.Resize(fyne.NewSize(90, 90))
-	// 			// TODO: MAKE THIS CLICKABLE
-	// 			// TODO: Make colored button widget
-	// 			return r
-	// 		}(),
-	// 		cont,
-	// 	)
-
-	// 	grid.Add(contBorder)
-	// }
 	vbox.Add(grid)
+
 	saveBtn := widget.NewButton("Save", func() {
 		fmt.Println("SAVE")
 	})
