@@ -28,13 +28,14 @@ type Config struct {
 }
 type BtnId int
 
+// TODO: Add public methods for CRUD'ing config
 // TO IMPLEMENT:
-// - save
-// - save as
-// - load
-// - edit / update macros
-// - delete macros
-// - new macros
+// [x] load
+// [ ] save
+// [ ] save as
+// [ ] edit / update macros
+// [ ] delete macros
+// [ ] new macros
 
 // NewConfig takes in CLIFlags to figure out the correct path and whether or not to reset the file.
 func NewConfig(flags *CLIFlags) (*Config, error) {
@@ -54,15 +55,28 @@ func NewConfig(flags *CLIFlags) (*Config, error) {
 		c.GUIMode = flags.GUIMode
 	}
 
-	// Load up the config from disk
+	err := c.loadConfig()
+	return c, err
+}
+
+func (c *Config) loadConfig() error {
 	f, err := os.Open(c.ConfigFullPath)
 	if err != nil {
-		return c, err
+		return fmt.Errorf("could not open %s, %e", c.ConfigFullPath, err)
 	}
 	defer f.Close()
 
-	return parseConfig(f)
+	return parseConfig(f, c)
 }
+
+// func (c Config) saveConfig(destFilename string) error {
+// 	f, err := os.Create(destFilename)
+// 	if err != nil {
+// 		return err
+// 	}
+// 	_, err = f.WriteString(c.String())
+// 	return err
+// }
 
 // depending on CLI args, and what files already exist, save default config if needed, and set c.ConfigFullPath
 func (c *Config) figureOutConfigPath(configPath string) error {
@@ -112,12 +126,11 @@ func (c *Config) saveDefaultConfig() error {
 	return err
 }
 
-// Create *Config from a io.Reader by marshalling the yaml to a Config
-func parseConfig(f io.Reader) (*Config, error) {
-	c := &Config{}
+// parse contents of f into c as Config
+func parseConfig(f io.Reader, c *Config) error {
 	err := yaml.NewDecoder(f).Decode(c)
 	if err != nil {
-		return c, err
+		return fmt.Errorf("could not decode %s into a Config", f)
 	}
 
 	// Set default delay if it's 0
@@ -125,17 +138,8 @@ func parseConfig(f io.Reader) (*Config, error) {
 		c.Delay = 100 * time.Millisecond
 	}
 
-	return c, nil
+	return nil
 }
-
-// func (c Config) saveConfig(destFilename string) error {
-// 	f, err := os.Create(destFilename)
-// 	if err != nil {
-// 		return err
-// 	}
-// 	_, err = f.WriteString(c.String())
-// 	return err
-// }
 
 /* Macro structs within config */
 type SerialDevice struct {

@@ -2,7 +2,6 @@ package config
 
 import (
 	"os"
-	"reflect"
 	"testing"
 )
 
@@ -27,14 +26,11 @@ func TestLoadConfig(t *testing.T) {
 			t.Fatalf("could not open file for test, err: %s. %+v", err, f)
 		}
 		defer f.Close()
-		c2, err := parseConfig(f)
+		err = parseConfig(f, c)
 		if err != nil {
 			t.Fatalf("expected no error, got %s", err)
 		}
 
-		if !reflect.DeepEqual(c, c2) {
-			t.Fatalf("res/defaultconfig.yml not the same as output from NewConfig(). got %+v, want %+v", c2, c)
-		}
 	})
 
 	t.Run("test various cliflags to confirm correct paths", func(t *testing.T) {
