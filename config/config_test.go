@@ -27,7 +27,7 @@ func TestLoadConfig(t *testing.T) {
 			t.Fatalf("could not open file for test, err: %s. %+v", err, f)
 		}
 		defer f.Close()
-		c2, err := loadConfig(f)
+		c2, err := parseConfig(f)
 		if err != nil {
 			t.Fatalf("expected no error, got %s", err)
 		}
