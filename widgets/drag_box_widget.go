@@ -62,8 +62,8 @@ func (dbw *DragBox) swapMacros(first, second int) {
 
 	dbw.grid.Objects[first], dbw.grid.Objects[second] =
 		dbw.grid.Objects[second], dbw.grid.Objects[first]
-	dbw.grid.Refresh()
 
+	dbw.grid.Refresh()
 }
 
 // Tapped is triggered when the widget is tapped.

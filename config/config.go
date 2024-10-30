@@ -16,28 +16,8 @@ import (
 //go:embed defaultConfig.yml
 var defaultConfigFile []byte
 
-// SerialDevice object
-type SerialDevice struct {
-	PortName string `yaml:"PortName"`
-	BaudRate int    `yaml:"BaudRate"`
-}
-
-// MacroLayout object
-type MacroLayout struct {
-	SizeX  int `yaml:"SizeX"`
-	SizeY  int `yaml:"SizeY"`
-	Width  int `yaml:"Width"`
-	Height int `yaml:"Height"`
-}
-
-// Macro object
-type Macro struct {
-	Name    string              `yaml:"Name"`
-	Actions []map[string]string `yaml:"Actions"`
-}
-
 // Config object
-// Stores related configuration details. No side effects here.
+// Stores related configuration details.
 type Config struct {
 	MacroLayout    MacroLayout     `yaml:"MacroLayout"`
 	SerialDevice   SerialDevice    `yaml:"SerialDevice"`
@@ -175,6 +155,24 @@ func loadConfig(f io.Reader) (*Config, error) {
 // 	_, err = f.WriteString(c.String())
 // 	return err
 // }
+
+/* Macro structs within config */
+type SerialDevice struct {
+	PortName string `yaml:"PortName"`
+	BaudRate int    `yaml:"BaudRate"`
+}
+
+type MacroLayout struct {
+	SizeX  int `yaml:"SizeX"`
+	SizeY  int `yaml:"SizeY"`
+	Width  int `yaml:"Width"`
+	Height int `yaml:"Height"`
+}
+
+type Macro struct {
+	Name    string              `yaml:"Name"`
+	Actions []map[string]string `yaml:"Actions"`
+}
 
 /* Stringers */
 func (c *Config) String() string {
