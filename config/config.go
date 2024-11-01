@@ -65,6 +65,8 @@ func NewConfig(flags *CLIFlags) (*Config, error) {
 	return c, err
 }
 
+// load c.ConfigFullPath and parse it into c
+// TODO: Support updating the main UI when this is called? Or use observer?
 func (c *Config) loadConfig() error {
 	f, err := os.Open(c.ConfigFullPath)
 	if err != nil {
@@ -95,6 +97,18 @@ func (c Config) SaveConfig(destFullPath string) error {
 		return fmt.Errorf("could not write file, %e", err)
 	}
 	return err
+}
+
+// Open config from file.
+func (c Config) OpenConfig(srcFullPath string) error {
+	if srcFullPath == "" {
+		return fmt.Errorf("%s should not be empty", srcFullPath)
+	}
+	fmt.Println("Opening Config from", srcFullPath)
+
+	fmt.Println("TODO: FIX OPEN CONFIG NOT SETTING MACROS PROPERLY")
+
+	return c.loadConfig()
 }
 
 // depending on CLI args, and what files already exist, save default config if needed, and set c.ConfigFullPath

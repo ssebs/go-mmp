@@ -39,6 +39,15 @@ func (g *GUI) initGUI(win fyne.Window) {
 	saveBtn.Importance = widget.HighImportance
 
 	vbox.Add(container.NewHBox(
+		widget.NewButton("Open Config", func() {
+			filename, err := osdialog.File().Filter("YAML config file", "yaml", "yml").Load()
+			if err != nil {
+				ShowErrorDialogAndRun(err)
+			}
+			g.config.OpenConfig(filename)
+			g.SetContent(widget.NewLabel("test"))
+			g.initGUI(win)
+		}),
 		widget.NewButton("+ Add Macro", func() {
 			fmt.Println("ADD MACRO")
 		}),
