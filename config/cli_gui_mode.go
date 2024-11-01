@@ -16,6 +16,7 @@ type CLIFlags struct {
 	GUIMode     GUIMode
 	ConfigPath  string
 	ResetConfig bool
+	Testing     bool
 }
 
 // parseFlags will parse the CLI flags that may have been used.
@@ -29,6 +30,8 @@ func ParseFlags() *CLIFlags {
 		"Reset your ~/mmpConfig.yml file to default. If using config-path, reset that file.")
 	flag.StringVarP(&cliFlags.ConfigPath, "path", "p", ConfigPathShortName,
 		"Path to your mmpConfig.yml. If used with reset-config, the specifified file will be reset.")
+	flag.BoolVarP(&cliFlags.Testing, "dry-run", "n", false,
+		"Enable dry run / test mode")
 	// TODO: implement verbose flag
 
 	flag.Parse()

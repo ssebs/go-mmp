@@ -1,0 +1,28 @@
+---
+MacroLayout:
+  SizeX: 3
+  SizeY: 3
+  Width: 300
+  Height: 300
+SerialDevice:
+  PortName: COM1
+  BaudRate: 9600
+Delay: 125ms
+GUIMode: NORMAL
+Macros:
+  1:
+    Name: first
+    Actions:
+      - SendText: first
+  2:
+    Name: second
+    Actions:
+      - SendText: second
+  3:
+    Name: third
+    Actions:
+      - SendText: third
+  4:
+    Name: fourth
+    Actions:
+      - SendText: fourth
