@@ -35,9 +35,10 @@ type BtnId int
 
 // TODO: Add public methods for CRUD'ing config
 // TO IMPLEMENT:
-// [x] load
-// [ ] save
-// [ ] save as
+// [x] load from CLI
+// [ ] load from Open file
+// [x] save
+// [x] save as
 // [ ] edit / update macros
 // [ ] delete macros
 // [ ] new macros
@@ -79,9 +80,7 @@ func (c Config) SaveConfig(destFullPath string) error {
 	if destFullPath == "" {
 		destFullPath = c.ConfigFullPath
 	} else {
-		// confirm is full path and path exists
-		fmt.Println("destFullPath:", destFullPath)
-
+		filepath.Abs(destFullPath)
 	}
 	fmt.Println("Saving Config to", destFullPath)
 

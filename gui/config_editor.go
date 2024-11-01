@@ -8,6 +8,7 @@ import (
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
+	osdialog "github.com/sqweek/dialog"
 	"github.com/ssebs/go-mmp/widgets"
 )
 
@@ -42,6 +43,13 @@ func (g *GUI) initGUI(win fyne.Window) {
 			fmt.Println("ADD MACRO")
 		}),
 		saveBtn,
+		widget.NewButton("Save As", func() {
+			filename, err := osdialog.File().Filter("YAML config file", "yaml", "yml").Load()
+			if err != nil {
+				ShowErrorDialogAndRun(err)
+			}
+			g.config.SaveConfig(filename)
+		}),
 	))
 	win.SetContent(vbox)
 }
