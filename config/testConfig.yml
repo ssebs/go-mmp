@@ -1,7 +1,7 @@
 ---
 MacroLayout:
-  SizeX: 3
-  SizeY: 3
+  SizeX: 2
+  SizeY: 2
   Width: 300
   Height: 300
 SerialDevice:
@@ -22,7 +22,3 @@ Macros:
     Name: third
     Actions:
       - SendText: third
-  4:
-    Name: fourth
-    Actions:
-      - SendText: fourth

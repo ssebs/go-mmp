@@ -41,6 +41,10 @@
             "request": "launch",
             "mode": "auto",
             "program": "${workspaceFolder}/tmp/test.go",
+            "args": [
+                "-p",
+                "${workspaceFolder}/tmp/conftest.yml"
+            ]
         }
     ]
 }
