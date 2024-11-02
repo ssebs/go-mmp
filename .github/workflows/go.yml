@@ -17,7 +17,7 @@ jobs:
 
       - name: setup fyne
         run: |
-          sudo apt-get update && sudo apt-get install gcc libgl1-mesa-dev libegl1-mesa-dev libgles2-mesa-dev libx11-dev xorg-dev bc
+          sudo apt-get update && sudo apt-get install gcc libgl1-mesa-dev libegl1-mesa-dev libgles2-mesa-dev libx11-dev xorg-dev bc build-essential libgtk-3-dev
           go install -tags k8s github.com/fyne-io/fyne-cross@latest
 
       - name: run tests
