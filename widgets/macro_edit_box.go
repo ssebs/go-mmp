@@ -18,10 +18,12 @@ type MacroEditBox struct {
 	widget.BaseWidget
 	Config *config.Config
 	Macro  config.Macro
+	app    fyne.App
 }
 
-func NewEditBox(conf *config.Config, macro config.Macro) *MacroEditBox {
+func NewEditBox(app fyne.App, conf *config.Config, macro config.Macro) *MacroEditBox {
 	eb := &MacroEditBox{
+		app:    app,
 		Config: conf,
 		Macro:  macro,
 	}
@@ -34,6 +36,7 @@ func (eb *MacroEditBox) CreateRenderer() fyne.WidgetRenderer {
 		nil,
 		widget.NewButton("Edit", func() {
 			fmt.Printf("Edit %s, id:%d\n", eb.Macro.Name, eb.getIdxFromMacro(eb.Macro.Name))
+			eb.runActionEditorWindow()
 		}),
 		nil, nil,
 		widget.NewLabelWithStyle(eb.Macro.Name, fyne.TextAlignCenter, fyne.TextStyle{}),
@@ -44,6 +47,14 @@ func (eb *MacroEditBox) CreateRenderer() fyne.WidgetRenderer {
 	// outer.Resize(c.Size().AddWidthHeight(20, 20)) // how to make this work??
 
 	return widget.NewSimpleRenderer(container.NewStack(outer, c))
+}
+
+func (eb *MacroEditBox) runActionEditorWindow() error {
+	newWin := eb.app.NewWindow("Edit Actions")
+	newWin.SetContent(widget.NewLabel("test"))
+	newWin.CenterOnScreen()
+	newWin.Show()
+	return nil
 }
 
 // get macro position from macro name, if not found return -1

@@ -25,11 +25,13 @@ type DragBox struct {
 	cols           int
 	draggedItemIdx int
 	latestItemIdx  int
+	app            fyne.App
 }
 
 // TODO: support changing the item container type (from editbox)
-func NewDragBox(conf *config.Config, bgcolor, fgcolor color.Color) *DragBox {
+func NewDragBox(app fyne.App, conf *config.Config, bgcolor, fgcolor color.Color) *DragBox {
 	dbw := &DragBox{
+		app:            app,
 		Config:         conf,
 		cols:           conf.MacroLayout.SizeX,
 		grid:           nil,
@@ -50,7 +52,7 @@ func (dbw *DragBox) initGrid() {
 
 	for pos := 0; pos < len(dbw.Config.Macros); pos++ {
 		macroPos := config.BtnId(pos + 1)
-		dbw.grid.Add(NewEditBox(dbw.Config, dbw.Config.Macros[macroPos]))
+		dbw.grid.Add(NewEditBox(dbw.app, dbw.Config, dbw.Config.Macros[macroPos]))
 	}
 }
 

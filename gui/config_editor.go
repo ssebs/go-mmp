@@ -15,7 +15,7 @@ import (
 // Open a new Window and use it to edit the config
 func (g *GUI) EditConfig() {
 	editorWindow := g.App.NewWindow("Config Editor")
-	g.initGUI(editorWindow)
+	g.initEditorGUI(editorWindow)
 
 	// Editor features:
 	// [ ] Click btn to edit Macro
@@ -26,9 +26,9 @@ func (g *GUI) EditConfig() {
 	editorWindow.Show()
 }
 
-func (g *GUI) initGUI(win fyne.Window) {
+func (g *GUI) initEditorGUI(win fyne.Window) {
 	vbox := container.NewVBox(widget.NewLabelWithStyle("Edit Macros", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}))
-	dragBox := widgets.NewDragBox(g.config, color.RGBA{20, 20, 20, 255}, color.White)
+	dragBox := widgets.NewDragBox(g.App, g.config, color.RGBA{20, 20, 20, 255}, color.White)
 
 	vbox.Add(dragBox)
 	vbox.Add(layout.NewSpacer())
@@ -42,11 +42,12 @@ func (g *GUI) initGUI(win fyne.Window) {
 		widget.NewButton("Open Config", func() {
 			filename, err := osdialog.File().Filter("YAML config file", "yaml", "yml").Load()
 			if err != nil {
+				fmt.Println(err)
 				ShowErrorDialogAndRun(err)
 			}
 			g.config.OpenConfig(filename)
 			g.SetContent(widget.NewLabel("test"))
-			g.initGUI(win)
+			g.initEditorGUI(win)
 		}),
 		widget.NewButton("+ Add Macro", func() {
 			fmt.Println("ADD MACRO")
