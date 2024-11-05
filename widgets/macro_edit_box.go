@@ -8,6 +8,7 @@ import (
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/data/binding"
+	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
 	"github.com/ssebs/go-mmp/config"
 )
@@ -74,21 +75,43 @@ func (eb *MacroEditBox) CreateRenderer() fyne.WidgetRenderer {
 
 func (eb *MacroEditBox) runActionEditorWindow() error {
 	newWin := eb.app.NewWindow("Edit Actions")
-	macronameentrybinding := binding.NewString()
+	nameEntryBinding := binding.NewString()
+	nameEntryBinding.Set(eb.Macro.Name)
 
-	replace_me_name := widget.NewEntryWithData(macronameentrybinding)
-	replace_me_name.PlaceHolder = eb.Macro.Name
+	nameEntry := widget.NewEntryWithData(nameEntryBinding)
+	nameEntry.Validator = nil
+
+	actionsScroll := container.NewVScroll(container.NewVBox())
+	actionsScroll.Resize(actionsScroll.Size().AddWidthHeight(0, 400))
+
+	// Within a Macro, there's a list of Actions to run.
+	// we want to run each one in order here
+	for _, action := range eb.Macro.Actions {
+		// Get the key/vals from the action
+		for funcName, funcParam := range action {
+			actionsScroll.Content.(*fyne.Container).Add(
+				widget.NewLabel(fmt.Sprintf("%s : %s", funcName, funcParam)),
+			)
+		}
+	}
 
 	newWin.SetContent(container.NewVBox(
-		widget.NewLabel(fmt.Sprintf("Edit %s", eb.Macro.Name)),
-		container.NewHBox(
-			widget.NewLabel("Name:"),
-			replace_me_name,
+		widget.NewLabel(fmt.Sprintf("Edit %s", nameEntry.Text)),
+		widget.NewForm(
+			widget.NewFormItem("Name", nameEntry),
+			widget.NewFormItem("Actions", layout.NewSpacer()),
 		),
-		widget.NewButton("JOSE LOOK HERE", func() {
-			fmt.Println("SAVED", replace_me_name.Text)
+		actionsScroll,
+		// container.NewHBox(
+		// 	widget.NewLabel("Name:"),
+		// 	nameEntry,
+		// ),
+		widget.NewButton("Save", func() {
+			fmt.Println("SAVED", nameEntry.Text)
 		}),
 	))
+
+	newWin.Resize(fyne.NewSquareSize(400))
 	newWin.CenterOnScreen()
 	newWin.Show()
 	return nil
