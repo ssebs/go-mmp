@@ -83,6 +83,9 @@ func (eb *MacroEditBox) runActionEditorWindow() error {
 
 	nameEntry := widget.NewEntryWithData(nameEntryBinding)
 	nameEntry.Validator = nil
+	nameEntry.OnChanged = func(s string) {
+		nameEntryBinding.Set(s)
+	}
 
 	actionsScroll := container.NewVScroll(container.NewVBox())
 	actionsScroll.Resize(actionsScroll.Size().AddWidthHeight(0, 400))
@@ -91,7 +94,6 @@ func (eb *MacroEditBox) runActionEditorWindow() error {
 		actionsScroll.Content.(*fyne.Container).Add(
 			eb.newActionItemEditor(action),
 		)
-
 	}
 
 	newWin.SetContent(container.NewBorder(
@@ -102,14 +104,22 @@ func (eb *MacroEditBox) runActionEditorWindow() error {
 				fyne.TextStyle{Bold: true},
 			),
 			widget.NewForm(
-				widget.NewFormItem("Name", nameEntry),
+				widget.NewFormItem("Name/Title:", nameEntry),
 				widget.NewFormItem("Actions", layout.NewSpacer()),
 				widget.NewFormItem("", layout.NewSpacer()),
 			),
 		),
-		widget.NewButton("Save", func() {
-			fmt.Println("SAVED", nameEntry.Text)
-		}),
+		container.NewHBox(
+			widget.NewButton("Close", func() {
+				fmt.Println("CLOSE WINDOW")
+			}),
+			widget.NewButton("+ Add Action", func() {
+				fmt.Println("ADD ACTION")
+			}),
+			widget.NewButton("Save", func() {
+				fmt.Println("SAVED", nameEntry.Text)
+			}),
+		),
 		nil, nil,
 		actionsScroll,
 	))
@@ -147,7 +157,6 @@ func (eb *MacroEditBox) newActionItemEditor(action map[string]string) *fyne.Cont
 			layout.NewSpacer()),
 		paramEntry,
 	)
-
 	return container
 }
 
