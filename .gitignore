@@ -6,7 +6,6 @@
 fyne-cross/
 tmp/usr/
 tmp/Makefile
-tmp/*.yml
 __debug*
 
 mmpConfig.yml

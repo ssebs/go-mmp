@@ -95,20 +95,24 @@ func (eb *MacroEditBox) runActionEditorWindow() error {
 		}
 	}
 
-	newWin.SetContent(container.NewVBox(
-		widget.NewLabel(fmt.Sprintf("Edit %s", nameEntry.Text)),
-		widget.NewForm(
-			widget.NewFormItem("Name", nameEntry),
-			widget.NewFormItem("Actions", layout.NewSpacer()),
+	newWin.SetContent(container.NewBorder(
+		container.NewVBox(
+			widget.NewLabelWithStyle(
+				fmt.Sprintf("Edit %s", nameEntry.Text),
+				fyne.TextAlignCenter,
+				fyne.TextStyle{Bold: true},
+			),
+			widget.NewForm(
+				widget.NewFormItem("Name", nameEntry),
+				widget.NewFormItem("Actions", layout.NewSpacer()),
+			),
+			layout.NewSpacer(),
 		),
-		actionsScroll,
-		// container.NewHBox(
-		// 	widget.NewLabel("Name:"),
-		// 	nameEntry,
-		// ),
 		widget.NewButton("Save", func() {
 			fmt.Println("SAVED", nameEntry.Text)
 		}),
+		nil, nil,
+		actionsScroll,
 	))
 
 	newWin.Resize(fyne.NewSquareSize(400))
