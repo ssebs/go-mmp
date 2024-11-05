@@ -44,6 +44,7 @@ func NewMacroManager(conf *config.Config) (*MacroManager, error) {
 	return mgr, nil
 }
 
+// TODO: Merge with macro.FunctionList
 func (mm *MacroManager) GetFunctionMapActions() []string {
 	keys := make([]string, 0, len(mm.functionMap))
 	for k := range mm.functionMap {

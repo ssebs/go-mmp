@@ -9,8 +9,11 @@ import (
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/data/binding"
 	"fyne.io/fyne/v2/layout"
+	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
 	"github.com/ssebs/go-mmp/config"
+	"github.com/ssebs/go-mmp/macro"
+	"github.com/ssebs/go-mmp/utils"
 )
 
 /*
@@ -84,15 +87,11 @@ func (eb *MacroEditBox) runActionEditorWindow() error {
 	actionsScroll := container.NewVScroll(container.NewVBox())
 	actionsScroll.Resize(actionsScroll.Size().AddWidthHeight(0, 400))
 
-	// Within a Macro, there's a list of Actions to run.
-	// we want to run each one in order here
 	for _, action := range eb.Macro.Actions {
-		// Get the key/vals from the action
-		for funcName, funcParam := range action {
-			actionsScroll.Content.(*fyne.Container).Add(
-				widget.NewLabel(fmt.Sprintf("%s : %s", funcName, funcParam)),
-			)
-		}
+		actionsScroll.Content.(*fyne.Container).Add(
+			eb.newActionItemEditor(action),
+		)
+
 	}
 
 	newWin.SetContent(container.NewBorder(
@@ -105,8 +104,8 @@ func (eb *MacroEditBox) runActionEditorWindow() error {
 			widget.NewForm(
 				widget.NewFormItem("Name", nameEntry),
 				widget.NewFormItem("Actions", layout.NewSpacer()),
+				widget.NewFormItem("", layout.NewSpacer()),
 			),
-			layout.NewSpacer(),
 		),
 		widget.NewButton("Save", func() {
 			fmt.Println("SAVED", nameEntry.Text)
@@ -121,13 +120,32 @@ func (eb *MacroEditBox) runActionEditorWindow() error {
 	return nil
 }
 
-func (eb *MacroEditBox) newActionItemEditor() *fyne.Container {
+func (eb *MacroEditBox) newActionItemEditor(action map[string]string) *fyne.Container {
+	// Get the key/vals from the action
+	funcName, funcParam := utils.GetKeyVal(action)
 
-	// dragIcon := nil
-	// delIcon := nil
+	paramEntryBinding := binding.NewString()
+	paramEntryBinding.Set(funcParam)
 
-	container := container.NewHBox(
-	// widget.NewIcon()MenuExpandIcon
+	paramEntry := widget.NewEntryWithData(paramEntryBinding)
+	paramEntry.Validator = nil
+
+	funcSelect := widget.NewSelect(macro.FunctionList, func(s string) {
+		fmt.Println(s)
+	})
+	funcSelect.SetSelected(funcName)
+
+	container := container.NewBorder(
+		nil,
+		nil,
+		container.NewHBox(
+			widget.NewIcon(theme.MenuIcon()),
+			funcSelect,
+		),
+		container.NewHBox(
+			widget.NewIcon(theme.WindowCloseIcon()),
+			layout.NewSpacer()),
+		paramEntry,
 	)
 
 	return container

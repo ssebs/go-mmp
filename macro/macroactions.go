@@ -8,6 +8,16 @@ import (
 	"github.com/go-vgo/robotgo"
 )
 
+var FunctionList = []string{
+	"Delay",
+	"PressRelease",
+	"Press",
+	"Release",
+	"SendText",
+	"Shortcut",
+	"Repeat",
+}
+
 // macroaction.go is where the DoBlah functions are housed.
 // macro.go was getting too hard to read, so I moved half of the methods here.
 

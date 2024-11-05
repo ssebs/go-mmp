@@ -73,3 +73,10 @@ func CopyFile(src, dest string) error {
 	}
 	return nil
 }
+
+func GetKeyVal(m map[string]string) (string, string) {
+	for k, v := range m {
+		return k, v
+	}
+	return "", ""
+}

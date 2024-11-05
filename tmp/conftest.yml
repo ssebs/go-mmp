@@ -19,9 +19,11 @@ Macros:
             - SendText: third
             - SendText: third
     3:
-        Name: first
+        Name: gg
         Actions:
-            - SendText: first
+            - Shortcut: SHIFT+ENTER
+            - SendText: gg
+            - PressRelease: ENTER
     4:
         Name: like 12
         Actions:
