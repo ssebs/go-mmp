@@ -121,6 +121,18 @@ func (eb *MacroEditBox) runActionEditorWindow() error {
 	return nil
 }
 
+func (eb *MacroEditBox) newActionItemEditor() *fyne.Container {
+
+	// dragIcon := nil
+	// delIcon := nil
+
+	container := container.NewHBox(
+	// widget.NewIcon()MenuExpandIcon
+	)
+
+	return container
+}
+
 // get macro position from macro name, if not found return -1
 func (eb *MacroEditBox) getIdxFromMacro(macroName string) config.BtnId {
 	for idx, macro := range eb.Config.Macros {
