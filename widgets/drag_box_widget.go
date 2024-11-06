@@ -52,13 +52,16 @@ func (dbw *DragBox) initGrid() {
 
 	for pos := 0; pos < len(dbw.Config.Macros); pos++ {
 		macroPos := config.BtnId(pos + 1)
-		dbw.grid.Add(NewEditBox(dbw.app, dbw.Config, dbw.Config.Macros[macroPos]))
+		dbw.grid.Add(
+			NewEditBox(dbw.app, dbw.Config, dbw.Config.Macros[macroPos]),
+		)
 	}
 }
 
 // swapMacros swaps macros in the config by grid idx and updates the UI.
 func (dbw *DragBox) swapMacros(first, second int) {
 	fmt.Printf("Swapping %q and %q\n", dbw.getMacroFromIdx(first).Name, dbw.getMacroFromIdx(second).Name)
+	// TODO: Don't change config.macros directly!
 	dbw.Config.Macros[config.BtnId(first+1)], dbw.Config.Macros[config.BtnId(second+1)] =
 		dbw.Config.Macros[config.BtnId(second+1)], dbw.Config.Macros[config.BtnId(first+1)]
 

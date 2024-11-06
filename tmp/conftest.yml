@@ -8,22 +8,22 @@ SerialDevice:
     BaudRate: 9600
 Macros:
     1:
-        Name: second
-        Actions:
-            - SendText: second
-            - SendText: second
-    2:
-        Name: third
-        Actions:
-            - SendText: third
-            - SendText: third
-            - SendText: third
-    3:
         Name: gg
         Actions:
             - Shortcut: SHIFT+ENTER
             - SendText: gg
             - PressRelease: ENTER
+    2:
+        Name: second
+        Actions:
+            - SendText: second
+            - SendText: second
+    3:
+        Name: third
+        Actions:
+            - SendText: third
+            - SendText: third
+            - SendText: third
     4:
         Name: like 12
         Actions:
@@ -39,6 +39,5 @@ Macros:
             - SendText: "12"
             - SendText: "12"
             - SendText: "12"
-
 Delay: 125ms
 GUIMode: NORMAL

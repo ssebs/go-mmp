@@ -59,11 +59,12 @@ func NewEditBox(app fyne.App, conf *config.Config, macro config.Macro) *MacroEdi
 }
 
 func (eb *MacroEditBox) CreateRenderer() fyne.WidgetRenderer {
+	// Label + Edit btn
 	c := container.NewBorder(
 		nil,
 		widget.NewButton("Edit", func() {
 			fmt.Printf("Edit %s, id:%d\n", eb.Macro.Name, eb.getIdxFromMacro(eb.Macro.Name))
-			eb.runActionEditorWindow()
+			NewActionEdtior(eb.app, eb.Config, eb.Macro).Run()
 		}),
 		nil, nil,
 		widget.NewLabelWithStyle(eb.Macro.Name, fyne.TextAlignCenter, fyne.TextStyle{}),
