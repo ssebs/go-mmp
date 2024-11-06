@@ -10,6 +10,7 @@ import (
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
 	osdialog "github.com/sqweek/dialog"
+	"github.com/ssebs/go-mmp/config"
 	"github.com/ssebs/go-mmp/widgets"
 )
 
@@ -28,6 +29,9 @@ func (g *GUI) EditConfig() {
 }
 
 func (g *GUI) initEditorGUI(win fyne.Window) {
+	// TODO: CLEAN THIS UP, MOVE TO WIDGET
+	vbox := container.NewVBox()
+
 	delayEntryBinding := binding.NewString()
 	delayEntryBinding.Set(g.config.Delay.String())
 
@@ -39,15 +43,18 @@ func (g *GUI) initEditorGUI(win fyne.Window) {
 
 	dragBox := widgets.NewDragBox(g.App, g.config, color.RGBA{20, 20, 20, 255}, color.White)
 
-	vbox := container.NewVBox()
-
-	vbox.Add(widget.NewLabelWithStyle("Edit Config", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}))
+	vbox.Add(widget.NewLabelWithStyle(
+		"Edit Config", fyne.TextAlignCenter, fyne.TextStyle{Bold: true},
+	))
 	vbox.Add(widget.NewForm(
 		widget.NewFormItem("Delay", widget.NewEntryWithData(delayEntryBinding)),
 		widget.NewFormItem("Serial Port", widget.NewEntryWithData(serialPortEntryBinding)),
 		widget.NewFormItem("Serial Baud", widget.NewEntryWithData(serialBaudEntryBinding)),
 	))
-	vbox.Add(widget.NewLabelWithStyle("Edit Macros", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}))
+	vbox.Add(widget.NewLabelWithStyle(
+		"Edit Macros\n(drag and drop the macros to move them)",
+		fyne.TextAlignCenter, fyne.TextStyle{Bold: true},
+	))
 	vbox.Add(dragBox)
 	vbox.Add(layout.NewSpacer())
 
@@ -59,7 +66,9 @@ func (g *GUI) initEditorGUI(win fyne.Window) {
 	vbox.Add(container.NewHBox(
 		widget.NewButton("Open Config", g.OpenConfig),
 		widget.NewButton("+ Add Macro", func() {
-			// g.config.AddMacro() or something like that
+			g.config.AddMacro(config.NewMacro("New Macro", nil))
+			g.initEditorGUI(win)
+
 			fmt.Println("ADD MACRO")
 		}),
 		saveBtn,

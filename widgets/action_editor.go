@@ -49,6 +49,7 @@ func NewActionEdtior(app fyne.App, conf *config.Config, macro config.Macro) *Act
 	// Add actions to actionsScroll's VBox
 	for _, action := range ae.Macro.Actions {
 		ae.actionsScroll.Content.(*fyne.Container).Add(
+			// TODO: implement drag and drop for each
 			NewActionItemEdtior(conf, action),
 		)
 	}

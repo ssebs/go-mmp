@@ -63,8 +63,9 @@ func (ae *ActionItemEditor) CreateRenderer() fyne.WidgetRenderer {
 			ae.funcSelect,
 		),
 		container.NewHBox(
-			widget.NewIcon(theme.WindowCloseIcon()),
-			layout.NewSpacer()),
+			widget.NewIcon(theme.NewErrorThemedResource(theme.WindowCloseIcon())),
+			layout.NewSpacer(),
+		),
 		ae.paramEntry,
 	)
 	return widget.NewSimpleRenderer(c)

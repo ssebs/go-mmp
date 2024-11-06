@@ -7,6 +7,7 @@ import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
 	"github.com/ssebs/go-mmp/config"
 )
@@ -32,13 +33,27 @@ func NewEditBox(app fyne.App, conf *config.Config, macro config.Macro) *MacroEdi
 }
 
 func (eb *MacroEditBox) CreateRenderer() fyne.WidgetRenderer {
-	// Label + Edit btn
+	delBtn := widget.NewButtonWithIcon("",
+		theme.NewErrorThemedResource(theme.WindowCloseIcon()), func() {
+			fmt.Printf("Delete %s\n", eb.Macro.Name)
+			eb.Config.DelMacro(eb.Macro)
+			eb.Refresh()
+		})
+
+	editBtn := widget.NewButton("Edit", func() {
+		fmt.Printf("Edit %s, id:%d\n", eb.Macro.Name, eb.Config.GetIdxFromMacro(eb.Macro))
+		NewActionEdtior(eb.app, eb.Config, eb.Macro).ShowNewWindow()
+	})
+
+	// Label + Del/Edit btn
 	c := container.NewBorder(
 		nil,
-		widget.NewButton("Edit", func() {
-			fmt.Printf("Edit %s, id:%d\n", eb.Macro.Name, eb.getIdxFromMacro(eb.Macro.Name))
-			NewActionEdtior(eb.app, eb.Config, eb.Macro).ShowNewWindow()
-		}),
+		container.NewBorder(
+			nil, nil,
+			delBtn,
+			nil,
+			editBtn,
+		),
 		nil, nil,
 		widget.NewLabelWithStyle(eb.Macro.Name, fyne.TextAlignCenter, fyne.TextStyle{}),
 	)
@@ -46,14 +61,4 @@ func (eb *MacroEditBox) CreateRenderer() fyne.WidgetRenderer {
 	outer := canvas.NewRectangle(color.RGBA{30, 30, 30, 255})
 
 	return widget.NewSimpleRenderer(container.NewStack(outer, c))
-}
-
-// get macro position from macro name, if not found return -1
-func (eb *MacroEditBox) getIdxFromMacro(macroName string) config.BtnId {
-	for idx, macro := range eb.Config.Macros {
-		if macroName == macro.Name {
-			return idx
-		}
-	}
-	return -1
 }

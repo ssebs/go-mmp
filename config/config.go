@@ -14,34 +14,13 @@ import (
 )
 
 // TODO: SET GUIONLY IN CONFIG IF CLI FLAG IS SET ON DEFAULT
+// TODO: Make UI elements listen for changes with config. See: observer?
 
 //go:embed defaultConfig.yml
 var defaultConfigFile []byte
 
 //go:embed testConfig.yml
 var testConfigFile []byte
-
-// Config object
-// Stores related configuration details.
-type Config struct {
-	MacroLayout    MacroLayout     `yaml:"MacroLayout"`
-	SerialDevice   SerialDevice    `yaml:"SerialDevice"`
-	Macros         map[BtnId]Macro `yaml:"Macros"`
-	Delay          time.Duration   `yaml:"Delay"`
-	GUIMode        GUIMode         `yaml:"GUIMode"`
-	ConfigFullPath string          `yaml:"-"`
-}
-type BtnId int
-
-// TODO: Add public methods for CRUD'ing config
-// TO IMPLEMENT:
-// [x] load from CLI
-// [ ] load from Open file
-// [x] save
-// [x] save as
-// [ ] edit / update macros
-// [ ] delete macros
-// [ ] new macros
 
 // NewConfig takes in CLIFlags to figure out the correct path and whether or not to reset the file.
 func NewConfig(flags *CLIFlags) (*Config, error) {
@@ -65,6 +44,46 @@ func NewConfig(flags *CLIFlags) (*Config, error) {
 	return c, err
 }
 
+func NewMacro(name string, actions []map[string]string) Macro {
+	m := Macro{
+		Name:    name,
+		Actions: actions,
+	}
+	if actions == nil {
+		m.Actions = make([]map[string]string, 0)
+	}
+
+	return m
+}
+
+/* Macro / Config */
+// Stores related configuration details.
+type Config struct {
+	MacroLayout    MacroLayout     `yaml:"MacroLayout"`
+	SerialDevice   SerialDevice    `yaml:"SerialDevice"`
+	Macros         map[BtnId]Macro `yaml:"Macros"`
+	Delay          time.Duration   `yaml:"Delay"`
+	GUIMode        GUIMode         `yaml:"GUIMode"`
+	ConfigFullPath string          `yaml:"-"`
+}
+type BtnId int
+type SerialDevice struct {
+	PortName string `yaml:"PortName"`
+	BaudRate int    `yaml:"BaudRate"`
+}
+
+type MacroLayout struct {
+	SizeX  int `yaml:"SizeX"`
+	SizeY  int `yaml:"SizeY"`
+	Width  int `yaml:"Width"`
+	Height int `yaml:"Height"`
+}
+
+type Macro struct {
+	Name    string              `yaml:"Name"`
+	Actions []map[string]string `yaml:"Actions"`
+}
+
 // load c.ConfigFullPath and parse it into c
 // TODO: Support updating the main UI when this is called? Or use observer?
 func (c *Config) loadConfig() error {
@@ -75,40 +94,6 @@ func (c *Config) loadConfig() error {
 	defer f.Close()
 
 	return parseConfig(f, c)
-}
-
-// Save config to file. If destFullPath is empty, use c.ConfigFullPath
-func (c Config) SaveConfig(destFullPath string) error {
-	if destFullPath == "" {
-		destFullPath = c.ConfigFullPath
-	} else {
-		filepath.Abs(destFullPath)
-	}
-	fmt.Println("Saving Config to", destFullPath)
-
-	f, err := os.Create(destFullPath)
-	if err != nil {
-		return fmt.Errorf("could not write file %s, %e", destFullPath, err)
-	}
-	defer f.Close()
-
-	_, err = f.Write([]byte(c.String()))
-	if err != nil {
-		return fmt.Errorf("could not write file, %e", err)
-	}
-	return err
-}
-
-// Open config from file.
-func (c Config) OpenConfig(srcFullPath string) error {
-	if srcFullPath == "" {
-		return fmt.Errorf("%s should not be empty", srcFullPath)
-	}
-	fmt.Println("Opening Config from", srcFullPath)
-
-	fmt.Println("TODO: FIX OPEN CONFIG NOT SETTING MACROS PROPERLY")
-
-	return c.loadConfig()
 }
 
 // depending on CLI args, and what files already exist, save default config if needed, and set c.ConfigFullPath
@@ -179,22 +164,14 @@ func parseConfig(f io.Reader, c *Config) error {
 	return nil
 }
 
-/* Macro structs within config */
-type SerialDevice struct {
-	PortName string `yaml:"PortName"`
-	BaudRate int    `yaml:"BaudRate"`
-}
-
-type MacroLayout struct {
-	SizeX  int `yaml:"SizeX"`
-	SizeY  int `yaml:"SizeY"`
-	Width  int `yaml:"Width"`
-	Height int `yaml:"Height"`
-}
-
-type Macro struct {
-	Name    string              `yaml:"Name"`
-	Actions []map[string]string `yaml:"Actions"`
+// get macro position from macro name, if not found return -1
+func (c *Config) GetIdxFromMacro(m Macro) BtnId {
+	for idx, macro := range c.Macros {
+		if m.Name == macro.Name {
+			return idx
+		}
+	}
+	return -1
 }
 
 /* Stringers */
