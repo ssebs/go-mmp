@@ -15,6 +15,7 @@ import (
 
 // TODO: SET GUIONLY IN CONFIG IF CLI FLAG IS SET ON DEFAULT
 // TODO: Make UI elements listen for changes with config. See: observer?
+// SEE https://docs.fyne.io/binding/twoway
 
 //go:embed defaultConfig.yml
 var defaultConfigFile []byte
