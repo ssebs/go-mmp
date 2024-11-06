@@ -23,7 +23,6 @@ type ActionItemEditor struct {
 	Action            map[string]string
 	FuncName          string
 	FuncParam         string
-	content           *fyne.Container
 	paramEntryBinding binding.String
 	paramEntry        *widget.Entry
 	funcSelect        *widget.Select
@@ -36,24 +35,27 @@ func NewActionItemEdtior(conf *config.Config, action map[string]string) *ActionI
 		Action:            action,
 		FuncName:          funcName,
 		FuncParam:         funcParam,
-		content:           nil,
 		paramEntryBinding: nil,
 		paramEntry:        nil,
 		funcSelect:        nil,
 	}
+	// Function Select to set FuncName
+	ae.funcSelect = widget.NewSelect(macro.FunctionList, ae.Selected) // TODO: Create OnSelected
+	ae.funcSelect.SetSelected(funcName)
 
+	// FuncParam Entry
 	ae.paramEntryBinding = binding.NewString()
 	ae.paramEntryBinding.Set(funcParam)
 
 	ae.paramEntry = widget.NewEntryWithData(ae.paramEntryBinding)
 	ae.paramEntry.Validator = nil
 
-	ae.funcSelect = widget.NewSelect(macro.FunctionList, func(s string) {
-		fmt.Println(s)
-	})
-	ae.funcSelect.SetSelected(funcName)
+	ae.ExtendBaseWidget(ae)
+	return ae
+}
 
-	ae.content = container.NewBorder(
+func (ae *ActionItemEditor) CreateRenderer() fyne.WidgetRenderer {
+	c := container.NewBorder(
 		nil,
 		nil,
 		container.NewHBox(
@@ -65,11 +67,9 @@ func NewActionItemEdtior(conf *config.Config, action map[string]string) *ActionI
 			layout.NewSpacer()),
 		ae.paramEntry,
 	)
-
-	ae.ExtendBaseWidget(ae)
-	return ae
+	return widget.NewSimpleRenderer(c)
 }
 
-func (ae *ActionItemEditor) CreateRenderer() fyne.WidgetRenderer {
-	return widget.NewSimpleRenderer(ae.content)
+func (ae *ActionItemEditor) Selected(s string) {
+	fmt.Println("Selected:", s)
 }

@@ -19,7 +19,6 @@ type ActionEditor struct {
 	Config           *config.Config
 	Macro            config.Macro
 	app              fyne.App
-	content          *fyne.Container
 	nameEntryBinding binding.String
 	nameEntry        *widget.Entry
 	actionsScroll    *container.Scroll
@@ -30,7 +29,6 @@ func NewActionEdtior(app fyne.App, conf *config.Config, macro config.Macro) *Act
 		app:              app,
 		Config:           conf,
 		Macro:            macro,
-		content:          nil,
 		nameEntryBinding: nil,
 		nameEntry:        nil,
 		actionsScroll:    nil,
@@ -42,9 +40,7 @@ func NewActionEdtior(app fyne.App, conf *config.Config, macro config.Macro) *Act
 
 	ae.nameEntry = widget.NewEntryWithData(ae.nameEntryBinding)
 	ae.nameEntry.Validator = nil
-	ae.nameEntry.OnChanged = func(s string) {
-		ae.nameEntryBinding.Set(s)
-	}
+	ae.nameEntry.OnChanged = ae.NameChanged
 
 	// Scrollbox for actions
 	ae.actionsScroll = container.NewVScroll(container.NewVBox())
@@ -57,7 +53,24 @@ func NewActionEdtior(app fyne.App, conf *config.Config, macro config.Macro) *Act
 		)
 	}
 
-	ae.content = container.NewBorder(
+	ae.ExtendBaseWidget(ae)
+	return ae
+}
+
+func (ae *ActionEditor) NameChanged(s string) {
+	ae.nameEntryBinding.Set(s)
+}
+
+func (ae *ActionEditor) ShowNewWindow() {
+	newWin := ae.app.NewWindow("Edit Actions")
+	newWin.SetContent(ae)
+	newWin.Resize(fyne.NewSquareSize(400))
+	newWin.CenterOnScreen()
+	newWin.Show()
+}
+
+func (ae *ActionEditor) CreateRenderer() fyne.WidgetRenderer {
+	c := container.NewBorder(
 		container.NewVBox(
 			widget.NewLabelWithStyle(
 				fmt.Sprintf("Edit %s", ae.nameEntry.Text),
@@ -87,49 +100,5 @@ func NewActionEdtior(app fyne.App, conf *config.Config, macro config.Macro) *Act
 		nil, nil,
 		ae.actionsScroll,
 	)
-
-	ae.ExtendBaseWidget(ae)
-	return ae
-}
-
-// func (ae *ActionEditor) newActionItemEditor(action map[string]string) *fyne.Container {
-// 	// Get the key/vals from the action
-// 	funcName, funcParam := utils.GetKeyVal(action)
-
-// 	paramEntryBinding := binding.NewString()
-// 	paramEntryBinding.Set(funcParam)
-
-// 	paramEntry := widget.NewEntryWithData(paramEntryBinding)
-// 	paramEntry.Validator = nil
-
-// 	funcSelect := widget.NewSelect(macro.FunctionList, func(s string) {
-// 		fmt.Println(s)
-// 	})
-// 	funcSelect.SetSelected(funcName)
-
-// 	container := container.NewBorder(
-// 		nil,
-// 		nil,
-// 		container.NewHBox(
-// 			widget.NewIcon(theme.MenuIcon()),
-// 			funcSelect,
-// 		),
-// 		container.NewHBox(
-// 			widget.NewIcon(theme.WindowCloseIcon()),
-// 			layout.NewSpacer()),
-// 		paramEntry,
-// 	)
-// 	return container
-// }
-
-func (ae *ActionEditor) Show() {
-	newWin := ae.app.NewWindow("Edit Actions")
-	newWin.SetContent(ae.content)
-	newWin.Resize(fyne.NewSquareSize(400))
-	newWin.CenterOnScreen()
-	newWin.Show()
-}
-
-func (ae *ActionEditor) CreateRenderer() fyne.WidgetRenderer {
-	return widget.NewSimpleRenderer(ae.content)
+	return widget.NewSimpleRenderer(c)
 }
