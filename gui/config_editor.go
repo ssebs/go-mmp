@@ -14,7 +14,7 @@ import (
 
 // Open a new Window and use it to edit the config
 func (g *GUI) EditConfig() {
-	editorWindow := g.App.NewWindow("Config Editor")
+	editorWindow := g.App.NewWindow("Config Editor") // TOOD: Move this so it can be used elsewhere
 	g.initEditorGUI(editorWindow)
 
 	// Editor features:
@@ -39,31 +39,52 @@ func (g *GUI) initEditorGUI(win fyne.Window) {
 	saveBtn.Importance = widget.HighImportance
 
 	vbox.Add(container.NewHBox(
-		widget.NewButton("Open Config", func() {
-			filename, err := osdialog.File().Filter("YAML config file", "yaml", "yml").Load()
-			if err != nil {
-				fmt.Println(err)
-				ShowErrorDialogAndRun(err)
-			}
-			g.config.OpenConfig(filename)
-			g.SetContent(widget.NewLabel("test"))
-			g.initEditorGUI(win)
-		}),
+		widget.NewButton("Open Config", g.OpenConfig),
 		widget.NewButton("+ Add Macro", func() {
+			// g.config.AddMacro() or something like that
 			fmt.Println("ADD MACRO")
 		}),
 		saveBtn,
 		widget.NewButton("Save As", func() {
-			filename, err := osdialog.File().Filter("YAML config file", "yaml", "yml").Load()
+			filename, err := getYAMLFilename(true)
 			if err != nil {
-				ShowErrorDialogAndRun(err)
+				fmt.Println(err)
 			}
 			g.config.SaveConfig(filename)
 		}),
 	))
 	win.SetContent(vbox)
+	vbox.Refresh()
 }
 
 func (g *GUI) OpenConfig() {
 	fmt.Println("OPEN CONFIG")
+	filename, err := getYAMLFilename(false)
+	if err != nil {
+		fmt.Println(err)
+	}
+	g.config.OpenConfig(filename)
+	g.SetContent(widget.NewLabel("test"))
+	// TODO: refresh!
+
+	// g.initEditorGUI(win) // reload
+	// win.Content().Refresh()
+}
+
+// returns path to .yaml|.yml file
+// isSaving sets the type to save file instead of open file.
+func getYAMLFilename(isSaving bool) (string, error) {
+	var filename string
+	var err error
+
+	if isSaving {
+		filename, err = osdialog.File().Filter("YAML config file", "yaml", "yml").Save()
+	} else {
+		filename, err = osdialog.File().Filter("YAML config file", "yaml", "yml").Load()
+	}
+
+	if err != nil {
+		err = fmt.Errorf("could not open YAML config file, err: %s", err)
+	}
+	return filename, err
 }
