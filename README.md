@@ -174,8 +174,11 @@ Example Actions:
     - Install [Golang](https://go.dev/doc/install)
     - Follow the install docs at https://docs.fyne.io/started/
       - This takes a while but is required to get this working.
-    - If running on linux, add yourself to the `dialout` group
-      - `sudo usermod -aG dialout <username>`
+    - If running on linux
+      - Add yourself to the `dialout` group
+        - `sudo usermod -aG dialout <username>`
+      - Install GTK3-dev
+        - `sudo apt install libgtk-3-dev`
 - Go pkg
   - `go get github.com/ssebs/go-mmp`
 
