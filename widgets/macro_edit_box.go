@@ -11,28 +11,6 @@ import (
 	"github.com/ssebs/go-mmp/config"
 )
 
-/*
-Main gui
-- VBox:
-	- Label: Edit (macroname)
-	- Hbox:
-		- Label (name)
-		- Entry for (macroname)
-	- Label: (Actions)
-	- List:
-		- <See below>
-	- HBox:
-		- Undo btn?
-		- +NewAction btn
-		- Save btn
-- List for actions: (each item)
-	- Hbox:
-		- icon for drag/moving position
-		- Select for action
-		- entry for action param
-		- x icon for delete
-*/
-
 // Ensure interface implementation.
 var _ fyne.Widget = (*MacroEditBox)(nil)
 

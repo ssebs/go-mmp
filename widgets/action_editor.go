@@ -70,6 +70,7 @@ func (ae *ActionEditor) ShowNewWindow() {
 }
 
 func (ae *ActionEditor) CreateRenderer() fyne.WidgetRenderer {
+	// Editor w/ edit macro name, list of actions, save/add btns
 	c := container.NewBorder(
 		container.NewVBox(
 			widget.NewLabelWithStyle(

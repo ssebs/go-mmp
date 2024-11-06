@@ -6,6 +6,7 @@ import (
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/data/binding"
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
 	osdialog "github.com/sqweek/dialog"
@@ -27,9 +28,26 @@ func (g *GUI) EditConfig() {
 }
 
 func (g *GUI) initEditorGUI(win fyne.Window) {
-	vbox := container.NewVBox(widget.NewLabelWithStyle("Edit Macros", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}))
+	delayEntryBinding := binding.NewString()
+	delayEntryBinding.Set(g.config.Delay.String())
+
+	serialPortEntryBinding := binding.NewString()
+	serialPortEntryBinding.Set(g.config.SerialDevice.PortName)
+
+	serialBaudEntryBinding := binding.NewString()
+	serialBaudEntryBinding.Set(fmt.Sprintf("%d", g.config.SerialDevice.BaudRate))
+
 	dragBox := widgets.NewDragBox(g.App, g.config, color.RGBA{20, 20, 20, 255}, color.White)
 
+	vbox := container.NewVBox()
+
+	vbox.Add(widget.NewLabelWithStyle("Edit Config", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}))
+	vbox.Add(widget.NewForm(
+		widget.NewFormItem("Delay", widget.NewEntryWithData(delayEntryBinding)),
+		widget.NewFormItem("Serial Port", widget.NewEntryWithData(serialPortEntryBinding)),
+		widget.NewFormItem("Serial Baud", widget.NewEntryWithData(serialBaudEntryBinding)),
+	))
+	vbox.Add(widget.NewLabelWithStyle("Edit Macros", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}))
 	vbox.Add(dragBox)
 	vbox.Add(layout.NewSpacer())
 
