@@ -19,43 +19,92 @@ var _ fyne.Widget = (*ActionEditor)(nil)
 
 type ActionEditor struct {
 	widget.BaseWidget
-	Config *config.Config
-	Macro  config.Macro
-	app    fyne.App
+	Config           *config.Config
+	Macro            config.Macro
+	app              fyne.App
+	content          *fyne.Container
+	nameEntryBinding binding.String
+	nameEntry        *widget.Entry
+	actionsScroll    *container.Scroll
 }
-
-/*
-
-TODO: IMPLEMENT THIS
-
-*/
 
 func NewActionEdtior(app fyne.App, conf *config.Config, macro config.Macro) *ActionEditor {
 	ae := &ActionEditor{
-		app:    app,
-		Config: conf,
-		Macro:  macro,
+		app:              app,
+		Config:           conf,
+		Macro:            macro,
+		content:          nil,
+		nameEntryBinding: nil,
+		nameEntry:        nil,
+		actionsScroll:    nil,
 	}
+
+	// Action Name
+	ae.nameEntryBinding = binding.NewString()
+	ae.nameEntryBinding.Set(ae.Macro.Name)
+
+	ae.nameEntry = widget.NewEntryWithData(ae.nameEntryBinding)
+	ae.nameEntry.Validator = nil
+	ae.nameEntry.OnChanged = func(s string) {
+		ae.nameEntryBinding.Set(s)
+	}
+
+	// Scrollbox for actions
+	ae.actionsScroll = container.NewVScroll(container.NewVBox())
+	ae.actionsScroll.Resize(ae.actionsScroll.Size().AddWidthHeight(0, 400))
+
+	// Actions
+	for _, action := range ae.Macro.Actions {
+		ae.actionsScroll.Content.(*fyne.Container).Add(
+			ae.newActionItemEditor(action),
+		)
+	}
+
+	ae.content = container.NewBorder(
+		container.NewVBox(
+			widget.NewLabelWithStyle(
+				fmt.Sprintf("Edit %s", ae.nameEntry.Text),
+				fyne.TextAlignCenter,
+				fyne.TextStyle{Bold: true},
+			),
+			widget.NewForm(
+				widget.NewFormItem("Name/Title:", ae.nameEntry),
+				widget.NewFormItem("Actions", layout.NewSpacer()),
+				widget.NewFormItem("", layout.NewSpacer()),
+			),
+		),
+		container.NewHBox(
+			widget.NewButton("Close", func() {
+				fmt.Println("CLOSE WINDOW")
+			}),
+			widget.NewButton("+ Add Action", func() {
+				fmt.Println("ADD ACTION")
+			}),
+			widget.NewButton("Save", func() {
+				msg := fmt.Sprintf("Saved %s", ae.nameEntry.Text)
+				fmt.Println(msg)
+				// app.SendNotification(fyne.NewNotification("Go-MMP", msg))
+				// NewToast(ae.app, "Mini Macro Pad", msg, 1*time.Second).Show()
+			}),
+		),
+		nil, nil,
+		ae.actionsScroll,
+	)
+
 	ae.ExtendBaseWidget(ae)
 	return ae
 }
 
-func (ae *ActionEditor) Run() {
-	fmt.Println("SHOW AND RUN WINDOW")
+func (ae *ActionEditor) Show() {
+	newWin := ae.app.NewWindow("Edit Actions")
+	newWin.SetContent(ae.content)
+	newWin.Resize(fyne.NewSquareSize(400))
+	newWin.CenterOnScreen()
+	newWin.Show()
 }
 
 func (ae *ActionEditor) CreateRenderer() fyne.WidgetRenderer {
-	// Label + Edit btn
-	c := container.NewBorder(
-		nil,
-		widget.NewButton("Edit", func() {
-			fmt.Println("replace_me")
-		}),
-		nil, nil,
-		widget.NewLabelWithStyle(ae.Macro.Name, fyne.TextAlignCenter, fyne.TextStyle{}),
-	)
-
-	return widget.NewSimpleRenderer(c)
+	return widget.NewSimpleRenderer(ae.content)
 }
 
 func (ae *ActionEditor) newActionItemEditor(action map[string]string) *fyne.Container {
