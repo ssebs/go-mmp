@@ -7,11 +7,8 @@ import (
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/data/binding"
 	"fyne.io/fyne/v2/layout"
-	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
 	"github.com/ssebs/go-mmp/config"
-	"github.com/ssebs/go-mmp/macro"
-	"github.com/ssebs/go-mmp/utils"
 )
 
 // Ensure interface implementation.
@@ -53,10 +50,10 @@ func NewActionEdtior(app fyne.App, conf *config.Config, macro config.Macro) *Act
 	ae.actionsScroll = container.NewVScroll(container.NewVBox())
 	ae.actionsScroll.Resize(ae.actionsScroll.Size().AddWidthHeight(0, 400))
 
-	// Actions
+	// Add actions to actionsScroll's VBox
 	for _, action := range ae.Macro.Actions {
 		ae.actionsScroll.Content.(*fyne.Container).Add(
-			ae.newActionItemEditor(action),
+			NewActionItemEdtior(conf, action),
 		)
 	}
 
@@ -95,6 +92,36 @@ func NewActionEdtior(app fyne.App, conf *config.Config, macro config.Macro) *Act
 	return ae
 }
 
+// func (ae *ActionEditor) newActionItemEditor(action map[string]string) *fyne.Container {
+// 	// Get the key/vals from the action
+// 	funcName, funcParam := utils.GetKeyVal(action)
+
+// 	paramEntryBinding := binding.NewString()
+// 	paramEntryBinding.Set(funcParam)
+
+// 	paramEntry := widget.NewEntryWithData(paramEntryBinding)
+// 	paramEntry.Validator = nil
+
+// 	funcSelect := widget.NewSelect(macro.FunctionList, func(s string) {
+// 		fmt.Println(s)
+// 	})
+// 	funcSelect.SetSelected(funcName)
+
+// 	container := container.NewBorder(
+// 		nil,
+// 		nil,
+// 		container.NewHBox(
+// 			widget.NewIcon(theme.MenuIcon()),
+// 			funcSelect,
+// 		),
+// 		container.NewHBox(
+// 			widget.NewIcon(theme.WindowCloseIcon()),
+// 			layout.NewSpacer()),
+// 		paramEntry,
+// 	)
+// 	return container
+// }
+
 func (ae *ActionEditor) Show() {
 	newWin := ae.app.NewWindow("Edit Actions")
 	newWin.SetContent(ae.content)
@@ -105,34 +132,4 @@ func (ae *ActionEditor) Show() {
 
 func (ae *ActionEditor) CreateRenderer() fyne.WidgetRenderer {
 	return widget.NewSimpleRenderer(ae.content)
-}
-
-func (ae *ActionEditor) newActionItemEditor(action map[string]string) *fyne.Container {
-	// Get the key/vals from the action
-	funcName, funcParam := utils.GetKeyVal(action)
-
-	paramEntryBinding := binding.NewString()
-	paramEntryBinding.Set(funcParam)
-
-	paramEntry := widget.NewEntryWithData(paramEntryBinding)
-	paramEntry.Validator = nil
-
-	funcSelect := widget.NewSelect(macro.FunctionList, func(s string) {
-		fmt.Println(s)
-	})
-	funcSelect.SetSelected(funcName)
-
-	container := container.NewBorder(
-		nil,
-		nil,
-		container.NewHBox(
-			widget.NewIcon(theme.MenuIcon()),
-			funcSelect,
-		),
-		container.NewHBox(
-			widget.NewIcon(theme.WindowCloseIcon()),
-			layout.NewSpacer()),
-		paramEntry,
-	)
-	return container
 }
