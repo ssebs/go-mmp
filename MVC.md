@@ -126,20 +126,45 @@
   - Observer pattern?
 - Can be in the same file as the model?
 
+## ControllerNotifier
+All Controllers should have a ref to a notifier, so they can send updates
+- `Notify()`
+- `Subscribe()`
+
 ### Config Controller
-- `notifyAll()`
 - `SaveConfig(destinationFullPath string)`
 - `LoadConfig(sourceFullPath) *Config`
 - `AddMacro(newMacro Macro)`
 - `DeleteMacro(idx int)`
-- `UpdateMacro(idx int)`
-- `Subscribe(id string?, callback func(c *config)?)`
+- `UpdateMacro(idx int, updatedMacro Macro)`
+- `GetMacro(idx int)`
+- `Subscribe(callback func() )`
+  - Calls controllernotifier?
 
 ### Metadata Controller
+- `SetCols(colCount int)`
+- `SetSerial(portName string, baud int)`
+- `SetDefaultDelay(time.Duration)`
+- `SetGUIMode(mode GUIMode)`
+- `Subscribe(callback func() )`
+  - Calls controllernotifier?
 
 ### Macro Controller
+- `SetName(n string)`
+- `AddAction(newAction Action)`
+- `DeleteAction(idx int)`
+- `UpdateAction(idx int, updatedAction Action)`
+- `GetAction(idx int)`
+- `Subscribe(callback func() )`
+  - Calls controllernotifier?
 
 ### Action Controller
+- `GetFunctionNames()` will return list of all allowed functions that can be used
+- `SetFuncName(fn string)`
+- `SetFuncParam(fp string)`
+- `CheckValidParam(fn, fp string) bool`
+- `Subscribe(callback func() )`
+  - Calls controllernotifier?
 
 
 ## Views
