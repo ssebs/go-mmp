@@ -10,45 +10,6 @@
 - [ ] Update all GUI elements when config data changes
 - [ ] Save config data from GUI to disk
 
-### GUI
-- [ ] Display Macros as buttons in correct order in a grid
-- [ ] Click on Macro btn will run a macro
-- [ ] File menu to:
-  - [ ] Open config
-  - [ ] Quit
-- [ ] Edit menu to:
-  - [ ] *Edit Macros* 
-  - [ ] *Edit Config*
-- *Edit Macros*:
-  - [ ] Convert buttons to *Custom Macro Edit* widgets in place of where the buttons were
-  - [ ] Drag and Drop the widgets to change position in grid
-  - [ ] Cancel Button
-    - Undo button would be nice too, but out of scope
-  - [ ] Save/Save As button
-  - [ ] *Custom Macro Edit* widgets
-    - [ ] Draggable using hamburger icon on top left
-    - [ ] Delete Macro using `x` in top right
-    - [ ] Rename Title/Name from entry
-    - [ ] *Edit Actions* button on the bottom
-  - [ ] *Edit Actions* widget
-    - [ ] New window
-    - [ ] Macro name (entry so it can be edited too)
-    - [ ] Short tutorial / explanation
-    - [ ] List of *ActionItem Editor* widgets
-      - [ ] Drag and Drop the widgets to change run order
-    - [ ] Save btn
-  - [ ] *ActionItem Editor* widget
-    - [ ] Draggable using hamburger icon on left
-    - [ ] Select with Function to run
-    - [ ] Entry with Function Parameter as string
-      - [ ] Validation - depends on Function
-- [ ] *Edit Config* widget
-  - [ ] New window
-  - [ ] Edit the Serial conn info
-  - [ ] Edit the default delay
-  - [ ] Edit the gui mode
-  - [ ] Save btn
-
 ## Config data has:
 - Metadata
   - Layout/size
@@ -175,3 +136,40 @@ All Controllers should have a ref to a notifier, so they can send updates
 - Drag/Drop type state should not update the data model until "done". 
   - e.g. DragEnd() should tell the controller what to update and how
     - e.g. SwapMacroPositions(idx1, idx2)
+- [ ] Display Macros as buttons in correct order in a grid
+- [ ] Click on Macro btn will run a macro
+- [ ] File menu to:
+  - [ ] Open config
+  - [ ] Quit
+- [ ] Edit menu to:
+  - [ ] *Edit Macros* 
+  - [ ] *Edit Config*
+- *Edit Macros*:
+  - [ ] Convert buttons to *Custom Macro Edit* widgets in place of where the buttons were
+  - [ ] Drag and Drop the widgets to change position in grid
+  - [ ] Cancel Button
+    - Undo button would be nice too, but out of scope
+  - [ ] Save/Save As button
+  - [ ] *Custom Macro Edit* widgets
+    - [ ] Draggable using hamburger icon on top left
+    - [ ] Delete Macro using `x` in top right
+    - [ ] Rename Title/Name from entry
+    - [ ] *Edit Actions* button on the bottom
+  - [ ] *Edit Actions* widget
+    - [ ] New window
+    - [ ] Macro name (entry so it can be edited too)
+    - [ ] Short tutorial / explanation
+    - [ ] List of *ActionItem Editor* widgets
+      - [ ] Drag and Drop the widgets to change run order
+    - [ ] Save btn
+  - [ ] *ActionItem Editor* widget
+    - [ ] Draggable using hamburger icon on left
+    - [ ] Select with Function to run
+    - [ ] Entry with Function Parameter as string
+      - [ ] Validation - depends on Function
+- [ ] *Edit Config* widget
+  - [ ] New window
+  - [ ] Edit the Serial conn info
+  - [ ] Edit the default delay
+  - [ ] Edit the gui mode
+  - [ ] Save btn
