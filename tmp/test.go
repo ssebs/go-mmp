@@ -7,6 +7,7 @@ import (
 	"github.com/ssebs/go-mmp/config"
 	"github.com/ssebs/go-mmp/gui"
 	"github.com/ssebs/go-mmp/macro"
+	"github.com/ssebs/go-mmp/models"
 )
 
 func main() {
@@ -21,7 +22,7 @@ func main() {
 		fmt.Fprintln(os.Stderr, err.Error())
 	}
 
-	if cliFlags.GUIMode != config.NOTSET {
+	if cliFlags.GUIMode != models.NOTSET {
 		macroMgr.Config.GUIMode = cliFlags.GUIMode
 	}
 

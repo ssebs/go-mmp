@@ -3,11 +3,13 @@ package config
 import (
 	"os"
 	"testing"
+
+	"github.com/ssebs/go-mmp/models"
 )
 
 func TestLoadConfig(t *testing.T) {
 	cliFlags := &CLIFlags{
-		GUIMode:     TESTING,
+		GUIMode:     models.TESTING,
 		ConfigPath:  "../config/defaultConfig.yml",
 		ResetConfig: false,
 	}

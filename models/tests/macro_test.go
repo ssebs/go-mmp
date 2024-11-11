@@ -8,11 +8,11 @@ import (
 )
 
 func TestMacroModel(t *testing.T) {
+	want := models.Macro{
+		Name:    "TestingName",
+		Actions: make([]models.Action, 0),
+	}
 	t.Run("Test empty actions constructor", func(t *testing.T) {
-		want := models.Macro{
-			Name:    "TestingName",
-			Actions: make([]models.Action, 0),
-		}
 		got := models.NewMacro("TestingName", nil)
 		assert.Equal(t, want, got)
 	})
@@ -22,7 +22,7 @@ func TestMacroModel(t *testing.T) {
 			{FuncName: "a", FuncParam: "a"},
 			{FuncName: "b", FuncParam: "b"},
 		}
-		want := models.Macro{
+		want = models.Macro{
 			Name:    "TestingName",
 			Actions: _actions,
 		}
@@ -38,4 +38,29 @@ func TestMacroModel(t *testing.T) {
 
 	})
 
+	t.Run("Test parser", func(t *testing.T) {
+		assert.YAMLEq(
+			t,
+			"Name: TestingName\nActions: []\n",
+			want.String(),
+		)
+
+		want.Actions = append(want.Actions,
+			models.Action{FuncName: "a", FuncParam: "aa"},
+			models.Action{FuncName: "b", FuncParam: "bb"},
+		)
+
+		expectedStr := `Name: TestingName
+Actions:
+    - FuncName: a
+      FuncParam: aa
+    - FuncName: b
+      FuncParam: bb`
+
+		assert.YAMLEq(
+			t,
+			expectedStr,
+			want.String(),
+		)
+	})
 }

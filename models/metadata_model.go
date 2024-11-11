@@ -23,6 +23,7 @@ func NewMetadata(
 		SerialPortName: portName,
 		SerialBaudRate: baudRate,
 		Delay:          delay,
+		GUIMode:        guiMode,
 	}
 }
 
@@ -32,6 +33,7 @@ func NewDefaultMetadata() Metadata {
 		SerialPortName: "",
 		SerialBaudRate: 9600,
 		Delay:          125 * time.Millisecond,
+		GUIMode:        GUIOnly,
 	}
 
 	// if ports, err := serial.GetPortsList(); err != nil {

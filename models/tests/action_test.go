@@ -12,13 +12,16 @@ func TestActionModel(t *testing.T) {
 		FuncName:  "TestingFunction",
 		FuncParam: "TestingParameter",
 	}
-	got := models.NewAction("TestingFunction", "TestingParameter")
-
-	assert.Equal(t, want, got)
-	assert.YAMLEq(
-		t,
-		"FuncName: TestingFunction\nFuncParam: TestingParameter\n",
-		got.String(),
-	)
+	t.Run("Test constructor", func(t *testing.T) {
+		got := models.NewAction("TestingFunction", "TestingParameter")
+		assert.Equal(t, want, got)
+	})
+	t.Run("Test parser", func(t *testing.T) {
+		assert.YAMLEq(
+			t,
+			"FuncName: TestingFunction\nFuncParam: TestingParameter\n",
+			want.String(),
+		)
+	})
 
 }

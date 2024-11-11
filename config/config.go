@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/ssebs/go-mmp/models"
 	"github.com/ssebs/go-mmp/utils"
 	"gopkg.in/yaml.v3"
 )
@@ -64,7 +65,7 @@ type Config struct {
 	SerialDevice   SerialDevice    `yaml:"SerialDevice"`
 	Macros         map[BtnId]Macro `yaml:"Macros"`
 	Delay          time.Duration   `yaml:"Delay"`
-	GUIMode        GUIMode         `yaml:"GUIMode"`
+	GUIMode        models.GUIMode  `yaml:"GUIMode"`
 	ConfigFullPath string          `yaml:"-"`
 }
 type BtnId int

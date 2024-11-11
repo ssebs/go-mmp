@@ -9,6 +9,7 @@ import (
 	"github.com/ssebs/go-mmp/config"
 	"github.com/ssebs/go-mmp/gui"
 	"github.com/ssebs/go-mmp/macro"
+	"github.com/ssebs/go-mmp/models"
 	"github.com/ssebs/go-mmp/serialdevice"
 )
 
@@ -27,7 +28,7 @@ func main() {
 		gui.ShowErrorDialogAndRun(err) // TODO: only if GUIMode is not set to daemon
 	}
 
-	if cliFlags.GUIMode != config.NOTSET {
+	if cliFlags.GUIMode != models.NOTSET {
 		macroMgr.Config.GUIMode = cliFlags.GUIMode
 	}
 
@@ -36,7 +37,7 @@ func main() {
 
 	// If GUI only mode, ShowAndRun instead of continuing with serial stuff.
 	// This will "block" until the window is closed, then exit
-	if conf.GUIMode == config.GUIOnly {
+	if conf.GUIMode == models.GUIOnly {
 		g.RootWin.SetOnClosed(func() {
 			fmt.Println("gui only closed")
 			os.Exit(0)

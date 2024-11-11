@@ -2,6 +2,7 @@ package config
 
 import (
 	flag "github.com/spf13/pflag"
+	"github.com/ssebs/go-mmp/models"
 )
 
 // Will be used as /home/user/mmpConfig.yml, or C:\Users\user\mmpConfig.yml
@@ -9,7 +10,7 @@ const ConfigPathShortName string = "mmpConfig.yml"
 
 // CLI flag values will be stored in this
 type CLIFlags struct {
-	GUIMode     GUIMode
+	GUIMode     models.GUIMode
 	ConfigPath  string
 	ResetConfig bool
 	Testing     bool
