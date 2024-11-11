@@ -12,6 +12,7 @@ require (
 require (
 	github.com/spf13/pflag v1.0.5
 	github.com/sqweek/dialog v0.0.0-20240226140203-065105509627
+	github.com/stretchr/testify v1.9.0
 )
 
 require (
@@ -52,7 +53,6 @@ require (
 	github.com/shoenig/go-m1cpu v0.1.6 // indirect
 	github.com/srwiley/oksvg v0.0.0-20221011165216-be6e8873101c // indirect
 	github.com/srwiley/rasterx v0.0.0-20220730225603-2ab79fcdd4ef // indirect
-	github.com/stretchr/testify v1.9.0 // indirect
 	github.com/tailscale/win v0.0.0-20240403170916-6580b55d49ca // indirect
 	github.com/tklauser/go-sysconf v0.3.14 // indirect
 	github.com/tklauser/numcpus v0.8.0 // indirect
