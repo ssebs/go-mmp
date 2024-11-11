@@ -40,4 +40,4 @@ Macros:
             - SendText: "12"
             - SendText: "12"
 Delay: 125ms
-GUIMode: NORMAL
+GUIMode: GUIOnly

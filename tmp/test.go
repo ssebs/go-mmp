@@ -15,10 +15,12 @@ func main() {
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err.Error())
 	}
+
 	macroMgr, err := macro.NewMacroManager(conf)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err.Error())
 	}
+
 	if cliFlags.GUIMode != config.NOTSET {
 		macroMgr.Config.GUIMode = cliFlags.GUIMode
 	}
