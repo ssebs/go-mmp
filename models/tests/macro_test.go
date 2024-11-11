@@ -22,19 +22,19 @@ func TestMacroModel(t *testing.T) {
 			{FuncName: "a", FuncParam: "a"},
 			{FuncName: "b", FuncParam: "b"},
 		}
-		want = models.Macro{
+		want2 := models.Macro{
 			Name:    "TestingName",
 			Actions: _actions,
 		}
 
 		// First test with same array
 		got := models.NewMacro("TestingName", _actions)
-		assert.Equal(t, want, got)
+		assert.Equal(t, want2, got)
 
 		// Next test appending the values
 		got = models.NewMacro("TestingName", nil)
 		got.Actions = append(got.Actions, _actions...)
-		assert.Equal(t, want, got)
+		assert.Equal(t, want2, got)
 
 	})
 
