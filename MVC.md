@@ -9,6 +9,7 @@
 - [ ] Update config data from GUI
 - [ ] Update all GUI elements when config data changes
 - [ ] Save config data from GUI to disk
+- [ ] `ports, err := serial.GetPortsList()` metadata editor
 
 ## Config data has:
 - Metadata
@@ -87,7 +88,7 @@
   - Observer pattern?
 - Can be in the same file as the model?
 
-## ControllerNotifier
+### ControllerNotifier
 All Controllers should have a ref to a notifier, so they can send updates
 - `Notify()`
 - `Subscribe()`
@@ -107,6 +108,7 @@ All Controllers should have a ref to a notifier, so they can send updates
 - `SetSerial(portName string, baud int)`
 - `SetDefaultDelay(time.Duration)`
 - `SetGUIMode(mode GUIMode)`
+- `GetSerialPorts() []string`
 - `Subscribe(callback func() )`
   - Calls controllernotifier?
 

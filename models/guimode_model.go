@@ -1,4 +1,4 @@
-package config
+package models
 
 import (
 	"fmt"
@@ -20,32 +20,7 @@ const (
 	TESTING
 )
 
-/* GUIMode pflag.Value implementation */
-func (g *GUIMode) String() string {
-	return g.Type()
-}
-func (g *GUIMode) Type() string {
-	switch *g {
-	case NORMAL:
-		return "NORMAL"
-	case GUIOnly:
-		return "GUIOnly"
-	}
-	return ""
-}
-func (g *GUIMode) Set(m string) error {
-	switch strings.ToUpper(m) {
-	case "NORMAL":
-		*g = NORMAL
-		return nil
-	case "GUIONLY":
-		*g = GUIOnly
-		return nil
-	}
-
-	return fmt.Errorf("could not find mode %s", m)
-}
-
+/* YAML Marshaller implementations */
 func (g *GUIMode) UnmarshalYAML(node *yaml.Node) error {
 	var modeStr string
 	var modeInt int
@@ -71,4 +46,30 @@ func (g *GUIMode) UnmarshalYAML(node *yaml.Node) error {
 
 func (g GUIMode) MarshalYAML() (interface{}, error) {
 	return g.Type(), nil
+}
+
+/* GUIMode pflag.Value implementation */
+func (g *GUIMode) String() string {
+	return g.Type()
+}
+func (g *GUIMode) Type() string {
+	switch *g {
+	case NORMAL:
+		return "NORMAL"
+	case GUIOnly:
+		return "GUIOnly"
+	}
+	return ""
+}
+func (g *GUIMode) Set(m string) error {
+	switch strings.ToUpper(m) {
+	case "NORMAL":
+		*g = NORMAL
+		return nil
+	case "GUIONLY":
+		*g = GUIOnly
+		return nil
+	}
+
+	return fmt.Errorf("could not find mode %s", m)
 }
