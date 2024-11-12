@@ -34,7 +34,7 @@ func (g *GUIMode) Type() string {
 	case TESTING:
 		return "TESTING"
 	}
-	return ""
+	return "NOTSET"
 }
 
 func (g *GUIMode) Set(m string) error {
@@ -49,6 +49,7 @@ func (g *GUIMode) Set(m string) error {
 		return nil
 	}
 
+	*g = NOTSET
 	return fmt.Errorf("could not find mode %s", m)
 }
 
