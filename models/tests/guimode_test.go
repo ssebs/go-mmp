@@ -1,10 +1,12 @@
 package modelstests
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/ssebs/go-mmp/models"
 	"github.com/stretchr/testify/assert"
+	"gopkg.in/yaml.v3"
 )
 
 func TestGUIModeModel(t *testing.T) {
@@ -29,6 +31,25 @@ func TestGUIModeModel(t *testing.T) {
 func TestGUIModeYAML(t *testing.T) {
 	got := models.TESTING
 	t.Run("Test MarshalYAML", func(t *testing.T) {
-		got.MarshalYAML()
+		gotYaml, err := got.MarshalYAML()
+		assert.Nil(t, err)
+		assert.Equal(t, "TESTING", gotYaml)
 	})
+
+	t.Run("Test UnmarshalYAML", func(t *testing.T) {
+		want := TestStruct{StrField: "TEST", GMode: models.TESTING}
+		got := TestStruct{}
+
+		sampleData := []byte("StrField: \"TEST\"\nGMode: \"TESTING\"\n")
+		err := yaml.Unmarshal(sampleData, &got)
+		assert.Nil(t, err)
+
+		fmt.Println(want)
+		assert.Equal(t, want, got)
+	})
+}
+
+type TestStruct struct {
+	StrField string         `yaml:"StrField"`
+	GMode    models.GUIMode `yaml:"GMode"`
 }
