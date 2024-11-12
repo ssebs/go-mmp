@@ -89,9 +89,14 @@
 - Can be in the same file as the model?
 
 ### ControllerNotifier
-All Controllers should have a ref to a notifier, so they can send updates
-- `Notify()`
-- `Subscribe()`
+- A ControllerNotifier keeps track of a list of followers, which are Notifiers
+- It allows a Notifier to join/leave, and get/send notifications
+
+#### Notifier interface:
+- All Controllers should be a Notifier, so they can be added to a ControllerNotifier
+- What makes a Notifier?
+  - It should be able to notify the ControllerNotifier of something
+  - It should be able to Subscribe for alerts from a ControllerNotifier
 
 ### Action Controller
 - `GetFunctionNames()` will return list of all allowed functions that can be used

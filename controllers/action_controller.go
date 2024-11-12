@@ -1,12 +1,43 @@
 package controllers
 
-// Ensure interface implementation.
-var _ Notifier = (*ActionController)(nil)
+import (
+	"fmt"
+
+	"github.com/beevik/guid"
+)
 
 type ActionController struct {
-	ControllerNotifier
+	*ControllerNotifier
+	controllerID *guid.Guid
 }
 
-func (ac *ActionController) Notify(payload interface{}) {}
+func NewActionController(controllerNotifier *ControllerNotifier) *ActionController {
+	ac := &ActionController{
+		ControllerNotifier: controllerNotifier,
+		controllerID:       guid.New(),
+	}
 
-func (ac *ActionController) Subscribe() {}
+	return ac
+}
+
+// Notifier implementation
+var _ Notifier = (*ActionController)(nil)
+
+func (ac *ActionController) NotifyById(id *guid.Guid, payload interface{}) {
+	ac.ControllerNotifier.NotifyById(id, payload)
+}
+func (ac *ActionController) NotifyAll(payload interface{}) {
+	ac.ControllerNotifier.NotifyAll(payload)
+}
+
+func (ac *ActionController) ReceiveNotification(payload interface{}) {
+	fmt.Println(payload)
+}
+
+func (ac *ActionController) Subscribe() {
+	ac.ControllerNotifier.Subscribe(ac)
+}
+func (ac *ActionController) Unsubscribe() {}
+func (ac *ActionController) GetID() *guid.Guid {
+	return ac.controllerID
+}
