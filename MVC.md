@@ -93,6 +93,14 @@ All Controllers should have a ref to a notifier, so they can send updates
 - `Notify()`
 - `Subscribe()`
 
+### Action Controller
+- `GetFunctionNames()` will return list of all allowed functions that can be used
+- `SetFuncName(fn string)`
+- `SetFuncParam(fp string)`
+- `CheckValidParam(fn, fp string) bool`
+- `Subscribe(callback func() )`
+  - Calls controllernotifier?
+
 ### Config Controller
 - `SaveConfig(destinationFullPath string)`
 - `LoadConfig(sourceFullPath) *Config`
@@ -121,13 +129,6 @@ All Controllers should have a ref to a notifier, so they can send updates
 - `Subscribe(callback func() )`
   - Calls controllernotifier?
 
-### Action Controller
-- `GetFunctionNames()` will return list of all allowed functions that can be used
-- `SetFuncName(fn string)`
-- `SetFuncParam(fp string)`
-- `CheckValidParam(fn, fp string) bool`
-- `Subscribe(callback func() )`
-  - Calls controllernotifier?
 
 
 ## Views
