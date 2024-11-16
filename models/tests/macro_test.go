@@ -44,6 +44,38 @@ func TestModelMacroActions(t *testing.T) {
 
 	})
 
+	t.Run("Test UpdateAction", func(t *testing.T) {
+		got := models.NewMacro("TEST", []*models.Action{
+			models.NewAction("TESTONE", "TESTONE"),
+			models.NewAction("TESTTWO", "TESTTWO"),
+			models.NewAction("replace_me", "replace_me"),
+		})
+
+		err := got.UpdateAction(2, models.NewAction("TESTTHREE", "TESTTHREE"))
+		assert.Nil(t, err)
+
+		assert.Equal(t, want, got)
+	})
+
+	t.Run("Test SwapActionPositions", func(t *testing.T) {
+		got := models.NewMacro("TEST", []*models.Action{
+			models.NewAction("TESTTHREE", "TESTTHREE"),
+			models.NewAction("TESTTWO", "TESTTWO"),
+			models.NewAction("TESTONE", "TESTONE"),
+		})
+		assert.NotEqual(t, want, got)
+
+		err := got.SwapActionPositions(0, 2)
+		assert.Nil(t, err)
+
+		assert.Equal(t, want, got)
+	})
+
+	t.Run("Test GetAction", func(t *testing.T) {
+		got, err := want.GetAction(1)
+		assert.Nil(t, err)
+		assert.Equal(t, want.Actions[1], got)
+	})
 }
 
 func TestMacroModel(t *testing.T) {
