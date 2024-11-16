@@ -8,7 +8,7 @@ import (
 )
 
 func TestActionModel(t *testing.T) {
-	want := models.Action{
+	want := &models.Action{
 		FuncName:  "TestingFunction",
 		FuncParam: "TestingParameter",
 	}

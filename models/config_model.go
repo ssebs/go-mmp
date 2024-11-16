@@ -7,18 +7,18 @@ import (
 )
 
 type ConfigM struct {
-	Metadata `yaml:"Metadata"`
-	Macros   []Macro `yaml:"Macros"`
+	*Metadata `yaml:"Metadata"`
+	Macros    []*Macro `yaml:"Macros"`
 }
 
-func NewConfigM(meta Metadata, macros []Macro) ConfigM {
-	c := ConfigM{
+func NewConfigM(meta *Metadata, macros []*Macro) *ConfigM {
+	c := &ConfigM{
 		Metadata: meta,
 		Macros:   macros,
 	}
 
 	if c.Macros == nil {
-		c.Macros = make([]Macro, 0)
+		c.Macros = make([]*Macro, 0)
 	}
 
 	return c

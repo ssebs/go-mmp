@@ -9,7 +9,7 @@ import (
 )
 
 func TestMetadataModel(t *testing.T) {
-	want := models.Metadata{
+	want := &models.Metadata{
 		Columns:        1,
 		SerialPortName: "TEST",
 		SerialBaudRate: 1,
@@ -36,7 +36,7 @@ GUIMode: TESTING`
 	})
 
 	t.Run("Test default constructor", func(t *testing.T) {
-		want = models.Metadata{
+		want = &models.Metadata{
 			Columns:        2,
 			SerialPortName: "",
 			SerialBaudRate: 9600,

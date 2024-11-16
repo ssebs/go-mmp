@@ -17,8 +17,8 @@ type Metadata struct {
 
 func NewMetadata(
 	portName string, baudRate int, guiMode GUIMode, cols int, delay time.Duration,
-) Metadata {
-	return Metadata{
+) *Metadata {
+	return &Metadata{
 		Columns:        cols,
 		SerialPortName: portName,
 		SerialBaudRate: baudRate,
@@ -27,8 +27,8 @@ func NewMetadata(
 	}
 }
 
-func NewDefaultMetadata() Metadata {
-	m := Metadata{
+func NewDefaultMetadata() *Metadata {
+	m := &Metadata{
 		Columns:        2,
 		SerialPortName: "",
 		SerialBaudRate: 9600,

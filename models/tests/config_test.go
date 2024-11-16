@@ -8,12 +8,12 @@ import (
 )
 
 func TestConfigM(t *testing.T) {
-	_macros := []models.Macro{
+	_macros := []*models.Macro{
 		models.NewMacro("TestFirst", nil),
 		models.NewMacro("TestSecond", nil),
 	}
 
-	want := models.ConfigM{
+	want := &models.ConfigM{
 		Metadata: models.NewDefaultMetadata(),
 		Macros:   _macros,
 	}

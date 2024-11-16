@@ -64,3 +64,6 @@ func (v *ActionItemEditorView) SetOnFuncNameChanged(f func(string)) {
 func (v *ActionItemEditorView) SetOnFuncParamChanged(f func(string)) {
 	v.funcParamEntry.OnChanged = f
 }
+func (v *ActionItemEditorView) SetOnDelete(f func()) {
+	v.delBtn.OnTapped = f
+}
