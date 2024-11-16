@@ -10,7 +10,6 @@ require (
 )
 
 require (
-	github.com/beevik/guid v1.0.0
 	github.com/spf13/pflag v1.0.5
 	github.com/sqweek/dialog v0.0.0-20240226140203-065105509627
 	github.com/stretchr/testify v1.9.0

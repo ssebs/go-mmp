@@ -7,6 +7,7 @@ import (
 )
 
 // TODO: generate this from macro
+// TODO: enum?
 var actionFunctionList = []string{
 	"Delay",
 	"PressRelease",
@@ -35,7 +36,7 @@ func GetActionFunctions() []string {
 	return actionFunctionList
 }
 
-func (a *Action) String() string {
+func (a Action) String() string {
 	data, err := yaml.Marshal(a)
 	if err != nil {
 		log.Fatal(err)
