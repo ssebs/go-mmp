@@ -10,7 +10,7 @@ import (
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
 	"github.com/ssebs/go-mmp/config"
-	"github.com/ssebs/go-mmp/macro"
+	"github.com/ssebs/go-mmp/models"
 	"github.com/ssebs/go-mmp/utils"
 )
 
@@ -40,7 +40,7 @@ func NewActionItemEdtior(conf *config.Config, action map[string]string) *ActionI
 		funcSelect:        nil,
 	}
 	// Function Select to set FuncName
-	ae.funcSelect = widget.NewSelect(macro.FunctionList, ae.Selected) // TODO: Create OnSelected
+	ae.funcSelect = widget.NewSelect(models.GetActionFunctions(), ae.Selected) // TODO: Create OnSelected
 	ae.funcSelect.SetSelected(funcName)
 
 	// FuncParam Entry

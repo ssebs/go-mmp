@@ -30,15 +30,11 @@
   - key: Function to run e.g. `PressRelease`
   - val: Parameter for func e.g. `DELETE`
 
-## The Plan
-- Create custom struct types for each field in config
-- Macro should have methods to update values
-- Actions data structure should be changed from list of key/val pairs. it's hard to use
-
 ## Models
 - Config is the "main" one that composes other types
 - Structs with yaml support
 - Have constructors
+- Getters and Setters that can be used with Controllers
 
 ### Config Model:
 ```json
@@ -80,31 +76,13 @@
 ```
 
 ## Controllers 
-- Public functions to:
-  - Manipulate data within Model from a View
-  - Update Views when something in the Model is updated
-  - e.g. for Actions, there should be AddAction() / GetActions() methods
-- Should notify the model, and the view that data has been updated
-  - Observer pattern?
-- Can be in the same file as the model?
-
-### ControllerNotifier
-- A ControllerNotifier keeps track of a list of followers, which are Notifiers
-- It allows a Notifier to join/leave, and get/send notifications
-
-#### Notifier interface:
-- All Controllers should be a Notifier, so they can be added to a ControllerNotifier
-- What makes a Notifier?
-  - It should be able to notify the ControllerNotifier of something
-  - It should be able to Subscribe for alerts from a ControllerNotifier
+- Runs functions / acts as binding between model and view
 
 ### Action Controller
 - `GetFunctionNames()` will return list of all allowed functions that can be used
 - `SetFuncName(fn string)`
 - `SetFuncParam(fp string)`
 - `CheckValidParam(fn, fp string) bool`
-- `Subscribe(callback func() )`
-  - Calls controllernotifier?
 
 ### Config Controller
 - `SaveConfig(destinationFullPath string)`
@@ -133,8 +111,6 @@
 - `GetAction(idx int)`
 - `Subscribe(callback func() )`
   - Calls controllernotifier?
-
-
 
 ## Views
 - GUI widgets should be able to:
