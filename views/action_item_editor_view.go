@@ -10,6 +10,9 @@ import (
 	"github.com/ssebs/go-mmp/models"
 )
 
+// Ensure interface implementation.
+var _ fyne.Widget = (*ActionItemEditorView)(nil)
+
 type ActionItemEditorView struct {
 	widget.BaseWidget
 	funcSelect     *widget.Select

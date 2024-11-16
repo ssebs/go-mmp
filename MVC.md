@@ -1,8 +1,6 @@
 # Model View Controller planning doc for data binding.
 
 ## Goals
-
-### Config
 - [ ] Load config data from disk
 - [ ] Generate config if needed (default, test, --reset, etc.)
 - [ ] Save config data to disk
@@ -91,8 +89,6 @@
 - `DeleteMacro(idx int)`
 - `UpdateMacro(idx int, updatedMacro Macro)`
 - `GetMacro(idx int)`
-- `Subscribe(callback func() )`
-  - Calls controllernotifier?
 
 ### Metadata Controller
 - `SetCols(colCount int)`
@@ -100,8 +96,6 @@
 - `SetDefaultDelay(time.Duration)`
 - `SetGUIMode(mode GUIMode)`
 - `GetSerialPorts() []string`
-- `Subscribe(callback func() )`
-  - Calls controllernotifier?
 
 ### Macro Controller
 - `SetName(n string)`
@@ -109,8 +103,6 @@
 - `DeleteAction(idx int)`
 - `UpdateAction(idx int, updatedAction Action)`
 - `GetAction(idx int)`
-- `Subscribe(callback func() )`
-  - Calls controllernotifier?
 
 ## Views
 - GUI widgets should be able to:

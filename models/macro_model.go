@@ -1,7 +1,9 @@
 package models
 
 import (
+	"fmt"
 	"log"
+	"slices"
 
 	"gopkg.in/yaml.v3"
 )
@@ -22,6 +24,46 @@ func NewMacro(name string, actions []*Action) *Macro {
 	}
 
 	return m
+}
+
+func (m *Macro) AddAction(a *Action) {
+	m.Actions = append(m.Actions, a)
+}
+func (m *Macro) UpdateAction(idx int, updatedAction *Action) error {
+	if !m.isValidBoundsInActions(idx) {
+		return fmt.Errorf("idx out of bounds of Macro's actions")
+	}
+
+	m.Actions[idx] = updatedAction
+	return nil
+}
+func (m *Macro) DeleteAction(idx int) error {
+	if !m.isValidBoundsInActions(idx) {
+		return fmt.Errorf("idx out of bounds of Macro's actions")
+	}
+
+	m.Actions = slices.Delete(m.Actions, idx, idx+1)
+	return nil
+}
+
+func (m *Macro) GetAction(idx int) (*Action, error) {
+	if !m.isValidBoundsInActions(idx) {
+		return nil, fmt.Errorf("idx out of bounds of Macro's actions")
+	}
+	return m.Actions[idx], nil
+}
+
+func (m *Macro) SwapActionPositions(idx1, idx2 int) error {
+	if !m.isValidBoundsInActions(idx1) || !m.isValidBoundsInActions(idx2) {
+		return fmt.Errorf("idx out of bounds of Macro's actions")
+	}
+
+	m.Actions[idx1], m.Actions[idx2] = m.Actions[idx2], m.Actions[idx1]
+	return nil
+}
+
+func (m *Macro) isValidBoundsInActions(idx int) bool {
+	return idx > len(m.Actions) || idx < 0
 }
 
 func (m Macro) String() string {

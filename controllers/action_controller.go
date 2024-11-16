@@ -36,3 +36,8 @@ func NewActionController(a *models.Action, v *views.ActionItemEditorView) *Actio
 func (ac *ActionController) UpdateActionView() {
 	ac.ActionItemEditorView.SetAction(ac.Action)
 }
+
+func (ac *ActionController) CheckValidParams() bool {
+	// TODO: implement
+	return false
+}
