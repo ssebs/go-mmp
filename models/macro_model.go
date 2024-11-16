@@ -63,7 +63,7 @@ func (m *Macro) SwapActionPositions(idx1, idx2 int) error {
 }
 
 func (m *Macro) isValidBoundsInActions(idx int) bool {
-	return idx > len(m.Actions) || idx < 0
+	return idx <= len(m.Actions) && idx >= 0
 }
 
 func (m Macro) String() string {

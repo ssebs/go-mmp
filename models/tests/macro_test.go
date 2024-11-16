@@ -7,6 +7,45 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestModelMacroActions(t *testing.T) {
+	want := &models.Macro{
+		Name: "TEST",
+		Actions: []*models.Action{
+			models.NewAction("TESTONE", "TESTONE"),
+			models.NewAction("TESTTWO", "TESTTWO"),
+			models.NewAction("TESTTHREE", "TESTTHREE"),
+		},
+	}
+
+	t.Run("Test AddAction", func(t *testing.T) {
+		got := models.NewMacro("TEST", nil)
+		got.AddAction(models.NewAction("TESTONE", "TESTONE"))
+		got.AddAction(models.NewAction("TESTTWO", "TESTTWO"))
+		got.AddAction(models.NewAction("TESTTHREE", "TESTTHREE"))
+
+		assert.Equal(t, want, got)
+	})
+
+	t.Run("Test DeleteAction", func(t *testing.T) {
+		got := models.NewMacro("TEST", []*models.Action{
+			models.NewAction("TESTONE", "TESTONE"),
+			models.NewAction("TESTTWO", "TESTTWO"),
+			models.NewAction("TESTTHREE", "TESTTHREE"),
+			models.NewAction("DELETE_ME", "DELETE_ME"),
+		})
+		// Valid delete
+		err := got.DeleteAction(3)
+		assert.Nil(t, err)
+		assert.Equal(t, want, got)
+
+		// Invalid delete
+		err = got.DeleteAction(-1)
+		assert.Error(t, err)
+
+	})
+
+}
+
 func TestMacroModel(t *testing.T) {
 	want := &models.Macro{
 		Name:    "TestingName",
