@@ -29,6 +29,14 @@ func NewMacro(name string, actions []*Action) *Macro {
 func (m *Macro) AddAction(a *Action) {
 	m.Actions = append(m.Actions, a)
 }
+
+func (m *Macro) GetAction(idx int) (*Action, error) {
+	if !m.isValidBoundsInActions(idx) {
+		return nil, fmt.Errorf("idx out of bounds of Macro's actions")
+	}
+	return m.Actions[idx], nil
+}
+
 func (m *Macro) UpdateAction(idx int, updatedAction *Action) error {
 	if !m.isValidBoundsInActions(idx) {
 		return fmt.Errorf("idx out of bounds of Macro's actions")
@@ -37,6 +45,7 @@ func (m *Macro) UpdateAction(idx int, updatedAction *Action) error {
 	m.Actions[idx] = updatedAction
 	return nil
 }
+
 func (m *Macro) DeleteAction(idx int) error {
 	if !m.isValidBoundsInActions(idx) {
 		return fmt.Errorf("idx out of bounds of Macro's actions")
@@ -44,13 +53,6 @@ func (m *Macro) DeleteAction(idx int) error {
 
 	m.Actions = slices.Delete(m.Actions, idx, idx+1)
 	return nil
-}
-
-func (m *Macro) GetAction(idx int) (*Action, error) {
-	if !m.isValidBoundsInActions(idx) {
-		return nil, fmt.Errorf("idx out of bounds of Macro's actions")
-	}
-	return m.Actions[idx], nil
 }
 
 func (m *Macro) SwapActionPositions(idx1, idx2 int) error {
