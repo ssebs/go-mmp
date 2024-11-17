@@ -14,27 +14,54 @@ func main() {
 	testApp := app.New()
 	win := testApp.NewWindow("TEST")
 
-	mm := models.NewMacro("TestMacro", []*models.Action{
-		models.NewAction("Shortcut", "CTRL+C"),
-		models.NewAction("Delay", "200ms"),
-		models.NewAction("Shortcut", "CTRL+V"),
-	})
-	mv := views.NewMacroEditorView()
-	mc := controllers.NewMacroController(mm, mv)
-	mc.UpdateMacroView()
+	mm := models.NewDefaultMetadata()
+	mv := views.NewMetadataEditorView()
+	mc := controllers.NewMetadataController(mm, mv)
+
+	mc.UpdateMetadataView()
 
 	win.SetContent(container.NewBorder(
 		widget.NewSeparator(),
 		widget.NewSeparator(),
 		widget.NewSeparator(),
 		widget.NewSeparator(),
-		mc.MacroEditorView,
+		mv,
 	))
 
 	win.CenterOnScreen()
 	win.Resize(fyne.NewSize(300, 500))
 	win.ShowAndRun()
+
 }
+
+// test MacroEditorView
+
+// func main() {
+// 	testApp := app.New()
+// 	win := testApp.NewWindow("TEST")
+
+// 	mm := models.NewMacro("TestMacro", []*models.Action{
+// 		models.NewAction("PressRelease", "ENTER"),
+// 		models.NewAction("Delay", "200ms"),
+// 		models.NewAction("SendText", "GG"),
+// 		models.NewAction("PressRelease", "ENTER"),
+// 	})
+// 	mv := views.NewMacroEditorView()
+// 	mc := controllers.NewMacroController(mm, mv)
+// 	mc.UpdateMacroView()
+
+// 	win.SetContent(container.NewBorder(
+// 		widget.NewSeparator(),
+// 		widget.NewSeparator(),
+// 		widget.NewSeparator(),
+// 		widget.NewSeparator(),
+// 		mc.MacroEditorView,
+// 	))
+
+// 	win.CenterOnScreen()
+// 	win.Resize(fyne.NewSize(300, 500))
+// 	win.ShowAndRun()
+// }
 
 // func main() {
 // 	cliFlags := config.ParseFlags()

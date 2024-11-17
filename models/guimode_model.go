@@ -9,7 +9,7 @@ import (
 
 type GUIMode int
 
-// var _ yaml.Marshaler = (*GUIMode)(nil)
+var _ yaml.Marshaler = (*GUIMode)(nil)
 var _ yaml.Unmarshaler = (*GUIMode)(nil)
 
 const (
@@ -19,6 +19,13 @@ const (
 	// CLIOnly
 	TESTING
 )
+
+func GetGUIModesList() []string {
+	return []string{
+		"NORMAL",
+		"GUIOnly",
+	}
+}
 
 /* GUIMode pflag.Value implementation */
 func (g *GUIMode) String() string {
@@ -44,6 +51,7 @@ func (g *GUIMode) Set(m string) error {
 		return nil
 	case "GUIONLY":
 		*g = GUIOnly
+		return nil
 	case "TESTING":
 		*g = TESTING
 		return nil
@@ -51,6 +59,23 @@ func (g *GUIMode) Set(m string) error {
 
 	*g = NOTSET
 	return fmt.Errorf("could not find mode %s", m)
+}
+func ParseGUIModeString(m string) (GUIMode, error) {
+	gm := NOTSET
+	switch strings.ToUpper(m) {
+	case "NORMAL":
+		gm = NORMAL
+	case "GUIONLY":
+		gm = GUIOnly
+	case "TESTING":
+		gm = TESTING
+	}
+
+	if gm != NOTSET {
+		return gm, nil
+	}
+
+	return gm, fmt.Errorf("could not find mode %s", m)
 }
 
 /* YAML Marshaller implementations */

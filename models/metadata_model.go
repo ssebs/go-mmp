@@ -1,9 +1,11 @@
 package models
 
 import (
+	"fmt"
 	"log"
 	"time"
 
+	"go.bug.st/serial"
 	"gopkg.in/yaml.v3"
 )
 
@@ -41,6 +43,23 @@ func NewDefaultMetadata() *Metadata {
 	// }
 
 	return m
+}
+
+func (m *Metadata) UpdateAllFields(updated Metadata) {
+	m.Columns = updated.Columns
+	m.SerialPortName = updated.SerialPortName
+	m.SerialBaudRate = updated.SerialBaudRate
+	m.Delay = updated.Delay
+	m.GUIMode = updated.GUIMode
+}
+
+func GetSerialPortsList() []string {
+	ports, err := serial.GetPortsList()
+	if err != nil {
+		fmt.Println("error getting serial ports.", err)
+		return nil
+	}
+	return ports
 }
 
 func (m Metadata) String() string {
