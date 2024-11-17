@@ -57,7 +57,8 @@ func (v *MacroEditorView) CreateRenderer() fyne.WidgetRenderer {
 		nil, nil,
 		v.actionsScroll,
 	)
-	return widget.NewSimpleRenderer(c)
+	c0 := container.NewBorder(nil, NewActionDragView(), nil, nil, c)
+	return widget.NewSimpleRenderer(c0)
 }
 
 /* Setters */
@@ -81,10 +82,6 @@ func (v *MacroEditorView) SetActions(actions []*ActionItemEditorView) {
 	v.actionsScroll.Refresh()
 }
 
-func (v *MacroEditorView) SetOnActionDeleted(f func(idx int)) {
-	v.OnActionDeleted = f
-}
-
 func (v *MacroEditorView) SetTitleLabel(s string) {
 	v.titleLabel.SetText(s)
 	v.titleLabel.Refresh()
@@ -99,4 +96,7 @@ func (v *MacroEditorView) SetOnAddAction(f func()) {
 }
 func (v *MacroEditorView) SetOnSave(f func()) {
 	v.saveBtn.OnTapped = f
+}
+func (v *MacroEditorView) SetOnActionDeleted(f func(idx int)) {
+	v.OnActionDeleted = f
 }
