@@ -57,8 +57,8 @@ func (v *MacroEditorView) CreateRenderer() fyne.WidgetRenderer {
 		nil, nil,
 		v.actionsScroll,
 	)
-	c0 := container.NewBorder(nil, container.NewVBox(widget.NewLabel("Test ActionDragView:"), NewActionDragView()), nil, nil, c)
-	return widget.NewSimpleRenderer(c0)
+
+	return widget.NewSimpleRenderer(c)
 }
 
 /* Setters */
