@@ -16,18 +16,19 @@ var _ fyne.Widget = (*MacroEditorView)(nil)
 
 type MacroEditorView struct {
 	widget.BaseWidget
-	macroNameEntry  *widget.Entry
-	actionsScroll   *container.Scroll
-	titleLabel      *widget.Label
-	addActionBtn    *widget.Button
-	saveBtn         *widget.Button
-	OnActionDeleted func(idx int)
+	macroNameEntry   *widget.Entry
+	actionsScroll    *container.Scroll
+	titleLabel       *widget.Label
+	addActionBtn     *widget.Button
+	saveBtn          *widget.Button
+	OnActionDeleted  func(idx int)
+	OnActionsSwapped func(idx1, idx2 int)
 }
 
 func NewMacroEditorView() *MacroEditorView {
 	view := &MacroEditorView{
 		macroNameEntry: widget.NewEntry(),
-		actionsScroll:  container.NewVScroll(container.NewVBox()),
+		actionsScroll:  container.NewVScroll(NewDragAndDropView()),
 		titleLabel: widget.NewLabelWithStyle("Edit", fyne.TextAlignCenter,
 			fyne.TextStyle{Bold: true},
 		),
@@ -67,18 +68,18 @@ func (v *MacroEditorView) SetMacroName(s string) {
 	v.macroNameEntry.Refresh()
 }
 func (v *MacroEditorView) SetActions(actions []*ActionItemEditorView) {
-	v.actionsScroll.Content.(*fyne.Container).RemoveAll()
+	var stuff []fyne.CanvasObject
 
 	for idx, action := range actions {
-		dragIcon := widget.NewIcon(theme.MenuIcon())
 		delBtn := widget.NewButtonWithIcon("", theme.NewErrorThemedResource(theme.WindowCloseIcon()), func() {
 			if v.OnActionDeleted != nil {
 				v.OnActionDeleted(idx)
 			}
 		})
-
-		v.actionsScroll.Content.(*fyne.Container).Add(container.NewBorder(nil, nil, dragIcon, delBtn, action))
+		stuff = append(stuff, container.NewBorder(nil, nil, nil, delBtn, action))
 	}
+	v.actionsScroll.Content.(*DragAndDropView).SetDragItems(stuff)
+	v.actionsScroll.Content.(*DragAndDropView).SetOnItemsSwapped(v.OnActionsSwapped)
 	v.actionsScroll.Refresh()
 }
 
@@ -99,4 +100,7 @@ func (v *MacroEditorView) SetOnSave(f func()) {
 }
 func (v *MacroEditorView) SetOnActionDeleted(f func(idx int)) {
 	v.OnActionDeleted = f
+}
+func (v *MacroEditorView) SetOnActionsSwapped(f func(idx1, idx2 int)) {
+	v.OnActionsSwapped = f
 }

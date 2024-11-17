@@ -44,6 +44,14 @@ func NewMacroController(m *models.Macro, v *views.MacroEditorView) *MacroControl
 		fmt.Printf("Deleted %d", idx)
 	})
 
+	mc.SetOnActionsSwapped(func(idx1, idx2 int) {
+		if err := mc.Macro.SwapActionPositions(idx1, idx2); err != nil {
+			fmt.Fprintln(os.Stderr, "failed to swap actions", err)
+		}
+		mc.UpdateActionsInView()
+		fmt.Printf("Swapped Actions %d and %d\n", idx1, idx2)
+	})
+
 	return mc
 }
 

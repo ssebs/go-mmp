@@ -38,8 +38,10 @@ func (v *DragAndDropView) SetOnItemsSwapped(f func(idx1, idx2 int)) {
 func (v *DragAndDropView) SetDragItems(items []fyne.CanvasObject) {
 	v.dragItems.RemoveAll()
 	for _, item := range items {
-		v.dragItems.Add(container.NewHBox(
+		v.dragItems.Add(container.NewBorder(
+			nil, nil,
 			widget.NewIcon(theme.MenuIcon()),
+			nil,
 			item,
 		))
 	}
@@ -48,6 +50,7 @@ func (v *DragAndDropView) SetDragItems(items []fyne.CanvasObject) {
 
 /* Actions Drag and Drop funcs */
 
+// TODO: draw dragged item on top z idx
 func (v *DragAndDropView) Dragged(e *fyne.DragEvent) {
 	v.latestDraggedIdx = v.getDragIconIdxAtPosition(e.Position)
 
@@ -90,7 +93,8 @@ func (v *DragAndDropView) getDragIconIdxAtPosition(mousePos fyne.Position) int {
 	for idx, item := range v.dragItems.Objects {
 
 		// Get the position of the drag icon, so we can only drag from that
-		itemIcon := item.(*fyne.Container).Objects[0]
+		// since we're using a border, we need to get the 2nd idx item
+		itemIcon := item.(*fyne.Container).Objects[1]
 		globalItemPos := itemIcon.Position().Add(item.(*fyne.Container).Position())
 
 		if withinBounds(mousePos, globalItemPos, itemIcon.Size()) && v.draggedItemIdx != idx {
