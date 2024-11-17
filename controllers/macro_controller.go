@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"fmt"
+
 	"github.com/ssebs/go-mmp/models"
 	"github.com/ssebs/go-mmp/views"
 )
@@ -18,13 +20,18 @@ func NewMacroController(m *models.Macro, v *views.MacroEditorView) *MacroControl
 		actionViews:     make([]*views.ActionItemEditorView, 0),
 	}
 
+	mc.SetOnMacroNameChanged(func(s string) {
+		mc.Macro.Name = s
+		mc.SetTitleLabel(fmt.Sprintf("Edit %s", mc.Macro.Name))
+	})
+
 	return mc
 }
 
 func (mc *MacroController) UpdateMacroView() {
 	mc.SetMacroName(mc.Name)
+	mc.SetTitleLabel(fmt.Sprintf("Edit %s", mc.Macro.Name))
 	mc.UpdateActionsInView()
-	mc.Refresh()
 }
 
 func (mc *MacroController) UpdateActionsInView() {
@@ -33,5 +40,4 @@ func (mc *MacroController) UpdateActionsInView() {
 		mc.actionViews[i] = views.NewActionItemEditorView(action)
 	}
 	mc.MacroEditorView.SetActions(mc.actionViews)
-	mc.MacroEditorView.Refresh()
 }

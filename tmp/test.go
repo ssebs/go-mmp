@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
@@ -16,24 +14,25 @@ func main() {
 	testApp := app.New()
 	win := testApp.NewWindow("TEST")
 
-	am := models.NewAction("Shortcut", "CTRL+V")
-	av := views.NewActionItemEditorView(am)
-	ac := controllers.NewActionController(am, av)
-
-	ac.UpdateActionView()
+	mm := models.NewMacro("TestMacro", []*models.Action{
+		models.NewAction("Shortcut", "CTRL+C"),
+		models.NewAction("Delay", "200ms"),
+		models.NewAction("Shortcut", "CTRL+V"),
+	})
+	mv := views.NewMacroEditorView()
+	mc := controllers.NewMacroController(mm, mv)
+	mc.UpdateMacroView()
 
 	win.SetContent(container.NewBorder(
 		widget.NewSeparator(),
-		widget.NewButton("Get Action", func() {
-			fmt.Println(ac.Action)
-		}),
 		widget.NewSeparator(),
 		widget.NewSeparator(),
-		ac.ActionItemEditorView,
+		widget.NewSeparator(),
+		mc.MacroEditorView,
 	))
 
 	win.CenterOnScreen()
-	win.Resize(fyne.NewSize(300, 100))
+	win.Resize(fyne.NewSize(300, 300))
 	win.ShowAndRun()
 }
 

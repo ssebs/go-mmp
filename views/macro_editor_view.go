@@ -16,12 +16,16 @@ type MacroEditorView struct {
 	widget.BaseWidget
 	macroNameEntry *widget.Entry
 	actionsScroll  *container.Scroll
+	titleLabel     *widget.Label
 }
 
 func NewMacroEditorView() *MacroEditorView {
 	view := &MacroEditorView{
 		macroNameEntry: widget.NewEntry(),
 		actionsScroll:  container.NewVScroll(container.NewVBox()),
+		titleLabel: widget.NewLabelWithStyle("Edit", fyne.TextAlignCenter,
+			fyne.TextStyle{Bold: true},
+		),
 	}
 	view.macroNameEntry.Validator = nil
 	view.actionsScroll.Resize(view.actionsScroll.Size().AddWidthHeight(0, 400))
@@ -41,13 +45,19 @@ func (v *MacroEditorView) SetActions(actions []*ActionItemEditorView) {
 	}
 	v.actionsScroll.Refresh()
 }
+func (v *MacroEditorView) SetTitleLabel(s string) {
+	v.titleLabel.SetText(s)
+	v.titleLabel.Refresh()
+}
+
+func (v *MacroEditorView) SetOnMacroNameChanged(f func(string)) {
+	v.macroNameEntry.OnChanged = f
+}
 
 func (v *MacroEditorView) CreateRenderer() fyne.WidgetRenderer {
 	c := container.NewBorder(
 		container.NewVBox(
-			widget.NewLabelWithStyle("Edit", fyne.TextAlignCenter,
-				fyne.TextStyle{Bold: true},
-			),
+			v.titleLabel,
 			widget.NewForm(
 				widget.NewFormItem("Name/Title:", v.macroNameEntry),
 				widget.NewFormItem("Actions", layout.NewSpacer()),
