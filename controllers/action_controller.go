@@ -1,8 +1,6 @@
 package controllers
 
 import (
-	"fmt"
-
 	"github.com/ssebs/go-mmp/models"
 	"github.com/ssebs/go-mmp/views"
 )
@@ -24,10 +22,6 @@ func NewActionController(a *models.Action, v *views.ActionItemEditorView) *Actio
 
 	ac.ActionItemEditorView.SetOnFuncParamChanged(func(s string) {
 		ac.Action.FuncParam = s
-	})
-
-	ac.ActionItemEditorView.SetOnDelete(func() {
-		fmt.Println("This should be handled in the macro editor")
 	})
 
 	return ac

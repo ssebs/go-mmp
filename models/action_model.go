@@ -32,6 +32,13 @@ func NewAction(funcName, funcParam string) *Action {
 	}
 }
 
+func NewDefaultAction() *Action {
+	return &Action{
+		FuncName:  "SendText",
+		FuncParam: "",
+	}
+}
+
 func GetActionFunctions() []string {
 	return actionFunctionList
 }

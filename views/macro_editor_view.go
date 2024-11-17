@@ -1,8 +1,6 @@
 package views
 
 import (
-	"fmt"
-
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/layout"
@@ -17,6 +15,8 @@ type MacroEditorView struct {
 	macroNameEntry *widget.Entry
 	actionsScroll  *container.Scroll
 	titleLabel     *widget.Label
+	addActionBtn   *widget.Button
+	saveBtn        *widget.Button
 }
 
 func NewMacroEditorView() *MacroEditorView {
@@ -26,6 +26,8 @@ func NewMacroEditorView() *MacroEditorView {
 		titleLabel: widget.NewLabelWithStyle("Edit", fyne.TextAlignCenter,
 			fyne.TextStyle{Bold: true},
 		),
+		addActionBtn: widget.NewButton("+ Add Action", nil),
+		saveBtn:      widget.NewButton("Save", nil),
 	}
 	view.macroNameEntry.Validator = nil
 	view.actionsScroll.Resize(view.actionsScroll.Size().AddWidthHeight(0, 400))
@@ -45,6 +47,7 @@ func (v *MacroEditorView) SetActions(actions []*ActionItemEditorView) {
 	}
 	v.actionsScroll.Refresh()
 }
+
 func (v *MacroEditorView) SetTitleLabel(s string) {
 	v.titleLabel.SetText(s)
 	v.titleLabel.Refresh()
@@ -52,6 +55,14 @@ func (v *MacroEditorView) SetTitleLabel(s string) {
 
 func (v *MacroEditorView) SetOnMacroNameChanged(f func(string)) {
 	v.macroNameEntry.OnChanged = f
+}
+
+func (v *MacroEditorView) SetOnAddAction(f func()) {
+	v.addActionBtn.OnTapped = f
+}
+
+func (v *MacroEditorView) SetOnSave(f func()) {
+	v.saveBtn.OnTapped = f
 }
 
 func (v *MacroEditorView) CreateRenderer() fyne.WidgetRenderer {
@@ -65,16 +76,8 @@ func (v *MacroEditorView) CreateRenderer() fyne.WidgetRenderer {
 			),
 		),
 		container.NewHBox(
-			widget.NewButton("Close", func() {
-				fmt.Println("CLOSE WINDOW")
-			}),
-			widget.NewButton("+ Add Action", func() {
-				fmt.Println("ADD ACTION")
-			}),
-			widget.NewButton("Save", func() {
-				msg := fmt.Sprintf("Saved %s", v.macroNameEntry.Text)
-				fmt.Println(msg)
-			}),
+			v.addActionBtn,
+			v.saveBtn,
 		),
 		nil, nil,
 		v.actionsScroll,

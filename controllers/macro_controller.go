@@ -10,20 +10,31 @@ import (
 type MacroController struct {
 	*models.Macro
 	*views.MacroEditorView
-	actionViews []*views.ActionItemEditorView
+	actionControllers []*ActionController
 }
 
 func NewMacroController(m *models.Macro, v *views.MacroEditorView) *MacroController {
 	mc := &MacroController{
-		Macro:           m,
-		MacroEditorView: v,
-		actionViews:     make([]*views.ActionItemEditorView, 0),
+		Macro:             m,
+		MacroEditorView:   v,
+		actionControllers: make([]*ActionController, 0),
 	}
 
 	mc.SetOnMacroNameChanged(func(s string) {
 		mc.Macro.Name = s
 		mc.SetTitleLabel(fmt.Sprintf("Edit %s", mc.Macro.Name))
 	})
+
+	mc.SetOnAddAction(func() {
+		mc.Macro.AddAction(models.NewDefaultAction())
+		mc.UpdateActionsInView()
+	})
+	mc.SetOnSave(func() {
+		fmt.Println("Saving Macro!")
+		fmt.Println(mc.Macro)
+	})
+
+	// Set on delete
 
 	return mc
 }
@@ -35,9 +46,15 @@ func (mc *MacroController) UpdateMacroView() {
 }
 
 func (mc *MacroController) UpdateActionsInView() {
-	mc.actionViews = make([]*views.ActionItemEditorView, len(mc.Macro.Actions))
-	for i, action := range mc.Macro.Actions {
-		mc.actionViews[i] = views.NewActionItemEditorView(action)
+	actionViews := make([]*views.ActionItemEditorView, 0, len(mc.Macro.Actions))
+
+	for _, action := range mc.Macro.Actions {
+		av := views.NewActionItemEditorView(action)
+		ac := NewActionController(action, av)
+
+		mc.actionControllers = append(mc.actionControllers, ac)
+		actionViews = append(actionViews, av)
 	}
-	mc.MacroEditorView.SetActions(mc.actionViews)
+
+	mc.MacroEditorView.SetActions(actionViews)
 }
