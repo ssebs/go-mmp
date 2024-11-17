@@ -17,7 +17,7 @@ func main() {
 	win := testApp.NewWindow("TEST")
 
 	am := models.NewAction("Shortcut", "CTRL+V")
-	av := views.NewActionItemEditorView()
+	av := views.NewActionItemEditorView(am)
 	ac := controllers.NewActionController(am, av)
 
 	ac.UpdateActionView()

@@ -20,7 +20,7 @@ type ActionItemEditorView struct {
 	delBtn         *widget.Button
 }
 
-func NewActionItemEditorView() *ActionItemEditorView {
+func NewActionItemEditorView(initialAction *models.Action) *ActionItemEditorView {
 	view := &ActionItemEditorView{
 		funcSelect: widget.NewSelect(models.GetActionFunctions(),
 			func(s string) { fmt.Println("Use SetOnFuncNameChanged() to overwrite this behavior!\ns:", s) },
@@ -32,6 +32,14 @@ func NewActionItemEditorView() *ActionItemEditorView {
 	}
 	view.funcParamEntry.Validator = nil
 
+	if initialAction.FuncName != "" {
+		view.funcSelect.SetSelected(initialAction.FuncName)
+	}
+	if initialAction.FuncParam != "" {
+		view.funcParamEntry.SetText(initialAction.FuncParam)
+	}
+
+	view.ExtendBaseWidget(view)
 	return view
 }
 
