@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/ssebs/go-mmp/models"
 	"github.com/ssebs/go-mmp/views"
@@ -29,12 +30,19 @@ func NewMacroController(m *models.Macro, v *views.MacroEditorView) *MacroControl
 		mc.Macro.AddAction(models.NewDefaultAction())
 		mc.UpdateActionsInView()
 	})
+
 	mc.SetOnSave(func() {
 		fmt.Println("Saving Macro!")
 		fmt.Println(mc.Macro)
 	})
 
-	// Set on delete
+	mc.SetOnActionDeleted(func(idx int) {
+		if err := mc.Macro.DeleteAction(idx); err != nil {
+			fmt.Fprintln(os.Stderr, "failed to delete action", err)
+		}
+		mc.UpdateActionsInView()
+		fmt.Printf("Deleted %d", idx)
+	})
 
 	return mc
 }
