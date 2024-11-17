@@ -14,12 +14,16 @@ var _ fyne.Widget = (*ActionDragView)(nil)
 
 type ActionDragView struct {
 	widget.BaseWidget
-	dragItems *fyne.Container
+	dragItems        *fyne.Container
+	draggedItemIdx   int
+	latestDraggedIdx int
 }
 
 func NewActionDragView() *ActionDragView {
 	view := &ActionDragView{
-		dragItems: container.NewVBox(),
+		dragItems:        container.NewVBox(),
+		draggedItemIdx:   -1,
+		latestDraggedIdx: -1,
 	}
 	view.initTestItems()
 
@@ -27,6 +31,7 @@ func NewActionDragView() *ActionDragView {
 	return view
 }
 
+// TODO: make this public and support adding other widgets here
 func (v *ActionDragView) initTestItems() {
 	for i := 0; i < 3; i++ {
 		v.dragItems.Add(container.NewHBox(
@@ -41,6 +46,30 @@ func (v *ActionDragView) Tapped(e *fyne.PointEvent) {
 	fmt.Printf("tapped: x: %.1f y: %.1f\n", e.Position.X, e.Position.Y)
 	v.getDragIconIdxAtPosition(e.Position)
 }
+func (v *ActionDragView) Dragged(e *fyne.DragEvent) {
+	v.latestDraggedIdx = v.getDragIconIdxAtPosition(e.Position)
+
+	// not currently dragging anything AND clicking over a non-nil item
+	if v.draggedItemIdx == -1 && v.latestDraggedIdx != -1 {
+		v.draggedItemIdx = v.latestDraggedIdx
+		fmt.Printf("dragging: %d\n", v.draggedItemIdx)
+	}
+
+	// currently dragging
+	if v.draggedItemIdx != -1 {
+		curPos := v.dragItems.Objects[v.draggedItemIdx].Position()
+		v.dragItems.Objects[v.draggedItemIdx].Move(curPos.AddXY(0, e.Dragged.DY))
+	}
+}
+func (v *ActionDragView) DragEnd() {
+	fmt.Printf("draggedIdx: %d, hoverIdx: %d\n", v.draggedItemIdx, v.latestDraggedIdx)
+	if v.latestDraggedIdx != -1 && v.draggedItemIdx != v.latestDraggedIdx {
+		fmt.Printf("released over: %d\n", v.latestDraggedIdx)
+		fmt.Printf("swap %d and %d\n", v.draggedItemIdx, v.latestDraggedIdx)
+	}
+	v.draggedItemIdx, v.latestDraggedIdx = -1, -1
+	v.dragItems.Refresh()
+}
 
 // Return the idx of v.dragItems where the mousePos clicks.
 // Only matches on the drag icon
@@ -52,7 +81,7 @@ func (v *ActionDragView) getDragIconIdxAtPosition(mousePos fyne.Position) int {
 		itemIcon := item.(*fyne.Container).Objects[0]
 		globalItemPos := itemIcon.Position().Add(item.(*fyne.Container).Position())
 
-		if withinBounds(mousePos, globalItemPos, itemIcon.Size()) {
+		if withinBounds(mousePos, globalItemPos, itemIcon.Size()) && v.draggedItemIdx != idx {
 			return idx
 		}
 	}
@@ -63,13 +92,6 @@ func (v *ActionDragView) getDragIconIdxAtPosition(mousePos fyne.Position) int {
 // withinBounds checks if a point is within the bounds of a rectangle defined by position and size.
 func withinBounds(point, pos fyne.Position, size fyne.Size) bool {
 	return point.X >= pos.X && point.X <= pos.X+size.Width && point.Y >= pos.Y && point.Y <= pos.Y+size.Height
-}
-
-func (v *ActionDragView) Dragged(e *fyne.DragEvent) {
-	fmt.Println(e)
-}
-func (v *ActionDragView) DragEnd() {
-	fmt.Println("Done dragging")
 }
 
 func (v *ActionDragView) CreateRenderer() fyne.WidgetRenderer {
