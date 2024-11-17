@@ -38,8 +38,33 @@ func (v *ActionDragView) initTestItems() {
 
 /* Actions Drag and Drop funcs */
 func (v *ActionDragView) Tapped(e *fyne.PointEvent) {
-	fmt.Println(e)
+	fmt.Printf("tapped: x: %.1f y: %.1f\n", e.Position.X, e.Position.Y)
+	v.getDragIconIdxAtPosition(e.Position)
 }
+
+// Return the idx of v.dragItems where the mousePos clicks.
+// Only matches on the drag icon
+// Returns -1 if there's no match
+func (v *ActionDragView) getDragIconIdxAtPosition(mousePos fyne.Position) int {
+	for idx, item := range v.dragItems.Objects {
+
+		// Get the position of the drag icon, so we can only drag from that
+		itemIcon := item.(*fyne.Container).Objects[0]
+		globalItemPos := itemIcon.Position().Add(item.(*fyne.Container).Position())
+
+		if withinBounds(mousePos, globalItemPos, itemIcon.Size()) {
+			return idx
+		}
+	}
+
+	return -1
+}
+
+// withinBounds checks if a point is within the bounds of a rectangle defined by position and size.
+func withinBounds(point, pos fyne.Position, size fyne.Size) bool {
+	return point.X >= pos.X && point.X <= pos.X+size.Width && point.Y >= pos.Y && point.Y <= pos.Y+size.Height
+}
+
 func (v *ActionDragView) Dragged(e *fyne.DragEvent) {
 	fmt.Println(e)
 }
@@ -48,9 +73,5 @@ func (v *ActionDragView) DragEnd() {
 }
 
 func (v *ActionDragView) CreateRenderer() fyne.WidgetRenderer {
-	return widget.NewSimpleRenderer(container.NewBorder(
-		widget.NewLabel("Test ActionDragView:"),
-		nil, nil, nil,
-		v.dragItems,
-	))
+	return widget.NewSimpleRenderer(v.dragItems)
 }
