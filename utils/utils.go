@@ -6,6 +6,8 @@ import (
 	"os"
 	"reflect"
 	"strconv"
+
+	"github.com/sqweek/dialog"
 )
 
 const ProjectName = "Go-MMP"
@@ -79,4 +81,22 @@ func GetKeyVal(m map[string]string) (string, string) {
 		return k, v
 	}
 	return "", ""
+}
+
+// returns path to .yaml|.yml file
+// isSaving sets the type to save file instead of open file.
+func GetYAMLFilename(isSaving bool) (string, error) {
+	var filename string
+	var err error
+
+	if isSaving {
+		filename, err = dialog.File().Filter("YAML config file", "yaml", "yml").Save()
+	} else {
+		filename, err = dialog.File().Filter("YAML config file", "yaml", "yml").Load()
+	}
+
+	if err != nil {
+		err = fmt.Errorf("could not open YAML config file, err: %s", err)
+	}
+	return filename, err
 }

@@ -8,16 +8,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-/*
-- `SaveConfig(destinationFullPath string)`
-- `LoadConfig(sourceFullPath) *Config`
-- `AddMacro(newMacro Macro)`
-- `DeleteMacro(idx int)`
-- `UpdateMacro(idx int, updatedMacro Macro)`
-- `GetMacro(idx int)`
-
-also functionality from old Config
-*/
+// TODO: Add save/parsing from old config
 type ConfigM struct {
 	*Metadata `yaml:"Metadata"`
 	Macros    []*Macro `yaml:"Macros"`

@@ -26,6 +26,13 @@ func NewMacro(name string, actions []*Action) *Macro {
 	return m
 }
 
+func NewDefaultMacro() *Macro {
+	return &Macro{
+		Name:    "",
+		Actions: make([]*Action, 0),
+	}
+}
+
 func (m *Macro) AddAction(a *Action) {
 	m.Actions = append(m.Actions, a)
 }
