@@ -23,6 +23,68 @@ func TestConfigM(t *testing.T) {
 		assert.Equal(t, want, got)
 	})
 
+	t.Run("Test AddMacro", func(t *testing.T) {
+		got := models.NewConfigM(models.NewDefaultMetadata(), nil)
+		got.AddMacro(models.NewMacro("TestFirst", nil))
+		got.AddMacro(models.NewMacro("TestSecond", nil))
+
+		assert.Equal(t, want, got)
+	})
+
+	t.Run("Test GetMacro", func(t *testing.T) {
+		got, err := want.GetMacro(0)
+		assert.Nil(t, err)
+		assert.Equal(t, models.NewMacro("TestFirst", nil), got)
+
+		got, err = want.GetMacro(999)
+		assert.Error(t, err, "idx out of bounds of Macros")
+		assert.Nil(t, got)
+
+	})
+
+	t.Run("Test UpdateMacro", func(t *testing.T) {
+		m_copy := make([]*models.Macro, len(_macros))
+		copy(m_copy, _macros)
+
+		got := models.NewConfigM(models.NewDefaultMetadata(), m_copy)
+		got.UpdateMacro(0, models.NewMacro("ReplacedFirst", nil))
+
+		gotMacro, err := got.GetMacro(0)
+		assert.Nil(t, err)
+
+		assert.Equal(t, models.NewMacro("ReplacedFirst", nil), gotMacro)
+	})
+
+	t.Run("Test DeleteMacro", func(t *testing.T) {
+		m_copy := make([]*models.Macro, len(_macros))
+		copy(m_copy, _macros)
+
+		got := models.NewConfigM(models.NewDefaultMetadata(), m_copy)
+		err := got.DeleteMacro(0)
+		assert.Nil(t, err)
+
+		gotMacro, err := got.GetMacro(0)
+		assert.Nil(t, err)
+
+		assert.Equal(t, _macros[1], gotMacro)
+
+	})
+	t.Run("Test SwapMacroPositions", func(t *testing.T) {
+		m_copy := make([]*models.Macro, len(_macros))
+		copy(m_copy, _macros)
+		got := models.NewConfigM(models.NewDefaultMetadata(), m_copy)
+		err := got.SwapMacroPositions(0, 1)
+		assert.Nil(t, err)
+
+		swapped0, err := got.GetMacro(0)
+		assert.Nil(t, err)
+		assert.Equal(t, _macros[1].Name, swapped0.Name)
+
+		swapped1, err := got.GetMacro(1)
+		assert.Nil(t, err)
+		assert.Equal(t, _macros[0].Name, swapped1.Name)
+	})
+
 	t.Run("Test parser", func(t *testing.T) {
 		expectedStr := `Metadata:
     Columns: 2
@@ -35,7 +97,7 @@ Macros:
       Actions: []
     - Name: TestSecond
       Actions: []`
-		// if err := os.WriteFile("../../tmp/expectedStr.txt", []byte(expectedStr), 0644); err != nil {
+		// if err := os.WriteFile("../../tmp/expectedStr.txt", []byte(want.String()), 0644); err != nil {
 		// 	t.Fatal(err)
 		// }
 
