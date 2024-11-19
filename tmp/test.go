@@ -14,6 +14,8 @@ func main() {
 	testApp := app.New()
 	win := testApp.NewWindow("TEST")
 
+	// TODO: LOAD FROM CONFIG, ADD PARSING, SAVING CONFIG AND RENAME CONFIGM
+
 	cm := models.NewConfigM(models.NewDefaultMetadata(), []*models.Macro{
 		models.NewMacro("Undo", []*models.Action{
 			models.NewAction("Shortcut", "CTRL+Z"),
