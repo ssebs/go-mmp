@@ -52,6 +52,7 @@ func NewMacroController(m *models.Macro, v *views.MacroEditorView) *MacroControl
 		fmt.Printf("Swapped Actions %d and %d\n", idx1, idx2)
 	})
 
+	mc.UpdateMacroView()
 	return mc
 }
 

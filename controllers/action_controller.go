@@ -24,6 +24,7 @@ func NewActionController(a *models.Action, v *views.ActionItemEditorView) *Actio
 		ac.Action.FuncParam = s
 	})
 
+	ac.UpdateActionView()
 	return ac
 }
 

@@ -25,6 +25,8 @@ func NewMetadataController(m *models.Metadata, v *views.MetadataEditorView) *Met
 		fmt.Println(mc.Metadata)
 	})
 
+	mc.UpdateMetadataView()
+
 	return mc
 }
 

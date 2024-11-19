@@ -20,16 +20,15 @@ func NewConfigEditorView() *ConfigEditorView {
 		titleLabel: widget.NewLabelWithStyle("Edit Config", fyne.TextAlignCenter,
 			fyne.TextStyle{Bold: true},
 		),
-		metadataBtn: widget.NewButton("Edit Metadata", func() {
-			win := fyne.CurrentApp().NewWindow("Metadata Editor")
-			win.CenterOnScreen()
-			win.SetContent(NewMetadataEditorView())
-			win.Show()
-		}),
+		metadataBtn: widget.NewButton("Edit Metadata", nil),
 	}
 
 	view.ExtendBaseWidget(view)
 	return view
+}
+
+func (v *ConfigEditorView) SetOnMetadataTapped(f func()) {
+	v.metadataBtn.OnTapped = f
 }
 
 func (v *ConfigEditorView) CreateRenderer() fyne.WidgetRenderer {

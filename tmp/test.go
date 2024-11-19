@@ -5,6 +5,8 @@ import (
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
+	"github.com/ssebs/go-mmp/controllers"
+	"github.com/ssebs/go-mmp/models"
 	"github.com/ssebs/go-mmp/views"
 )
 
@@ -12,11 +14,13 @@ func main() {
 	testApp := app.New()
 	win := testApp.NewWindow("TEST")
 
-	// cm := models.NewConfigM(models.NewDefaultMetadata(), []*models.Macro{
-	// 	models.NewMacro("Test", nil),
-	// })
+	cm := models.NewConfigM(models.NewDefaultMetadata(), []*models.Macro{
+		models.NewMacro("Test", []*models.Action{
+			models.NewAction("Shortcut", "CTRL+Z"),
+		}),
+	})
 	cv := views.NewConfigEditorView()
-	// mc := controllers.NewMetadataController(mm, mv)
+	cc := controllers.NewConfigController(cm, cv)
 
 	// cm.UpdateMetadataView()
 
@@ -25,7 +29,7 @@ func main() {
 		widget.NewSeparator(),
 		widget.NewSeparator(),
 		widget.NewSeparator(),
-		cv,
+		cc.ConfigEditorView,
 	))
 
 	win.CenterOnScreen()
