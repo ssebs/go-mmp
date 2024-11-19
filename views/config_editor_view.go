@@ -39,6 +39,8 @@ func (v *ConfigEditorView) SetMacros(macros []*models.Macro) {
 
 	for _, macro := range macros {
 		stuff = append(stuff, widget.NewLabel(macro.Name))
+		// REPLACE ME WITH BUTTON TO CREATE MACRO EDITOR WINDOW
+		// ALSO ALLOW X+Y DRAGGING ON DRAGANDDROPVIEW
 	}
 	v.macrosContainer.SetDragItems(stuff)
 	v.macrosContainer.SetOnItemsSwapped(v.OnMacrosSwapped)
