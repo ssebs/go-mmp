@@ -27,7 +27,7 @@ func NewConfigEditorView(cols int) *ConfigEditorView {
 			fyne.TextStyle{Bold: true},
 		),
 		metadataBtn:     widget.NewButton("Edit Metadata", nil),
-		macrosContainer: NewDragAndDropView(container.NewGridWithColumns(cols)),
+		macrosContainer: NewDragAndDropView(container.NewGridWithColumns(cols), DRAG_BOTH),
 	}
 
 	view.ExtendBaseWidget(view)
@@ -42,10 +42,10 @@ func (v *ConfigEditorView) SetMacros(macros []*models.Macro) {
 		stuff = append(stuff, widget.NewButton(macro.Name, func() {
 			v.OnMacroTapped(macro)
 		}))
-		// ALSO ALLOW X+Y DRAGGING ON DRAGANDDROPVIEW
 	}
 	v.macrosContainer.SetDragItems(stuff)
 	v.macrosContainer.SetOnItemsSwapped(v.OnMacrosSwapped)
+	v.macrosContainer.Refresh()
 }
 func (v *ConfigEditorView) SetOnMacroTapped(f func(*models.Macro)) {
 	v.OnMacroTapped = f

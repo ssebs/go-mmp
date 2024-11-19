@@ -9,6 +9,14 @@ import (
 	"fyne.io/fyne/v2/widget"
 )
 
+type DragDirection int
+
+const (
+	DRAG_HORIZONTAL DragDirection = iota
+	DRAG_VERTICAL
+	DRAG_BOTH
+)
+
 // Ensure interface implementation.
 var _ fyne.Widget = (*DragAndDropView)(nil)
 
@@ -17,14 +25,16 @@ type DragAndDropView struct {
 	dragItems        *fyne.Container
 	draggedItemIdx   int
 	latestDraggedIdx int
+	dragDirection    DragDirection
 	OnItemsSwapped   func(idx1, idx2 int)
 }
 
-func NewDragAndDropView(containingBox *fyne.Container) *DragAndDropView {
+func NewDragAndDropView(containingBox *fyne.Container, ddir DragDirection) *DragAndDropView {
 	view := &DragAndDropView{
 		dragItems:        containingBox,
 		draggedItemIdx:   -1,
 		latestDraggedIdx: -1,
+		dragDirection:    ddir,
 	}
 
 	view.ExtendBaseWidget(view)
@@ -62,12 +72,24 @@ func (v *DragAndDropView) Dragged(e *fyne.DragEvent) {
 
 	// currently dragging
 	if v.draggedItemIdx != -1 {
-		curPos := v.dragItems.Objects[v.draggedItemIdx].Position()
-		v.dragItems.Objects[v.draggedItemIdx].Move(curPos.AddXY(0, e.Dragged.DY))
+		// Allow releasing over the whole item, not just the icon
+		v.latestDraggedIdx = v.getDragItemIdxAtPosition(e.Position)
+
+		newPos := v.dragItems.Objects[v.draggedItemIdx].Position()
+		switch v.dragDirection {
+		case DRAG_BOTH:
+			newPos = newPos.AddXY(e.Dragged.DX, e.Dragged.DY)
+		case DRAG_HORIZONTAL:
+			newPos = newPos.AddXY(e.Dragged.DX, 0)
+		case DRAG_VERTICAL:
+			newPos = newPos.AddXY(0, e.Dragged.DY)
+		}
+
+		v.dragItems.Objects[v.draggedItemIdx].Move(newPos)
 	}
 }
 func (v *DragAndDropView) DragEnd() {
-	// fmt.Printf("draggedIdx: %d, hoverIdx: %d\n", v.draggedItemIdx, v.latestDraggedIdx)
+	fmt.Printf("draggedIdx: %d, hoverIdx: %d\n", v.draggedItemIdx, v.latestDraggedIdx)
 
 	if v.latestDraggedIdx != -1 && v.draggedItemIdx != v.latestDraggedIdx {
 		if v.OnItemsSwapped != nil {
@@ -98,6 +120,18 @@ func (v *DragAndDropView) getDragIconIdxAtPosition(mousePos fyne.Position) int {
 		globalItemPos := itemIcon.Position().Add(item.(*fyne.Container).Position())
 
 		if withinBounds(mousePos, globalItemPos, itemIcon.Size()) && v.draggedItemIdx != idx {
+			return idx
+		}
+	}
+
+	return -1
+}
+
+// Return the idx of v.dragItems where the mousePos clicks.
+// Returns -1 if there's no match
+func (v *DragAndDropView) getDragItemIdxAtPosition(mousePos fyne.Position) int {
+	for idx, item := range v.dragItems.Objects {
+		if withinBounds(mousePos, item.Position(), item.Size()) && v.draggedItemIdx != idx {
 			return idx
 		}
 	}

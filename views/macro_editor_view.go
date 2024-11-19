@@ -25,7 +25,7 @@ type MacroEditorView struct {
 func NewMacroEditorView() *MacroEditorView {
 	view := &MacroEditorView{
 		macroNameEntry: widget.NewEntry(),
-		actionsScroll:  container.NewVScroll(NewDragAndDropView(container.NewVBox())),
+		actionsScroll:  container.NewVScroll(NewDragAndDropView(container.NewVBox(), DRAG_VERTICAL)),
 		titleLabel: widget.NewLabelWithStyle("Edit", fyne.TextAlignCenter,
 			fyne.TextStyle{Bold: true},
 		),

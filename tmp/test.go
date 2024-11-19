@@ -15,8 +15,17 @@ func main() {
 	win := testApp.NewWindow("TEST")
 
 	cm := models.NewConfigM(models.NewDefaultMetadata(), []*models.Macro{
-		models.NewMacro("Test", []*models.Action{
+		models.NewMacro("Undo", []*models.Action{
 			models.NewAction("Shortcut", "CTRL+Z"),
+		}),
+		models.NewMacro("gg", []*models.Action{
+			models.NewAction("PressRelease", "Enter"),
+			models.NewAction("Delay", "100ms"),
+			models.NewAction("SendText", "gg"),
+			models.NewAction("PressRelease", "Enter"),
+		}),
+		models.NewMacro("close game", []*models.Action{
+			models.NewAction("Shortcut", "ALT+F4"),
 		}),
 	})
 	cv := views.NewConfigEditorView(cm.Columns)

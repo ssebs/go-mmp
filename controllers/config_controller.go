@@ -22,7 +22,7 @@ func NewConfigController(m *models.ConfigM, v *views.ConfigEditorView) *ConfigCo
 		metaController:   NewMetadataController(m.Metadata, views.NewMetadataEditorView()),
 	}
 
-	cc.SetOnMetadataTapped(func() {
+	cc.ConfigEditorView.SetOnMetadataTapped(func() {
 		win := fyne.CurrentApp().NewWindow("Metadata Editor")
 		win.CenterOnScreen()
 		win.SetContent(cc.metaController.MetadataEditorView)
@@ -30,13 +30,14 @@ func NewConfigController(m *models.ConfigM, v *views.ConfigEditorView) *ConfigCo
 		win.Show()
 	})
 
-	cc.SetOnMacrosSwapped(func(idx1, idx2 int) {
+	cc.ConfigEditorView.SetOnMacrosSwapped(func(idx1, idx2 int) {
+		fmt.Println("Swapping macros", idx1, idx2)
 		if err := cc.ConfigM.SwapMacroPositions(idx1, idx2); err != nil {
 			fmt.Fprintln(os.Stderr, err)
 		}
 	})
 
-	cc.SetOnMacroTapped(func(macro *models.Macro) {
+	cc.ConfigEditorView.SetOnMacroTapped(func(macro *models.Macro) {
 		win := fyne.CurrentApp().NewWindow("Macro Editor")
 		win.CenterOnScreen()
 
