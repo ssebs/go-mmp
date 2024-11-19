@@ -16,6 +16,7 @@ type ConfigEditorView struct {
 	titleLabel      *widget.Label
 	metadataBtn     *widget.Button
 	macrosContainer *DragAndDropView
+	OnMacroTapped   func(m *models.Macro)
 	OnMacrosSwapped func(idx1, idx2 int)
 }
 
@@ -38,12 +39,16 @@ func (v *ConfigEditorView) SetMacros(macros []*models.Macro) {
 	var stuff []fyne.CanvasObject
 
 	for _, macro := range macros {
-		stuff = append(stuff, widget.NewLabel(macro.Name))
-		// REPLACE ME WITH BUTTON TO CREATE MACRO EDITOR WINDOW
+		stuff = append(stuff, widget.NewButton(macro.Name, func() {
+			v.OnMacroTapped(macro)
+		}))
 		// ALSO ALLOW X+Y DRAGGING ON DRAGANDDROPVIEW
 	}
 	v.macrosContainer.SetDragItems(stuff)
 	v.macrosContainer.SetOnItemsSwapped(v.OnMacrosSwapped)
+}
+func (v *ConfigEditorView) SetOnMacroTapped(f func(*models.Macro)) {
+	v.OnMacroTapped = f
 }
 
 func (v *ConfigEditorView) SetOnMetadataTapped(f func()) {

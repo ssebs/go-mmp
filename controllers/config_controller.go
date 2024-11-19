@@ -26,6 +26,7 @@ func NewConfigController(m *models.ConfigM, v *views.ConfigEditorView) *ConfigCo
 		win := fyne.CurrentApp().NewWindow("Metadata Editor")
 		win.CenterOnScreen()
 		win.SetContent(cc.metaController.MetadataEditorView)
+		win.Resize(fyne.NewSize(300, 500))
 		win.Show()
 	})
 
@@ -33,6 +34,21 @@ func NewConfigController(m *models.ConfigM, v *views.ConfigEditorView) *ConfigCo
 		if err := cc.ConfigM.SwapMacroPositions(idx1, idx2); err != nil {
 			fmt.Fprintln(os.Stderr, err)
 		}
+	})
+
+	cc.SetOnMacroTapped(func(macro *models.Macro) {
+		win := fyne.CurrentApp().NewWindow("Macro Editor")
+		win.CenterOnScreen()
+
+		mv := views.NewMacroEditorView()
+		mc := NewMacroController(macro, mv)
+		win.SetContent(mc.MacroEditorView)
+		win.Resize(fyne.NewSize(300, 500))
+		win.Show()
+		win.SetOnClosed(func() {
+			cc.UpdateConfigView()
+		})
+
 	})
 
 	cc.UpdateConfigView()
