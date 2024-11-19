@@ -31,10 +31,11 @@ func NewConfigController(m *models.ConfigM, v *views.ConfigEditorView) *ConfigCo
 	})
 
 	cc.ConfigEditorView.SetOnMacrosSwapped(func(idx1, idx2 int) {
-		fmt.Println("Swapping macros", idx1, idx2)
+		fmt.Println("Swapping macros:", idx1, idx2)
 		if err := cc.ConfigM.SwapMacroPositions(idx1, idx2); err != nil {
 			fmt.Fprintln(os.Stderr, err)
 		}
+		cc.UpdateConfigView()
 	})
 
 	cc.ConfigEditorView.SetOnMacroTapped(func(macro *models.Macro) {
