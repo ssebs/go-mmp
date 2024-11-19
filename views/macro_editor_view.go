@@ -8,9 +8,6 @@ import (
 	"fyne.io/fyne/v2/widget"
 )
 
-// TODO: implement action drag and drop to position action items
-// widget.NewIcon(theme.MenuIcon()),
-
 // Ensure interface implementation.
 var _ fyne.Widget = (*MacroEditorView)(nil)
 

@@ -5,8 +5,6 @@ import (
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
-	"github.com/ssebs/go-mmp/controllers"
-	"github.com/ssebs/go-mmp/models"
 	"github.com/ssebs/go-mmp/views"
 )
 
@@ -14,18 +12,20 @@ func main() {
 	testApp := app.New()
 	win := testApp.NewWindow("TEST")
 
-	mm := models.NewDefaultMetadata()
-	mv := views.NewMetadataEditorView()
-	mc := controllers.NewMetadataController(mm, mv)
+	// cm := models.NewConfigM(models.NewDefaultMetadata(), []*models.Macro{
+	// 	models.NewMacro("Test", nil),
+	// })
+	cv := views.NewConfigEditorView()
+	// mc := controllers.NewMetadataController(mm, mv)
 
-	mc.UpdateMetadataView()
+	// cm.UpdateMetadataView()
 
 	win.SetContent(container.NewBorder(
 		widget.NewSeparator(),
 		widget.NewSeparator(),
 		widget.NewSeparator(),
 		widget.NewSeparator(),
-		mv,
+		cv,
 	))
 
 	win.CenterOnScreen()
@@ -33,6 +33,32 @@ func main() {
 	win.ShowAndRun()
 
 }
+
+// test medatata editor
+
+// func main() {
+// 	testApp := app.New()
+// 	win := testApp.NewWindow("TEST")
+
+// 	mm := models.NewDefaultMetadata()
+// 	mv := views.NewMetadataEditorView()
+// 	mc := controllers.NewMetadataController(mm, mv)
+
+// 	mc.UpdateMetadataView()
+
+// 	win.SetContent(container.NewBorder(
+// 		widget.NewSeparator(),
+// 		widget.NewSeparator(),
+// 		widget.NewSeparator(),
+// 		widget.NewSeparator(),
+// 		mv,
+// 	))
+
+// 	win.CenterOnScreen()
+// 	win.Resize(fyne.NewSize(300, 500))
+// 	win.ShowAndRun()
+
+// }
 
 // test MacroEditorView
 
