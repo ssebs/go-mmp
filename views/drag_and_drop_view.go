@@ -20,9 +20,9 @@ type DragAndDropView struct {
 	OnItemsSwapped   func(idx1, idx2 int)
 }
 
-func NewDragAndDropView() *DragAndDropView {
+func NewDragAndDropView(containingBox *fyne.Container) *DragAndDropView {
 	view := &DragAndDropView{
-		dragItems:        container.NewVBox(),
+		dragItems:        containingBox,
 		draggedItemIdx:   -1,
 		latestDraggedIdx: -1,
 	}

@@ -1,6 +1,9 @@
 package controllers
 
 import (
+	"fmt"
+	"os"
+
 	"fyne.io/fyne/v2"
 	"github.com/ssebs/go-mmp/models"
 	"github.com/ssebs/go-mmp/views"
@@ -26,9 +29,17 @@ func NewConfigController(m *models.ConfigM, v *views.ConfigEditorView) *ConfigCo
 		win.Show()
 	})
 
+	cc.SetOnMacrosSwapped(func(idx1, idx2 int) {
+		if err := cc.ConfigM.SwapMacroPositions(idx1, idx2); err != nil {
+			fmt.Fprintln(os.Stderr, err)
+		}
+	})
+
+	cc.UpdateConfigView()
 	return cc
 }
 
 func (cc *ConfigController) UpdateConfigView() {
-	// cc.ConfigEditorView.
+	cc.SetCols(cc.ConfigM.Columns)
+	cc.ConfigEditorView.SetMacros(cc.ConfigM.Macros)
 }

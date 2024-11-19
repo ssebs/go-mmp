@@ -19,7 +19,7 @@ func main() {
 			models.NewAction("Shortcut", "CTRL+Z"),
 		}),
 	})
-	cv := views.NewConfigEditorView()
+	cv := views.NewConfigEditorView(cm.Columns)
 	cc := controllers.NewConfigController(cm, cv)
 
 	// cm.UpdateMetadataView()
