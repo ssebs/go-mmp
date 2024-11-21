@@ -16,7 +16,7 @@ func main() {
 
 	// TODO: LOAD FROM CONFIG, ADD PARSING, SAVING CONFIG AND RENAME CONFIGM
 
-	cm := models.NewConfigM(models.NewDefaultMetadata(), []*models.Macro{
+	cm := models.NewConfig(models.NewDefaultMetadata(), []*models.Macro{
 		models.NewMacro("Undo", []*models.Action{
 			models.NewAction("Shortcut", "CTRL+Z"),
 		}),

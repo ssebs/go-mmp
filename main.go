@@ -33,7 +33,7 @@ func main() {
 	}
 
 	if cliFlags.GUIMode != models.NOTSET {
-		macroMgr.ConfigM.GUIMode = cliFlags.GUIMode
+		macroMgr.Config.GUIMode = cliFlags.GUIMode
 	}
 
 	// TODO: refactor this section to support daemon / CLI only
@@ -44,7 +44,7 @@ func main() {
 	rootWin.CenterOnScreen()
 
 	mainGUI := views.NewMacroRunnerView(conf.Columns, rootWin)
-	mainGUIController := controllers.NewMacroRunnerController(conf, mainGUI)
+	mainGUIController := controllers.NewMacroRunnerController(conf, mainGUI, macroMgr)
 	rootWin.SetContent(mainGUIController.MacroRunnerView)
 
 	// If GUI only mode, ShowAndRun instead of continuing with serial stuff.
@@ -94,7 +94,7 @@ func main() {
 					displayBtnch <- btn
 
 					// Run the action from the btn id
-					err := macroMgr.RunActionFromStrID(btn)
+					err := macroMgr.RunMacroById(btn)
 					if err != nil {
 						slog.Warn(err.Error())
 					}

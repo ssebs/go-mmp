@@ -11,14 +11,14 @@ import (
 )
 
 type ConfigController struct {
-	*models.ConfigM
+	*models.Config
 	*views.ConfigEditorView
 	metaController *MetadataController
 }
 
-func NewConfigController(m *models.ConfigM, v *views.ConfigEditorView) *ConfigController {
+func NewConfigController(m *models.Config, v *views.ConfigEditorView) *ConfigController {
 	cc := &ConfigController{
-		ConfigM:          m,
+		Config:           m,
 		ConfigEditorView: v,
 		metaController:   NewMetadataController(m.Metadata, views.NewMetadataEditorView()),
 	}
@@ -32,13 +32,13 @@ func NewConfigController(m *models.ConfigM, v *views.ConfigEditorView) *ConfigCo
 
 		win.Show()
 		win.SetOnClosed(func() {
-			fmt.Println("cols", cc.ConfigM.Columns)
+			fmt.Println("cols", cc.Config.Columns)
 			cc.UpdateConfigView()
 		})
 	})
 
 	cc.ConfigEditorView.SetOnMacrosSwapped(func(idx1, idx2 int) {
-		if err := cc.ConfigM.SwapMacroPositions(idx1, idx2); err != nil {
+		if err := cc.Config.SwapMacroPositions(idx1, idx2); err != nil {
 			fmt.Fprintln(os.Stderr, err)
 		}
 		cc.UpdateConfigView()
@@ -60,14 +60,14 @@ func NewConfigController(m *models.ConfigM, v *views.ConfigEditorView) *ConfigCo
 	})
 
 	cc.ConfigEditorView.SetOnAddMacro(func() {
-		cc.ConfigM.AddMacro(models.NewDefaultMacro())
+		cc.Config.AddMacro(models.NewDefaultMacro())
 		cc.UpdateConfigView()
 	})
 
 	cc.ConfigEditorView.SetOnSave(func() {
 		fmt.Println("Saving")
-		fmt.Println(cc.ConfigM)
-		if err := cc.ConfigM.SaveConfig(""); err != nil {
+		fmt.Println(cc.Config)
+		if err := cc.Config.SaveConfig(""); err != nil {
 			fmt.Fprint(os.Stderr, err)
 		}
 	})
@@ -77,14 +77,14 @@ func NewConfigController(m *models.ConfigM, v *views.ConfigEditorView) *ConfigCo
 			fmt.Fprint(os.Stderr, err)
 		}
 		fmt.Println("Saving to", yamlPath)
-		fmt.Println(cc.ConfigM)
-		if err := cc.ConfigM.SaveConfig(yamlPath); err != nil {
+		fmt.Println(cc.Config)
+		if err := cc.Config.SaveConfig(yamlPath); err != nil {
 			fmt.Fprint(os.Stderr, err)
 		}
 	})
 
 	cc.ConfigEditorView.SetOnMacroDeleted(func(i int) {
-		if err := cc.ConfigM.DeleteMacro(i); err != nil {
+		if err := cc.Config.DeleteMacro(i); err != nil {
 			fmt.Fprint(os.Stderr, err)
 		}
 		cc.UpdateConfigView()
@@ -95,6 +95,6 @@ func NewConfigController(m *models.ConfigM, v *views.ConfigEditorView) *ConfigCo
 }
 
 func (cc *ConfigController) UpdateConfigView() {
-	cc.SetCols(cc.ConfigM.Columns)
-	cc.ConfigEditorView.SetMacros(cc.ConfigM.Macros)
+	cc.SetCols(cc.Config.Columns)
+	cc.ConfigEditorView.SetMacros(cc.Config.Macros)
 }

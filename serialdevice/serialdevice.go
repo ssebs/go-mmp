@@ -46,7 +46,7 @@ func NewSerialDevice(pn string, baudRate int, timeout time.Duration) (*SerialDev
 // Create a new SerialDevice from a Config struct
 // Returns a SerialDevice, and an error.
 // See NewSerialDevice.
-func NewSerialDeviceFromConfig(c *models.ConfigM, timeout time.Duration) (*SerialDevice, error) {
+func NewSerialDeviceFromConfig(c *models.Config, timeout time.Duration) (*SerialDevice, error) {
 	arduino, err := NewSerialDevice(c.Metadata.SerialPortName, c.Metadata.SerialBaudRate, timeout)
 	return arduino, err
 }
