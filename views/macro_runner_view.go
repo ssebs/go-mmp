@@ -13,7 +13,6 @@ var _ fyne.Widget = (*MacroRunnerView)(nil)
 type MacroRunnerView struct {
 	widget.BaseWidget
 	cols            int
-	titleLabel      *widget.Label
 	macrosContainer *fyne.Container
 	OnMacroTapped   func(m *models.Macro)
 	OnOpenConfig    func()
@@ -25,10 +24,7 @@ type MacroRunnerView struct {
 
 func NewMacroRunnerView(cols int, rootWin fyne.Window) *MacroRunnerView {
 	view := &MacroRunnerView{
-		cols: cols,
-		titleLabel: widget.NewLabelWithStyle("Mini Macro Pad", fyne.TextAlignCenter,
-			fyne.TextStyle{Bold: true},
-		),
+		cols:            cols,
 		macrosContainer: container.NewGridWithColumns(cols),
 		mainMenu:        nil,
 		rootWin:         rootWin,
@@ -36,9 +32,9 @@ func NewMacroRunnerView(cols int, rootWin fyne.Window) *MacroRunnerView {
 
 	view.mainMenu = fyne.NewMainMenu(
 		fyne.NewMenu("File",
-			fyne.NewMenuItem("Open Config", view.OnOpenConfig),
+			fyne.NewMenuItem("Open Config", func() { view.OnOpenConfig() }),
 			fyne.NewMenuItemSeparator(),
-			fyne.NewMenuItem("Quit", view.OnQuit),
+			fyne.NewMenuItem("Quit", func() { view.OnQuit() }),
 		),
 		fyne.NewMenu("Edit",
 			fyne.NewMenuItem("Edit Config", func() { view.OnEditConfig() }),
@@ -83,9 +79,5 @@ func (v *MacroRunnerView) SetCols(c int) {
 }
 
 func (v *MacroRunnerView) CreateRenderer() fyne.WidgetRenderer {
-	c := container.NewVBox(
-		v.titleLabel,
-		v.macrosContainer,
-	)
-	return widget.NewSimpleRenderer(c)
+	return widget.NewSimpleRenderer(v.macrosContainer)
 }

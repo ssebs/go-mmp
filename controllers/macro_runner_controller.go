@@ -1,8 +1,12 @@
 package controllers
 
 import (
+	"fmt"
+	"os"
+
 	"fyne.io/fyne/v2"
 	"github.com/ssebs/go-mmp/models"
+	"github.com/ssebs/go-mmp/utils"
 	"github.com/ssebs/go-mmp/views"
 )
 
@@ -36,6 +40,24 @@ func NewMacroRunnerController(m *models.ConfigM, v *views.MacroRunnerView) *Macr
 		win.SetOnClosed(func() {
 			cc.UpdateConfigView()
 		})
+	})
+
+	cc.MacroRunnerView.SetOnOpenConfig(func() {
+		yamlPath, err := utils.GetYAMLFilename(false)
+		if err != nil {
+			fmt.Fprint(os.Stderr, err)
+		}
+		fmt.Println("Saving to", yamlPath)
+
+		if err := cc.ConfigM.OpenConfig(yamlPath); err != nil {
+			fmt.Fprint(os.Stderr, err)
+		}
+		cc.ConfigController.UpdateConfigView()
+		cc.UpdateConfigView()
+	})
+
+	cc.MacroRunnerView.SetOnQuit(func() {
+		fyne.CurrentApp().Quit()
 	})
 
 	cc.UpdateConfigView()

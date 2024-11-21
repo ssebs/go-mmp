@@ -67,7 +67,9 @@ func NewConfigController(m *models.ConfigM, v *views.ConfigEditorView) *ConfigCo
 	cc.ConfigEditorView.SetOnSave(func() {
 		fmt.Println("Saving")
 		fmt.Println(cc.ConfigM)
-		// cc.ConfigM.Save("")
+		if err := cc.ConfigM.SaveConfig(""); err != nil {
+			fmt.Fprint(os.Stderr, err)
+		}
 	})
 	cc.ConfigEditorView.SetOnSaveAs(func() {
 		yamlPath, err := utils.GetYAMLFilename(true)
@@ -76,7 +78,9 @@ func NewConfigController(m *models.ConfigM, v *views.ConfigEditorView) *ConfigCo
 		}
 		fmt.Println("Saving to", yamlPath)
 		fmt.Println(cc.ConfigM)
-		// cc.ConfigM.Save(yamlPath)
+		if err := cc.ConfigM.SaveConfig(yamlPath); err != nil {
+			fmt.Fprint(os.Stderr, err)
+		}
 	})
 
 	cc.ConfigEditorView.SetOnMacroDeleted(func(i int) {
