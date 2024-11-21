@@ -6,7 +6,6 @@ import (
 	"os"
 	"time"
 
-	"github.com/ssebs/go-mmp/config"
 	"github.com/ssebs/go-mmp/gui"
 	"github.com/ssebs/go-mmp/macro"
 	"github.com/ssebs/go-mmp/models"
@@ -14,9 +13,9 @@ import (
 )
 
 func main() {
-	cliFlags := config.ParseFlags()
+	cliFlags := models.ParseFlags()
 
-	conf, err := config.NewConfig(cliFlags)
+	conf, err := models.NewConfigFromFile(cliFlags)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err.Error())
 		gui.ShowErrorDialogAndRun(err) // TODO: only if GUIMode is not set to daemon
@@ -29,7 +28,7 @@ func main() {
 	}
 
 	if cliFlags.GUIMode != models.NOTSET {
-		macroMgr.Config.GUIMode = cliFlags.GUIMode
+		macroMgr.ConfigM.GUIMode = cliFlags.GUIMode
 	}
 
 	// TODO: refactor this section to support daemon / CLI only

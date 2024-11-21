@@ -10,8 +10,6 @@ import (
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
 	osdialog "github.com/sqweek/dialog"
-	"github.com/ssebs/go-mmp/config"
-	"github.com/ssebs/go-mmp/widgets"
 )
 
 // Open a new Window and use it to edit the config

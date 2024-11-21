@@ -13,8 +13,8 @@ import (
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
-	"github.com/ssebs/go-mmp/config"
 	"github.com/ssebs/go-mmp/macro"
+	"github.com/ssebs/go-mmp/models"
 	"github.com/ssebs/go-mmp/utils"
 )
 
@@ -24,10 +24,10 @@ type GUI struct {
 	App          fyne.App
 	RootWin      fyne.Window
 	macroManager *macro.MacroManager
-	config       *config.Config
-	grid         *fyne.Container
-	menu         *fyne.MainMenu
-	QuitCh       chan struct{}
+	*models.ConfigM
+	grid   *fyne.Container
+	menu   *fyne.MainMenu
+	QuitCh chan struct{}
 }
 
 // Create a new GUI, given a MacroManager ptr

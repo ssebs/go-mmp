@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ssebs/go-mmp/config"
+	"github.com/ssebs/go-mmp/models"
 	"github.com/ssebs/go-mmp/utils"
 	"go.bug.st/serial"
 )
@@ -46,8 +46,8 @@ func NewSerialDevice(pn string, baudRate int, timeout time.Duration) (*SerialDev
 // Create a new SerialDevice from a Config struct
 // Returns a SerialDevice, and an error.
 // See NewSerialDevice.
-func NewSerialDeviceFromConfig(c *config.Config, timeout time.Duration) (*SerialDevice, error) {
-	arduino, err := NewSerialDevice(c.SerialDevice.PortName, c.SerialDevice.BaudRate, timeout)
+func NewSerialDeviceFromConfig(c *models.ConfigM, timeout time.Duration) (*SerialDevice, error) {
+	arduino, err := NewSerialDevice(c.Metadata.SerialPortName, c.Metadata.SerialBaudRate, timeout)
 	return arduino, err
 }
 

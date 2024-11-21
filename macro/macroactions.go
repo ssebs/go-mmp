@@ -72,8 +72,9 @@ func (mm *MacroManager) DoShortcutAction(param string) error {
 			return err
 		}
 	}
+
 	// Delay
-	time.Sleep(mm.Config.Delay)
+	time.Sleep(mm.ConfigM.Metadata.Delay)
 
 	// Release all keys
 	for _, key := range keys {
@@ -130,7 +131,7 @@ func (mm *MacroManager) DoRepeatAction(param string) error {
 // f is the function to run, param is the parameter to that function,
 // repeatDelay is the delay between repeats in the loop,
 // stopCh will break the loop when it's closed.
-func repeatFunc(f fn, param string, repeatDelay time.Duration, stopCh chan struct{}) {
+func repeatFunc(f func(string) error, param string, repeatDelay time.Duration, stopCh chan struct{}) {
 free:
 	for {
 		select {

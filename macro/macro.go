@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log/slog"
 
-	"github.com/ssebs/go-mmp/config"
+	"github.com/ssebs/go-mmp/models"
 	"github.com/ssebs/go-mmp/utils"
 )
 
@@ -15,24 +15,23 @@ import (
 // For testing: Check out https://keyboard-test.space/
 
 // MacroManager creates a functionMap from the config, and is used to run Macros.
-// Use NewMacroManager to create!
 type MacroManager struct {
-	Config       *config.Config
-	functionMap  map[string]fn
+	*models.ConfigM
+	functionMap  map[string]func(string) error
 	isRepeating  bool
 	repeatStopCh chan struct{}
 }
 
 // NewMacroManager creates a functionMap from the config, and is used to run Macros.
-func NewMacroManager(conf *config.Config) (*MacroManager, error) {
+func NewMacroManager(conf *models.ConfigM) (*MacroManager, error) {
 	mgr := &MacroManager{
-		Config:       conf,
-		functionMap:  make(map[string]fn),
+		ConfigM:      conf,
+		functionMap:  make(map[string]func(string) error),
 		isRepeating:  false,
 		repeatStopCh: make(chan struct{}),
 	}
 
-	mgr.functionMap = map[string]fn{
+	mgr.functionMap = map[string]func(string) error{
 		"Delay":        mgr.DoDelayAction,
 		"PressRelease": mgr.DoPressReleaseAction,
 		"Press":        mgr.DoPressAction,
@@ -44,15 +43,15 @@ func NewMacroManager(conf *config.Config) (*MacroManager, error) {
 	return mgr, nil
 }
 
-// TODO: Merge with macro.FunctionList
-func (mm *MacroManager) GetFunctionMapActions() []string {
-	keys := make([]string, 0, len(mm.functionMap))
-	for k := range mm.functionMap {
-		keys = append(keys, k)
-	}
+// // TODO: Merge with macro.FunctionList
+// func (mm *MacroManager) GetFunctionMapActions() []string {
+// 	keys := make([]string, 0, len(mm.functionMap))
+// 	for k := range mm.functionMap {
+// 		keys = append(keys, k)
+// 	}
 
-	return keys
-}
+// 	return keys
+// }
 
 func (mm *MacroManager) RunActionFromStrID(actionID string) error {
 	fmt.Printf("Pressed: %s\n", actionID)
@@ -71,26 +70,21 @@ func (mm *MacroManager) RunActionFromStrID(actionID string) error {
 // Use GetFunctionMapActions() to get a slice of function key names
 //
 // This converts the actionID to an int (if possible), if not then log the error
-func (mm *MacroManager) RunActionFromID(actionID config.BtnId) error {
+func (mm *MacroManager) RunActionFromID(actionID int) error {
 	fmt.Printf("Pressed: %d\n", actionID)
 
 	// matchedMacro is a ptr to the config.Macros[actionID] if it exists
 	// this will have relevant info to call a method from.
-	matchedMacro, ok := mm.Config.Macros[actionID]
-	if !ok {
-		return ErrActionIDNotFoundInMacros{aID: actionID, macros: mm.Config.Macros}
+	matchedMacro, err := mm.ConfigM.GetMacro(actionID)
+	if err != nil {
+		return fmt.Errorf("could not find actionID: %d in Macros %+v", actionID, mm.ConfigM.Macros)
 	}
 
 	// Within a Macro, there's a list of Actions to run.
 	// we want to run each one in order here
 	for _, action := range matchedMacro.Actions {
-		// Get the key/vals from the action
-		for funcName, funcParam := range action {
-			// Run the function that was mapped, with the params given as a string
-			if err := mm.runFuncFromMap(funcName, funcParam); err != nil {
-				// Pass up error if there is one
-				return err
-			}
+		if err := mm.runFuncFromMap(action.FuncName, action.FuncParam); err != nil {
+			return fmt.Errorf("failed to run function from map, %s", err)
 		}
 	}
 	return nil
@@ -107,7 +101,7 @@ func (mm *MacroManager) runFuncFromMap(funcName string, funcParams string) error
 
 // convertActionID converts a string to a BtnId (int)
 // checks for empty string error, returns -1 if there's an error.
-func convertActionID(actionID string) (config.BtnId, error) {
+func convertActionID(actionID string) (int, error) {
 	iActionID, err := utils.StringToInt(actionID)
 	if errors.Is(err, &utils.ErrCannotParseIntFromEmptyString{}) {
 		// do nothing if an empty string was passed
@@ -116,18 +110,5 @@ func convertActionID(actionID string) (config.BtnId, error) {
 		slog.Warn(fmt.Sprint("convertActionIDToInt err: ", err))
 		return -1, err
 	}
-	return config.BtnId(iActionID), nil
+	return iActionID, nil
 }
-
-/* Errors */
-type ErrActionIDNotFoundInMacros struct {
-	aID    config.BtnId
-	macros map[config.BtnId]config.Macro
-}
-
-func (e ErrActionIDNotFoundInMacros) Error() string {
-	return fmt.Sprintf("could not find actionID: %d in mm.Config.Macros %+v", e.aID, e.macros)
-}
-
-// fn Function type, for use in functionMap
-type fn func(string) error
