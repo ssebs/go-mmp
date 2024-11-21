@@ -28,11 +28,12 @@ type SerialDevice struct {
 //   - open the connection using the supplied baudRate, and set the timeout
 func NewSerialDevice(pn string, baudRate int, timeout time.Duration) (*SerialDevice, error) {
 	arduino := &SerialDevice{portName: pn, timeout: timeout}
-	err := arduino.SetSerialPort(pn)
-	if err != nil {
-		return arduino, err
-	}
-	err = arduino.OpenConnection(baudRate)
+
+	// err := arduino.SetSerialPort(pn) // not needed?
+	// if err != nil {
+	// 	return arduino, err
+	// }
+	err := arduino.OpenConnection(baudRate)
 	if err != nil {
 		return arduino, err
 	}

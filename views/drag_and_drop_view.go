@@ -9,14 +9,6 @@ import (
 	"fyne.io/fyne/v2/widget"
 )
 
-type DragDirection int
-
-const (
-	DRAG_HORIZONTAL DragDirection = iota
-	DRAG_VERTICAL
-	DRAG_BOTH
-)
-
 // Ensure interface implementation.
 var _ fyne.Widget = (*DragAndDropView)(nil)
 
@@ -147,3 +139,11 @@ func withinBounds(point, pos fyne.Position, size fyne.Size) bool {
 func (v *DragAndDropView) CreateRenderer() fyne.WidgetRenderer {
 	return widget.NewSimpleRenderer(v.dragItems)
 }
+
+type DragDirection int
+
+const (
+	DRAG_HORIZONTAL DragDirection = iota
+	DRAG_VERTICAL
+	DRAG_BOTH
+)

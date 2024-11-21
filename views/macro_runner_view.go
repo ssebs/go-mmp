@@ -1,6 +1,9 @@
 package views
 
 import (
+	"fmt"
+	"time"
+
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
@@ -18,8 +21,9 @@ type MacroRunnerView struct {
 	OnOpenConfig    func()
 	OnQuit          func()
 	OnEditConfig    func()
-	mainMenu        *fyne.MainMenu
-	rootWin         fyne.Window
+
+	mainMenu *fyne.MainMenu
+	rootWin  fyne.Window
 }
 
 func NewMacroRunnerView(cols int, rootWin fyne.Window) *MacroRunnerView {
@@ -33,6 +37,7 @@ func NewMacroRunnerView(cols int, rootWin fyne.Window) *MacroRunnerView {
 	view.mainMenu = fyne.NewMainMenu(
 		fyne.NewMenu("File",
 			fyne.NewMenuItem("Open Config", func() { view.OnOpenConfig() }),
+			fyne.NewMenuItem("Reset Config", func() { fmt.Println("reset config") }),
 			fyne.NewMenuItemSeparator(),
 			fyne.NewMenuItem("Quit", func() { view.OnQuit() }),
 		),
@@ -47,6 +52,21 @@ func NewMacroRunnerView(cols int, rootWin fyne.Window) *MacroRunnerView {
 	return view
 }
 
+func (v *MacroRunnerView) ShowPressedAnimation(idx int, delay time.Duration) {
+	go func(idx int, delay time.Duration, v *MacroRunnerView) {
+		btn := v.macrosContainer.Objects[idx].(*widget.Button)
+
+		btn.Importance = widget.HighImportance
+		btn.Refresh()
+
+		time.Sleep(delay)
+
+		btn.Importance = widget.MediumImportance
+		btn.Refresh()
+
+	}(idx, delay, v)
+}
+
 // SEE: MacroEditorView.SetActions(...)
 func (v *MacroRunnerView) SetMacros(macros []*models.Macro) {
 	v.macrosContainer.RemoveAll()
@@ -55,7 +75,7 @@ func (v *MacroRunnerView) SetMacros(macros []*models.Macro) {
 		macroBtn := widget.NewButton(macro.Name, func() {
 			v.OnMacroTapped(macro)
 		})
-		v.macrosContainer.Add(container.NewBorder(nil, nil, nil, nil, macroBtn))
+		v.macrosContainer.Add(macroBtn)
 	}
 	v.macrosContainer.Refresh()
 }

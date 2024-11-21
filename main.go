@@ -9,7 +9,6 @@ import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 	"github.com/ssebs/go-mmp/controllers"
-	"github.com/ssebs/go-mmp/gui"
 	"github.com/ssebs/go-mmp/macro"
 	"github.com/ssebs/go-mmp/models"
 	"github.com/ssebs/go-mmp/serialdevice"
@@ -23,13 +22,13 @@ func main() {
 	conf, err := models.NewConfigFromFile(cliFlags)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err.Error())
-		gui.ShowErrorDialogAndRun(err) // TODO: only if GUIMode is not set to daemon
+		views.ShowErrorDialogAndRun(err) // TODO: only if GUIMode is not set to daemon
 	}
 
 	macroMgr, err := macro.NewMacroManager(conf)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err.Error())
-		gui.ShowErrorDialogAndRun(err) // TODO: only if GUIMode is not set to daemon
+		views.ShowErrorDialogAndRun(err) // TODO: only if GUIMode is not set to daemon
 	}
 
 	if cliFlags.GUIMode != models.NOTSET {
@@ -38,6 +37,7 @@ func main() {
 
 	// TODO: refactor this section to support daemon / CLI only
 
+	// TODO: move creating ui to func
 	mmpApp := app.New()
 	rootWin := mmpApp.NewWindow(utils.ProjectName)
 	rootWin.Resize(fyne.NewSize(400, 400))
@@ -63,7 +63,8 @@ func main() {
 	// Connect Serial Device from the config
 	arduino, err := serialdevice.NewSerialDeviceFromConfig(conf, time.Millisecond*20)
 	if err != nil {
-		gui.ShowErrorDialogAndRunWithLink(err, conf.ConfigFullPath)
+		views.ShowErrorDialogAndRunWithLink(err, conf.ConfigFullPath)
+		// TODO: show list of devices to select from and update config
 	}
 	defer arduino.CloseConnection()
 
@@ -72,14 +73,12 @@ func main() {
 	quitch := make(chan struct{})
 	displayBtnch := make(chan string, 1)
 
-	// g.QuitCh = quitch
-
 	// Run Serial Listener
 	// TODO: rename this
 	go Listen(btnch, quitch, arduino)
 
 	// Visible button press listener
-	// go g.ListenForDisplayButtonPress(displayBtnch, quitch)
+	go mainGUIController.ListenForDisplayButtonPress(displayBtnch, quitch)
 
 	// Do something when btnch gets data
 	// TODO: move to func

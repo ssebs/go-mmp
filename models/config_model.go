@@ -42,7 +42,7 @@ func NewConfigFromFile(flags *CLIFlags) (*Config, error) {
 	}
 
 	if flags.ResetConfig {
-		if err := c.saveDefaultConfig(flags.Testing); err != nil {
+		if err := c.saveDefaultConfig(); err != nil {
 			return c, fmt.Errorf("could not reset config, %e", err)
 		}
 	}
@@ -71,7 +71,7 @@ func (c *Config) figureOutConfigPath(configPath string) error {
 
 		if !utils.CheckFileExists(defaultFullPath) {
 			fmt.Printf("writing default config to %s\n", defaultFullPath)
-			c.saveDefaultConfig(false)
+			c.saveDefaultConfig()
 		}
 		return nil
 	}
@@ -85,7 +85,7 @@ func (c *Config) figureOutConfigPath(configPath string) error {
 	c.ConfigFullPath = fullConfigPath
 	if !utils.CheckFileExists(fullConfigPath) {
 		fmt.Printf("--path %s does not exist, writing default config.\n", fullConfigPath)
-		c.saveDefaultConfig(false)
+		c.saveDefaultConfig()
 	}
 	return nil
 }
@@ -152,20 +152,14 @@ func (c *Config) OpenConfig(srcFullPath string) error {
 //go:embed defaultConfig.yml
 var defaultConfigFile []byte
 
-//go:embed testConfig.yml
-var testConfigFile []byte
-
 // Write the defaultconfig to c.ConfigFullPath
-func (c *Config) saveDefaultConfig(testEnabled bool) error {
+func (c *Config) saveDefaultConfig() error {
 	f, err := os.Create(c.ConfigFullPath)
 	if err != nil {
 		return fmt.Errorf("could not open file %s, %e", c.ConfigFullPath, err)
 	}
-	if testEnabled {
-		_, err = f.Write(testConfigFile)
-	} else {
-		_, err = f.Write(defaultConfigFile)
-	}
+
+	_, err = f.Write(defaultConfigFile)
 
 	if err != nil {
 		return fmt.Errorf("could not write file, %e", err)

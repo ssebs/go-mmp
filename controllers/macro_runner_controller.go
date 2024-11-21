@@ -71,3 +71,19 @@ func (cc *MacroRunnerController) UpdateConfigView() {
 	cc.MacroRunnerView.SetCols(cc.Config.Columns)
 	cc.MacroRunnerView.SetMacros(cc.Config.Macros)
 }
+
+// ListenForDisplayButtonPress will listen for a button press then visibly update
+// the button so it looks like it was pressed
+func (cc *MacroRunnerController) ListenForDisplayButtonPress(displayBtnch chan string, quitch chan struct{}) {
+free:
+	for {
+		select {
+		case btnStr := <-displayBtnch:
+			if iBtn, err := utils.StringToInt(btnStr); err == nil {
+				cc.ShowPressedAnimation(iBtn, cc.Delay)
+			}
+		case <-quitch:
+			break free
+		}
+	}
+}
