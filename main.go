@@ -79,6 +79,7 @@ func main() {
 	go Listen(btnch, quitch, arduino)
 
 	// Visible button press listener
+	// TODO: FIX BUTTONS NOT LISTENING
 	// go g.ListenForDisplayButtonPress(displayBtnch, quitch)
 
 	// Do something when btnch gets data
