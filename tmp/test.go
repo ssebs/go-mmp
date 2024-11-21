@@ -46,7 +46,6 @@ func main() {
 	win.CenterOnScreen()
 	win.Resize(fyne.NewSize(300, 500))
 	win.ShowAndRun()
-
 }
 
 // test medatata editor

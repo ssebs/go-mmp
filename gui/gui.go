@@ -6,95 +6,108 @@ import (
 	"net/url"
 	"path/filepath"
 	"strings"
-	"time"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
-	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
-	"github.com/ssebs/go-mmp/macro"
-	"github.com/ssebs/go-mmp/models"
-	"github.com/ssebs/go-mmp/utils"
 )
 
-// GUI
-type GUI struct {
-	Size         fyne.Size
-	App          fyne.App
-	RootWin      fyne.Window
-	macroManager *macro.MacroManager
-	*models.ConfigM
-	grid   *fyne.Container
-	menu   *fyne.MainMenu
-	QuitCh chan struct{}
-}
+// import (
+// 	"fmt"
+// 	"log"
+// 	"net/url"
+// 	"path/filepath"
+// 	"strings"
+// 	"time"
 
-// Create a new GUI, given a MacroManager ptr
-func NewGUI(mm *macro.MacroManager) *GUI {
-	gs := fyne.NewSize(float32(mm.Config.MacroLayout.Width), float32(mm.Config.MacroLayout.Height))
-	mainGUI := &GUI{Size: gs, config: mm.Config, macroManager: mm}
+// 	"fyne.io/fyne/v2"
+// 	"fyne.io/fyne/v2/app"
+// 	"fyne.io/fyne/v2/container"
+// 	"fyne.io/fyne/v2/layout"
+// 	"fyne.io/fyne/v2/widget"
+// 	"github.com/ssebs/go-mmp/macro"
+// 	"github.com/ssebs/go-mmp/models"
+// 	"github.com/ssebs/go-mmp/utils"
+// )
 
-	mainGUI.App = app.New()
-	mainGUI.RootWin = mainGUI.App.NewWindow(utils.ProjectName)
-	mainGUI.RootWin.Resize(gs)
-	mainGUI.RootWin.CenterOnScreen()
+// // GUI
+// type GUI struct {
+// 	Size         fyne.Size
+// 	App          fyne.App
+// 	RootWin      fyne.Window
+// 	macroManager *macro.MacroManager
+// 	*models.ConfigM
+// 	grid   *fyne.Container
+// 	menu   *fyne.MainMenu
+// 	QuitCh chan struct{}
+// }
 
-	mainGUI.initMenu()
-	mainGUI.initMacroGrid()
+// // Create a new GUI, given a MacroManager ptr
+// func NewGUI(mm *macro.MacroManager) *GUI {
+// 	gs := fyne.NewSize(float32(mm.Config.MacroLayout.Width), float32(mm.Config.MacroLayout.Height))
+// 	mainGUI := &GUI{Size: gs, config: mm.Config, macroManager: mm}
 
-	return mainGUI
-}
+// 	mainGUI.App = app.New()
+// 	mainGUI.RootWin = mainGUI.App.NewWindow(utils.ProjectName)
+// 	mainGUI.RootWin.Resize(gs)
+// 	mainGUI.RootWin.CenterOnScreen()
 
-// initMacroGrid will generate grid from g.config.MacroLayout.SizeX
-// & number of Macros
-func (g *GUI) initMacroGrid() {
-	g.grid = container.New(layout.NewGridLayoutWithColumns(g.config.MacroLayout.SizeX))
+// 	mainGUI.initMenu()
+// 	mainGUI.initMacroGrid()
 
-	for pos := 1; pos <= len(g.config.Macros); pos++ {
-		macro := g.config.Macros[config.BtnId(pos)]
+// 	return mainGUI
+// }
 
-		g.grid.Add(widget.NewButton(macro.Name, func() {
-			g.macroManager.RunActionFromID(config.BtnId(pos))
-		}))
-	}
+// // initMacroGrid will generate grid from g.config.MacroLayout.SizeX
+// // & number of Macros
+// func (g *GUI) initMacroGrid() {
+// 	g.grid = container.New(layout.NewGridLayoutWithColumns(g.config.MacroLayout.SizeX))
 
-	g.RootWin.SetContent(g.grid)
-}
+// 	for pos := 1; pos <= len(g.config.Macros); pos++ {
+// 		macro := g.config.Macros[config.BtnId(pos)]
 
-// ListenForDisplayButtonPress will listen for a button press then visibly update
-// the button so it looks like it was pressed
-func (g *GUI) ListenForDisplayButtonPress(displayBtnch chan string, quitch chan struct{}) {
-free:
-	for {
-		select {
-		case btnStr := <-displayBtnch:
-			if iBtn, err := utils.StringToInt(btnStr); err == nil {
-				// Since the buttons start at 1 in the Config, get the btn - 1
-				btn := g.grid.Objects[iBtn-1].(*widget.Button)
-				ShowPressedAnimation(g.macroManager.Config.Delay, btn)
-			}
-		case <-quitch:
-			break free
-		}
-	}
-}
+// 		g.grid.Add(widget.NewButton(macro.Name, func() {
+// 			g.macroManager.RunActionFromID(config.BtnId(pos))
+// 		}))
+// 	}
 
-// ShowPressedAnimation will change the color of the button for the delay given
-func ShowPressedAnimation(delay time.Duration, btn *widget.Button) {
-	btn.Importance = widget.HighImportance
-	btn.Refresh()
-	time.Sleep(delay)
-	btn.Importance = widget.MediumImportance
-	btn.Refresh()
-}
+// 	g.RootWin.SetContent(g.grid)
+// }
 
-func (g *GUI) Quit() {
-	fmt.Println("Quitting")
-	close(g.QuitCh)
-}
+// // ListenForDisplayButtonPress will listen for a button press then visibly update
+// // the button so it looks like it was pressed
+// func (g *GUI) ListenForDisplayButtonPress(displayBtnch chan string, quitch chan struct{}) {
+// free:
+// 	for {
+// 		select {
+// 		case btnStr := <-displayBtnch:
+// 			if iBtn, err := utils.StringToInt(btnStr); err == nil {
+// 				// Since the buttons start at 1 in the Config, get the btn - 1
+// 				btn := g.grid.Objects[iBtn-1].(*widget.Button)
+// 				ShowPressedAnimation(g.macroManager.Config.Delay, btn)
+// 			}
+// 		case <-quitch:
+// 			break free
+// 		}
+// 	}
+// }
 
-/* Dialogs */
+// // ShowPressedAnimation will change the color of the button for the delay given
+// func ShowPressedAnimation(delay time.Duration, btn *widget.Button) {
+// 	btn.Importance = widget.HighImportance
+// 	btn.Refresh()
+// 	time.Sleep(delay)
+// 	btn.Importance = widget.MediumImportance
+// 	btn.Refresh()
+// }
+
+// func (g *GUI) Quit() {
+// 	fmt.Println("Quitting")
+// 	close(g.QuitCh)
+// }
+
+// /* Dialogs */
 
 // ShowErrorDialogAndRunWithLink will create a new error window displaying the text of the error.
 // Takes in an error, and an optional link. If the link is added, a hyperlink will be created
@@ -151,18 +164,18 @@ func ShowErrorDialogAndRun(err error) {
 	ShowErrorDialogAndRunWithLink(err, "")
 }
 
-/* Helpers */
-// Add content to the GUI.RootWin
-func (g *GUI) SetContent(c fyne.CanvasObject) {
-	g.RootWin.SetContent(c)
-}
+// /* Helpers */
+// // Add content to the GUI.RootWin
+// func (g *GUI) SetContent(c fyne.CanvasObject) {
+// 	g.RootWin.SetContent(c)
+// }
 
-// Run GUI.RootWin.ShowAndRun()
-func (g *GUI) ShowAndRun() {
-	g.RootWin.ShowAndRun()
-}
+// // Run GUI.RootWin.ShowAndRun()
+// func (g *GUI) ShowAndRun() {
+// 	g.RootWin.ShowAndRun()
+// }
 
-// Run GUI.RootWin.Show()
-func (g *GUI) Show() {
-	g.RootWin.Show()
-}
+// // Run GUI.RootWin.Show()
+// func (g *GUI) Show() {
+// 	g.RootWin.Show()
+// }

@@ -6,10 +6,15 @@ import (
 	"os"
 	"time"
 
+	"fyne.io/fyne/v2"
+	"fyne.io/fyne/v2/app"
+	"github.com/ssebs/go-mmp/controllers"
 	"github.com/ssebs/go-mmp/gui"
 	"github.com/ssebs/go-mmp/macro"
 	"github.com/ssebs/go-mmp/models"
 	"github.com/ssebs/go-mmp/serialdevice"
+	"github.com/ssebs/go-mmp/utils"
+	"github.com/ssebs/go-mmp/views"
 )
 
 func main() {
@@ -32,16 +37,24 @@ func main() {
 	}
 
 	// TODO: refactor this section to support daemon / CLI only
-	g := gui.NewGUI(macroMgr)
+
+	mmpApp := app.New()
+	rootWin := mmpApp.NewWindow(utils.ProjectName)
+	rootWin.Resize(fyne.NewSize(400, 400))
+	rootWin.CenterOnScreen()
+
+	mainGUI := views.NewMacroRunnerView(conf.Columns, rootWin)
+	mainGUIController := controllers.NewMacroRunnerController(conf, mainGUI)
+	rootWin.SetContent(mainGUIController.MacroRunnerView)
 
 	// If GUI only mode, ShowAndRun instead of continuing with serial stuff.
 	// This will "block" until the window is closed, then exit
 	if conf.GUIMode == models.GUIOnly {
-		g.RootWin.SetOnClosed(func() {
+		rootWin.SetOnClosed(func() {
 			fmt.Println("gui only closed")
 			os.Exit(0)
 		})
-		g.ShowAndRun()
+		rootWin.ShowAndRun()
 		return
 	}
 
@@ -59,14 +72,14 @@ func main() {
 	quitch := make(chan struct{})
 	displayBtnch := make(chan string, 1)
 
-	g.QuitCh = quitch
+	// g.QuitCh = quitch
 
 	// Run Serial Listener
 	// TODO: rename this
 	go Listen(btnch, quitch, arduino)
 
 	// Visible button press listener
-	go g.ListenForDisplayButtonPress(displayBtnch, quitch)
+	// go g.ListenForDisplayButtonPress(displayBtnch, quitch)
 
 	// Do something when btnch gets data
 	// TODO: move to func
@@ -90,11 +103,11 @@ func main() {
 				break free
 			}
 		}
-		g.App.Quit()
+		mmpApp.Quit()
 	}()
 
 	// Finally, display the GUI once everything is loaded & loop
-	g.ShowAndRun()
+	rootWin.ShowAndRun()
 }
 
 // Listen for data from a *SerialDevice, to be used in a goroutine

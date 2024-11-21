@@ -47,7 +47,7 @@ func NewConfigFromFile(flags *CLIFlags) (*ConfigM, error) {
 		}
 	}
 
-	if flags.GUIMode != c.GUIMode {
+	if c.Metadata != nil && flags.GUIMode != c.Metadata.GUIMode {
 		c.Metadata.GUIMode = flags.GUIMode
 	}
 
