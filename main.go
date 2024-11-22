@@ -68,64 +68,43 @@ func main() {
 	}
 	defer arduino.CloseConnection()
 
-	// listeners
+	// listener channels
 	btnch := make(chan string, 2)
 	quitch := make(chan struct{})
 	displayBtnch := make(chan string, 1)
 
 	// Run Serial Listener
-	// TODO: rename this
-	go Listen(btnch, quitch, arduino)
+	go arduino.Listen(btnch, quitch)
 
 	// Visible button press listener
 	go mainGUIController.ListenForDisplayButtonPress(displayBtnch, quitch)
 
 	// Do something when btnch gets data
-	// TODO: move to func
-	go func() {
-	free:
-		for {
-			select {
-			case btn := <-btnch:
-				// Only run the function if it's not blank, tho
-				if btn != "" {
-					// send btn id to show the btn press
-					displayBtnch <- btn
-
-					// Run the action from the btn id
-					err := macroMgr.RunMacroById(btn)
-					if err != nil {
-						slog.Warn(err.Error())
-					}
-				}
-			case <-quitch:
-				break free
-			}
-		}
-		mmpApp.Quit()
-	}()
+	go RunMacroOnDataIn(btnch, displayBtnch, quitch, mmpApp, macroMgr)
 
 	// Finally, display the GUI once everything is loaded & loop
 	rootWin.ShowAndRun()
 }
 
-// Listen for data from a *SerialDevice, to be used in a goroutine
-// Takes in a btnch to send data to when the serial connection gets something,
-// and a quitch if we need to stop the goroutine
-func Listen(btnch chan string, quitch chan struct{}, sd *serialdevice.SerialDevice) {
+func RunMacroOnDataIn(btnch chan string, displayBtnch chan string, quitch chan struct{}, mmpApp fyne.App, macroMgr *macro.MacroManager) {
 free:
-	// Keep looping since sd.Listen() will return if no data is sent
 	for {
 		select {
+		case btn := <-btnch:
+			// Only run the function if it's not blank, tho
+			if btn != "" {
+				// send btn id to show the btn press
+				displayBtnch <- btn
+
+				// Run the action from the btn id
+				err := macroMgr.RunMacroById(btn)
+				if err != nil {
+					slog.Warn(err.Error())
+				}
+			}
 		case <-quitch:
 			break free
-		default:
-			// If we get data, send to chan
-			actionID, err := sd.Listen()
-			if err != nil {
-				slog.Debug(fmt.Sprint("Listen err: ", err))
-			}
-			btnch <- actionID
 		}
 	}
+	mmpApp.Quit()
 }

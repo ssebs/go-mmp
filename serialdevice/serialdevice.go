@@ -3,12 +3,10 @@ package serialdevice
 import (
 	"bufio"
 	"fmt"
-	"log"
-	"strings"
+	"log/slog"
 	"time"
 
 	"github.com/ssebs/go-mmp/models"
-	"github.com/ssebs/go-mmp/utils"
 	"go.bug.st/serial"
 )
 
@@ -65,52 +63,30 @@ func (s *SerialDevice) CloseConnection() error {
 	return s.Conn.Close()
 }
 
-// Find & set the SerialDevice portName field.
-// Depends on what the requestedPortName is, and what serial devices are found.
-func (s *SerialDevice) SetSerialPort(requestedPortName string) (err error) {
-	// Get list of serial ports that are found
-	ports, err := serial.GetPortsList()
-	// TODO: replace with enumerator.GetDetailedPortsList
-	if err != nil {
-		return err
-	}
-	// If no serial devices are found
-	if len(ports) == 0 {
-		return ErrSerialDeviceNotFound{}
-	}
-	// Check if the requestedPortName matches any of the ports that were found
-	if _, isFound := utils.SliceContains[string](&ports, requestedPortName); isFound {
-		s.portName = requestedPortName
-		return nil
-	}
-	// TODO: give the user option to use one of the listed ports
-	return ErrSerialPortNameMismatch{Got: strings.Join(ports, ", "), Want: requestedPortName}
-}
-
-// Listen & run callback when data comes in
-// Runs in a bufio.Scanner.Scan() loop
-// callback must return true to break this loop
-func (s *SerialDevice) ListenCallback(fn func(strData string) bool) (shouldBreak bool) {
-	scanner := bufio.NewScanner(s.Conn)
-	for scanner.Scan() {
-		shouldBreak = fn(scanner.Text())
-	}
-	return shouldBreak
-}
-
-// Listen & send data thru chan
-// Runs in a bufio.Scanner.Scan() loop
-func (s *SerialDevice) ListenChan(ch chan string) {
-	scanner := bufio.NewScanner(s.Conn)
-	for scanner.Scan() {
-		log.Println("ListenChan txt: ", scanner.Text())
-		ch <- scanner.Text()
+// Listen for data from a *SerialDevice, to be used in a goroutine
+// Takes in a btnch to send data to when the serial connection gets something,
+// and a quitch if we need to stop the goroutine
+func (s *SerialDevice) Listen(btnch chan string, quitch chan struct{}) {
+free:
+	// Keep looping since sd.Listen() will return if no data is sent
+	for {
+		select {
+		case <-quitch:
+			break free
+		default:
+			// If we get data, send to chan
+			actionID, err := s.ScanThing()
+			if err != nil {
+				slog.Debug(fmt.Sprint("Listen err: ", err))
+			}
+			btnch <- actionID
+		}
 	}
 }
 
 // Listen & return data
 // Runs in a bufio.Scanner.Scan() loop
-func (s *SerialDevice) Listen() (actionID string, err error) {
+func (s *SerialDevice) ScanThing() (actionID string, err error) {
 	scanner := bufio.NewScanner(s.Conn)
 	for scanner.Scan() {
 		return scanner.Text(), nil
