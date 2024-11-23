@@ -15,14 +15,14 @@ import (
 )
 
 // TODO: Add save/parsing from old config
-type ConfigM struct {
+type Config struct {
 	*Metadata      `yaml:"Metadata"`
 	Macros         []*Macro `yaml:"Macros"`
 	ConfigFullPath string   `yaml:"-"`
 }
 
-func NewConfigM(meta *Metadata, macros []*Macro) *ConfigM {
-	c := &ConfigM{
+func NewConfig(meta *Metadata, macros []*Macro) *Config {
+	c := &Config{
 		Metadata: meta,
 		Macros:   macros,
 	}
@@ -34,15 +34,15 @@ func NewConfigM(meta *Metadata, macros []*Macro) *ConfigM {
 	return c
 }
 
-func NewConfigFromFile(flags *CLIFlags) (*ConfigM, error) {
-	c := &ConfigM{}
+func NewConfigFromFile(flags *CLIFlags) (*Config, error) {
+	c := &Config{}
 
 	if err := c.figureOutConfigPath(flags.ConfigPath); err != nil {
 		return c, err
 	}
 
 	if flags.ResetConfig {
-		if err := c.saveDefaultConfig(flags.Testing); err != nil {
+		if err := c.saveDefaultConfig(); err != nil {
 			return c, fmt.Errorf("could not reset config, %e", err)
 		}
 	}
@@ -56,7 +56,7 @@ func NewConfigFromFile(flags *CLIFlags) (*ConfigM, error) {
 }
 
 // depending on CLI args, and what files already exist, save default config if needed, and set c.ConfigFullPath
-func (c *ConfigM) figureOutConfigPath(configPath string) error {
+func (c *Config) figureOutConfigPath(configPath string) error {
 	// Get the fullpath of the default config
 	hd, _ := os.UserHomeDir()
 	defaultFullPath, err := filepath.Abs(filepath.Join(hd, ConfigPathShortName))
@@ -71,7 +71,7 @@ func (c *ConfigM) figureOutConfigPath(configPath string) error {
 
 		if !utils.CheckFileExists(defaultFullPath) {
 			fmt.Printf("writing default config to %s\n", defaultFullPath)
-			c.saveDefaultConfig(false)
+			c.saveDefaultConfig()
 		}
 		return nil
 	}
@@ -85,13 +85,13 @@ func (c *ConfigM) figureOutConfigPath(configPath string) error {
 	c.ConfigFullPath = fullConfigPath
 	if !utils.CheckFileExists(fullConfigPath) {
 		fmt.Printf("--path %s does not exist, writing default config.\n", fullConfigPath)
-		c.saveDefaultConfig(false)
+		c.saveDefaultConfig()
 	}
 	return nil
 }
 
 // parse contents of f into c as ConfigM
-func parseConfig(f io.Reader, c *ConfigM) error {
+func parseConfig(f io.Reader, c *Config) error {
 	err := yaml.NewDecoder(f).Decode(c)
 	if err != nil {
 		return fmt.Errorf("could not decode %s into a Config", f)
@@ -106,7 +106,7 @@ func parseConfig(f io.Reader, c *ConfigM) error {
 }
 
 // load c.ConfigFullPath and parse it into c
-func (c *ConfigM) loadConfig() error {
+func (c *Config) loadConfig() error {
 	f, err := os.Open(c.ConfigFullPath)
 	if err != nil {
 		return fmt.Errorf("could not open %s, %e", c.ConfigFullPath, err)
@@ -117,7 +117,7 @@ func (c *ConfigM) loadConfig() error {
 }
 
 // Save config to file. If destFullPath is empty, use c.ConfigFullPath
-func (c *ConfigM) SaveConfig(destFullPath string) error {
+func (c *Config) SaveConfig(destFullPath string) error {
 	if destFullPath == "" {
 		destFullPath = c.ConfigFullPath
 	} else {
@@ -139,7 +139,7 @@ func (c *ConfigM) SaveConfig(destFullPath string) error {
 }
 
 // Open config from file.
-func (c *ConfigM) OpenConfig(srcFullPath string) error {
+func (c *Config) OpenConfig(srcFullPath string) error {
 	if srcFullPath == "" {
 		return fmt.Errorf("%s should not be empty", srcFullPath)
 	}
@@ -152,20 +152,14 @@ func (c *ConfigM) OpenConfig(srcFullPath string) error {
 //go:embed defaultConfig.yml
 var defaultConfigFile []byte
 
-//go:embed testConfig.yml
-var testConfigFile []byte
-
 // Write the defaultconfig to c.ConfigFullPath
-func (c *ConfigM) saveDefaultConfig(testEnabled bool) error {
+func (c *Config) saveDefaultConfig() error {
 	f, err := os.Create(c.ConfigFullPath)
 	if err != nil {
 		return fmt.Errorf("could not open file %s, %e", c.ConfigFullPath, err)
 	}
-	if testEnabled {
-		_, err = f.Write(testConfigFile)
-	} else {
-		_, err = f.Write(defaultConfigFile)
-	}
+
+	_, err = f.Write(defaultConfigFile)
 
 	if err != nil {
 		return fmt.Errorf("could not write file, %e", err)
@@ -174,11 +168,11 @@ func (c *ConfigM) saveDefaultConfig(testEnabled bool) error {
 }
 
 // MVC functions
-func (c *ConfigM) AddMacro(m *Macro) {
+func (c *Config) AddMacro(m *Macro) {
 	c.Macros = append(c.Macros, m)
 }
 
-func (c *ConfigM) GetMacro(idx int) (*Macro, error) {
+func (c *Config) GetMacro(idx int) (*Macro, error) {
 	if !c.isValidBoundsInMacros(idx) {
 		return nil, fmt.Errorf("idx out of bounds of Macros")
 	}
@@ -186,7 +180,7 @@ func (c *ConfigM) GetMacro(idx int) (*Macro, error) {
 	return c.Macros[idx], nil
 }
 
-func (c *ConfigM) UpdateMacro(idx int, updatedMacro *Macro) error {
+func (c *Config) UpdateMacro(idx int, updatedMacro *Macro) error {
 	if !c.isValidBoundsInMacros(idx) {
 		return fmt.Errorf("idx out of bounds of Macros")
 	}
@@ -195,7 +189,7 @@ func (c *ConfigM) UpdateMacro(idx int, updatedMacro *Macro) error {
 	return nil
 }
 
-func (c *ConfigM) DeleteMacro(idx int) error {
+func (c *Config) DeleteMacro(idx int) error {
 	if !c.isValidBoundsInMacros(idx) {
 		return fmt.Errorf("idx out of bounds of Macros")
 	}
@@ -203,7 +197,7 @@ func (c *ConfigM) DeleteMacro(idx int) error {
 	return nil
 }
 
-func (c *ConfigM) SwapMacroPositions(idx1, idx2 int) error {
+func (c *Config) SwapMacroPositions(idx1, idx2 int) error {
 	if !c.isValidBoundsInMacros(idx1) || !c.isValidBoundsInMacros(idx2) {
 		return fmt.Errorf("idx out of bounds of Macro's actions")
 	}
@@ -212,11 +206,11 @@ func (c *ConfigM) SwapMacroPositions(idx1, idx2 int) error {
 	return nil
 }
 
-func (c *ConfigM) isValidBoundsInMacros(idx int) bool {
+func (c *Config) isValidBoundsInMacros(idx int) bool {
 	return idx <= len(c.Macros) && idx >= 0
 }
 
-func (c ConfigM) String() string {
+func (c Config) String() string {
 	data, err := yaml.Marshal(c)
 	if err != nil {
 		log.Fatal(err)

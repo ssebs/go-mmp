@@ -13,18 +13,18 @@ func TestConfigM(t *testing.T) {
 		models.NewMacro("TestSecond", nil),
 	}
 
-	want := &models.ConfigM{
+	want := &models.Config{
 		Metadata: models.NewDefaultMetadata(),
 		Macros:   _macros,
 	}
 
 	t.Run("test constructor", func(t *testing.T) {
-		got := models.NewConfigM(models.NewDefaultMetadata(), _macros)
+		got := models.NewConfig(models.NewDefaultMetadata(), _macros)
 		assert.Equal(t, want, got)
 	})
 
 	t.Run("Test AddMacro", func(t *testing.T) {
-		got := models.NewConfigM(models.NewDefaultMetadata(), nil)
+		got := models.NewConfig(models.NewDefaultMetadata(), nil)
 		got.AddMacro(models.NewMacro("TestFirst", nil))
 		got.AddMacro(models.NewMacro("TestSecond", nil))
 
@@ -46,7 +46,7 @@ func TestConfigM(t *testing.T) {
 		m_copy := make([]*models.Macro, len(_macros))
 		copy(m_copy, _macros)
 
-		got := models.NewConfigM(models.NewDefaultMetadata(), m_copy)
+		got := models.NewConfig(models.NewDefaultMetadata(), m_copy)
 		got.UpdateMacro(0, models.NewMacro("ReplacedFirst", nil))
 
 		gotMacro, err := got.GetMacro(0)
@@ -59,7 +59,7 @@ func TestConfigM(t *testing.T) {
 		m_copy := make([]*models.Macro, len(_macros))
 		copy(m_copy, _macros)
 
-		got := models.NewConfigM(models.NewDefaultMetadata(), m_copy)
+		got := models.NewConfig(models.NewDefaultMetadata(), m_copy)
 		err := got.DeleteMacro(0)
 		assert.Nil(t, err)
 
@@ -72,7 +72,7 @@ func TestConfigM(t *testing.T) {
 	t.Run("Test SwapMacroPositions", func(t *testing.T) {
 		m_copy := make([]*models.Macro, len(_macros))
 		copy(m_copy, _macros)
-		got := models.NewConfigM(models.NewDefaultMetadata(), m_copy)
+		got := models.NewConfig(models.NewDefaultMetadata(), m_copy)
 		err := got.SwapMacroPositions(0, 1)
 		assert.Nil(t, err)
 

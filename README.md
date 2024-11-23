@@ -93,6 +93,13 @@ There are many available, but if you like the one I designed, check out my [than
       - List of Actions, see [Actions](#actions) section below
 - When you press a button on the Arduino based MacroPad, it should run the macro.
 - You can also click the button in the UI to run the macro.
+- Testing with a virtual serial device (Linux)
+  - If you don't have a physical serial device, you can still simulate button presses.
+  - Install `socat`, and open up two terminals
+  - `$ socat -d -d PTY,raw,echo=0 PTY,raw,echo=0`
+    - You'll get two `/dev/pts/<num>` devices listed, the first one is what you set in your config, and the second is used to send data.
+  - `$ echo -n "<num>" > /dev/pts/num2`
+    - e.g. use num 0 to press the first button
 
 ### Don't have an arduino but still want to run macros?
 You can still run this in GUI only mode, but you'll need to open up a CLI terminal

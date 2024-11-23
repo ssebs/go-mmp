@@ -8,16 +8,14 @@ import (
 	"github.com/go-vgo/robotgo"
 )
 
-// macroaction.go is where the DoBlah functions are housed.
-// macro.go was getting too hard to read, so I moved half of the methods here.
-
 /*
  Below are the functions that provide the actual macro functionality
 */
 
+// TODO: Create MacroAction type and use that to track state instead of using MacroManager?
+
 // DoSendString will type a string that's passed
 // param should be a string, this can be a letter, word, sentence, etc.
-// e.g. DoSendTextAction("foo bar")
 func (mm *MacroManager) DoSendTextAction(param string) error {
 	// fmt.Println("DoSendTextAction:", param)
 	robotgo.TypeStr(param)
@@ -27,7 +25,6 @@ func (mm *MacroManager) DoSendTextAction(param string) error {
 // DoPressAction will press down a key and keep it held.
 // To release, use DoReleaseAction.
 // param should be a keyname, see README.md
-// e.g. DoPressAction("enter")
 func (mm *MacroManager) DoPressAction(param string) error {
 	return robotgo.KeyDown(param)
 }
@@ -35,14 +32,12 @@ func (mm *MacroManager) DoPressAction(param string) error {
 // DoReleaseAction will release a pressed key.
 // To press, use DoPressAction.
 // param should be a keyname, see README.md
-// e.g. DoReleaseAction("enter")
 func (mm *MacroManager) DoReleaseAction(param string) error {
 	return robotgo.KeyUp(param)
 }
 
 // DoPressReleaseAction will press and release a key or mouse button
 // param should be a keyname or mouse btn name, see README.md
-// e.g. DoPressReleaseAction("enter") or DoPressReleaseAction("RMB")
 func (mm *MacroManager) DoPressReleaseAction(param string) error {
 	// fmt.Println("DoPressReleaseAction:", param)
 	// If it's a mouse button, pressMouse
@@ -54,15 +49,14 @@ func (mm *MacroManager) DoPressReleaseAction(param string) error {
 }
 
 // DoShortcutAction will type a shortcut out for you
-// param should be formatted as: "SHIFT+ENTER+c"
+// param should be formatted like: "SHIFT+ENTER+c"
+//
 // After keys are held down, there's a delay defined in mm.Config.Delay,
 // then the keys will release
 // This does NOT support mouse buttons
-// e.g. DoShortcutAction("CTRL+SHIFT+ESC")
 func (mm *MacroManager) DoShortcutAction(param string) error {
-	// fmt.Println("DoShortcutAction:", param)
-
 	// TODO: add option to delay between keydown/keyup
+
 	keys := strings.Split(param, "+")
 
 	// Hold down all keys
@@ -74,7 +68,7 @@ func (mm *MacroManager) DoShortcutAction(param string) error {
 	}
 
 	// Delay
-	time.Sleep(mm.ConfigM.Metadata.Delay)
+	time.Sleep(mm.Config.Metadata.Delay)
 
 	// Release all keys
 	for _, key := range keys {
@@ -86,8 +80,21 @@ func (mm *MacroManager) DoShortcutAction(param string) error {
 	return nil
 }
 
+// DoDelay will time.sleep for the delay if it can be parsed
+// param should be formatted like: "120ms"
+func (mm *MacroManager) DoDelayAction(param string) error {
+	// Try to parse the duration
+	delay, err := time.ParseDuration(param)
+	if err != nil {
+		return fmt.Errorf("could not parse delay duration %q, err: %s", param, err)
+	}
+	// Then sleep
+	time.Sleep(delay)
+	return nil
+}
+
 // DoRepeatAction will...
-// param should be formatted as: "LMB+100ms"
+// param should be formatted like: "LMB+100ms"
 // Only a single key and the delay between repeats should be in the string.
 func (mm *MacroManager) DoRepeatAction(param string) error {
 	// TODO: keep the button looking pressed in the GUI while
@@ -146,18 +153,6 @@ free:
 			time.Sleep(repeatDelay)
 		}
 	}
-}
-
-// DoDelay will time.sleep for the delay if it can be parsed
-func (mm *MacroManager) DoDelayAction(param string) error {
-	// Try to parse the duration
-	delay, err := time.ParseDuration(param)
-	if err != nil {
-		return fmt.Errorf("could not parse delay duration %q, err: %s", param, err)
-	}
-	// Then sleep
-	time.Sleep(delay)
-	return nil
 }
 
 /* Helpers */

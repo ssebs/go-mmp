@@ -5,28 +5,31 @@ import (
 	"os"
 
 	"fyne.io/fyne/v2"
+	"github.com/ssebs/go-mmp/macro"
 	"github.com/ssebs/go-mmp/models"
 	"github.com/ssebs/go-mmp/utils"
 	"github.com/ssebs/go-mmp/views"
 )
 
 type MacroRunnerController struct {
-	*models.ConfigM
+	*models.Config
 	*views.MacroRunnerView
 	*views.ConfigEditorView
 	*ConfigController
+	*macro.MacroManager
 }
 
-func NewMacroRunnerController(m *models.ConfigM, v *views.MacroRunnerView) *MacroRunnerController {
+func NewMacroRunnerController(m *models.Config, v *views.MacroRunnerView, mm *macro.MacroManager) *MacroRunnerController {
 	cc := &MacroRunnerController{
-		ConfigM:          m,
+		Config:           m,
 		MacroRunnerView:  v,
 		ConfigEditorView: views.NewConfigEditorView(m.Columns),
+		MacroManager:     mm,
 	}
-	cc.ConfigController = NewConfigController(cc.ConfigM, cc.ConfigEditorView)
+	cc.ConfigController = NewConfigController(cc.Config, cc.ConfigEditorView)
 
 	cc.MacroRunnerView.SetOnMacroTapped(func(macro *models.Macro) {
-
+		cc.MacroManager.RunMacro(macro)
 	})
 
 	cc.MacroRunnerView.SetOnEditConfig(func() {
@@ -49,7 +52,7 @@ func NewMacroRunnerController(m *models.ConfigM, v *views.MacroRunnerView) *Macr
 		}
 		fmt.Println("Saving to", yamlPath)
 
-		if err := cc.ConfigM.OpenConfig(yamlPath); err != nil {
+		if err := cc.Config.OpenConfig(yamlPath); err != nil {
 			fmt.Fprint(os.Stderr, err)
 		}
 		cc.ConfigController.UpdateConfigView()
@@ -65,6 +68,22 @@ func NewMacroRunnerController(m *models.ConfigM, v *views.MacroRunnerView) *Macr
 }
 
 func (cc *MacroRunnerController) UpdateConfigView() {
-	cc.MacroRunnerView.SetCols(cc.ConfigM.Columns)
-	cc.MacroRunnerView.SetMacros(cc.ConfigM.Macros)
+	cc.MacroRunnerView.SetCols(cc.Config.Columns)
+	cc.MacroRunnerView.SetMacros(cc.Config.Macros)
+}
+
+// ListenForDisplayButtonPress will listen for a button press then visibly update
+// the button so it looks like it was pressed
+func (cc *MacroRunnerController) ListenForDisplayButtonPress(displayBtnch chan string, quitch chan struct{}) {
+free:
+	for {
+		select {
+		case btnStr := <-displayBtnch:
+			if iBtn, err := utils.StringToInt(btnStr); err == nil {
+				cc.ShowPressedAnimation(iBtn, cc.Delay)
+			}
+		case <-quitch:
+			break free
+		}
+	}
 }
