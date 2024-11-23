@@ -14,7 +14,6 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// TODO: Add save/parsing from old config
 type Config struct {
 	*Metadata      `yaml:"Metadata"`
 	Macros         []*Macro `yaml:"Macros"`

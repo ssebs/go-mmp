@@ -106,7 +106,6 @@ func (mm *MacroManager) DoRepeatAction(param string) error {
 
 	// Assert that we have the correct params
 	if len(parts) != 2 {
-		// TODO: convert this to an error type
 		return fmt.Errorf("config error: Repeat should only have 1 \"+\" between a keyname and the delay. expect format such as: \"LMB+100ms\", but got %s", param)
 	}
 

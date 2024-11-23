@@ -10,8 +10,6 @@ import (
 	"github.com/sqweek/dialog"
 )
 
-const ProjectName = "Mini Macro Pad"
-
 // Errors
 type ErrCannotParseIntFromEmptyString struct{}
 

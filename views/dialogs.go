@@ -59,7 +59,6 @@ func ShowErrorDialogAndRunWithLink(err error, link string) {
 	w.SetContent(container)
 	w.SetOnClosed(errFunc)
 	w.CenterOnScreen()
-	// TODO: Make this work after gui is initialized
 	w.ShowAndRun()
 }
 

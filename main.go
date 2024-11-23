@@ -12,16 +12,21 @@ import (
 	"github.com/ssebs/go-mmp/macro"
 	"github.com/ssebs/go-mmp/models"
 	"github.com/ssebs/go-mmp/serialdevice"
-	"github.com/ssebs/go-mmp/utils"
 	"github.com/ssebs/go-mmp/views"
 )
 
 /* To Fix before v2 release:
+- Organize Listeners
 - Change GUIMode In ConfigEditor => Reconnect to serial device
-- Cleanup printing config when saving
-- Close when Saving?
-- Don't open 3 windows for ConfigEditor
-- Support 1 indexing
+-
+- [Cleanup UI] Cleanup printing config when saving
+- [Cleanup UI] Don't open 3 windows for ConfigEditor
+- Cleanup main function
+- [Cleanup UI] Close when Saving?
+- Rewrite README
+- Validate Params in config
+- Support 1 indexing in config
+- [Cleanup UI] Drag and Drop highlighting
 
 */
 
@@ -44,11 +49,9 @@ func main() {
 		macroMgr.Config.GUIMode = cliFlags.GUIMode
 	}
 
-	// TODO: refactor this section to support daemon / CLI only
-
 	// TODO: move creating ui to func
 	mmpApp := app.New()
-	rootWin := mmpApp.NewWindow(utils.ProjectName)
+	rootWin := mmpApp.NewWindow("Mini Macro Pad")
 	rootWin.Resize(fyne.NewSize(400, 400))
 	rootWin.CenterOnScreen()
 
