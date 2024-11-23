@@ -16,13 +16,12 @@ import (
 )
 
 /* To Fix before v2 release:
-- Organize Listeners
+- Organize Listeners & channels
 - Change GUIMode In ConfigEditor => Reconnect to serial device
--
 - [Cleanup UI] Cleanup printing config when saving
 - [Cleanup UI] Don't open 3 windows for ConfigEditor
-- Cleanup main function
 - [Cleanup UI] Close when Saving?
+- Cleanup main function
 - Rewrite README
 - Validate Params in config
 - Support 1 indexing in config
