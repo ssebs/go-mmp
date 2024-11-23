@@ -11,54 +11,39 @@ import (
 )
 
 // SerialDevice is used to manage an arduino's serial connections
-// From loading the port, to opening connections and listening for serial input
 type SerialDevice struct {
 	portName string
 	mode     *serial.Mode
 	Conn     serial.Port
-	timeout  time.Duration
 }
 
-// Create a new SerialDevice
-// Returns a SerialDevice, and an error.
-// This will:
-//   - set the serial port based on the given portName
-//   - open the connection using the supplied baudRate, and set the timeout
-func NewSerialDevice(pn string, baudRate int, timeout time.Duration) (*SerialDevice, error) {
-	arduino := &SerialDevice{portName: pn, timeout: timeout}
+// This will Open a connection to the portName with baudRate
+func NewSerialDevice(portName string, baudRate int, timeout time.Duration) (*SerialDevice, error) {
+	serialDevice := &SerialDevice{
+		portName: portName,
+		mode:     &serial.Mode{BaudRate: baudRate},
+		Conn:     nil,
+	}
 
-	// err := arduino.SetSerialPort(pn) // not needed?
-	// if err != nil {
-	// 	return arduino, err
-	// }
-	err := arduino.OpenConnection(baudRate)
+	conn, err := serial.Open(serialDevice.portName, serialDevice.mode)
 	if err != nil {
-		return arduino, err
+		return serialDevice, fmt.Errorf("failed to open serial %s, err: %s", portName, err)
 	}
-	err = arduino.Conn.SetReadTimeout(timeout)
+	serialDevice.Conn = conn
+
+	err = serialDevice.Conn.SetReadTimeout(timeout)
 	if err != nil {
-		return arduino, err
+		return serialDevice, fmt.Errorf("failed to set read timeout, err: %s", err)
 	}
-	return arduino, nil
+
+	return serialDevice, nil
 }
 
-// Create a new SerialDevice from a Config struct
-// Returns a SerialDevice, and an error.
-// See NewSerialDevice.
 func NewSerialDeviceFromConfig(c *models.Config, timeout time.Duration) (*SerialDevice, error) {
 	arduino, err := NewSerialDevice(c.Metadata.SerialPortName, c.Metadata.SerialBaudRate, timeout)
 	return arduino, err
 }
 
-// Open a serial connection based on the baudrate,
-// and save the opened conn to SerialDevice.Conn
-func (s *SerialDevice) OpenConnection(baud int) (err error) {
-	s.mode = &serial.Mode{BaudRate: int(baud)}
-	s.Conn, err = serial.Open(s.portName, s.mode)
-	return err
-}
-
-// Close the serial connection
 func (s *SerialDevice) CloseConnection() error {
 	return s.Conn.Close()
 }

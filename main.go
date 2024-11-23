@@ -16,6 +16,15 @@ import (
 	"github.com/ssebs/go-mmp/views"
 )
 
+/* To Fix before v2 release:
+- Change GUIMode In ConfigEditor => Reconnect to serial device
+- Cleanup printing config when saving
+- Close when Saving?
+- Don't open 3 windows for ConfigEditor
+- Support 1 indexing
+
+*/
+
 func main() {
 	cliFlags := models.ParseFlags()
 

@@ -94,7 +94,7 @@ func (c *Config) figureOutConfigPath(configPath string) error {
 func parseConfig(f io.Reader, c *Config) error {
 	err := yaml.NewDecoder(f).Decode(c)
 	if err != nil {
-		return fmt.Errorf("could not decode %s into a Config", f)
+		return fmt.Errorf("could not decode %s into a Config. err: %s", f, err)
 	}
 
 	// Set default delay if it's 0
