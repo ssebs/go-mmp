@@ -44,33 +44,40 @@ func main() {
 		views.ShowErrorDialogAndRun(err) // TODO: only if GUIMode is not set to daemon
 	}
 
+	// TODO: move this by passing cliFlags to NewMacroManager?
 	if cliFlags.GUIMode != models.NOTSET {
-		macroMgr.Config.GUIMode = cliFlags.GUIMode
+		conf.GUIMode = cliFlags.GUIMode
 	}
 
-	// TODO: move creating ui to func
+	// TODO: move this
 	mmpApp := app.New()
 	rootWin := mmpApp.NewWindow("Mini Macro Pad")
 	rootWin.Resize(fyne.NewSize(400, 400))
 	rootWin.CenterOnScreen()
 
-	mainGUI := views.NewMacroRunnerView(conf.Columns, rootWin)
-	mainGUIController := controllers.NewMacroRunnerController(conf, mainGUI, macroMgr)
+	mainGUIController := controllers.NewMacroRunnerController(
+		conf,
+		views.NewMacroRunnerView(conf.Columns, rootWin),
+		macroMgr,
+	)
+
 	rootWin.SetContent(mainGUIController.MacroRunnerView)
 
-	// If GUI only mode, ShowAndRun instead of continuing with serial stuff.
-	// This will "block" until the window is closed, then exit
-	if conf.GUIMode == models.GUIOnly {
-		rootWin.SetOnClosed(func() {
-			fmt.Println("gui only closed")
-			os.Exit(0)
-		})
-		rootWin.ShowAndRun()
-		return
+	switch conf.GUIMode {
+	case models.GUIOnly:
+		runGUIOnly(rootWin)
+	case models.NORMAL:
+		runSerialAndGUI(rootWin, conf, mainGUIController, mmpApp, macroMgr)
+	default:
+		fmt.Fprintf(os.Stderr, "%s not supported", conf.GUIMode.String())
 	}
 
-	// Else, do the serial stuff
+}
 
+func runSerialAndGUI(
+	rootWin fyne.Window, conf *models.Config, guiController *controllers.MacroRunnerController,
+	mmpApp fyne.App, macroMgr *macro.MacroManager,
+) {
 	// Connect Serial Device from the config
 	arduino, err := serialdevice.NewSerialDeviceFromConfig(conf, time.Millisecond*20)
 	if err != nil {
@@ -88,12 +95,20 @@ func main() {
 	go arduino.Listen(btnch, quitch)
 
 	// Visible button press listener
-	go mainGUIController.ListenForDisplayButtonPress(displayBtnch, quitch)
+	go guiController.ListenForDisplayButtonPress(displayBtnch, quitch)
 
 	// Do something when btnch gets data
 	go RunMacroOnDataIn(btnch, displayBtnch, quitch, mmpApp, macroMgr)
 
 	// Finally, display the GUI once everything is loaded & loop
+	rootWin.ShowAndRun()
+}
+
+func runGUIOnly(rootWin fyne.Window) {
+	rootWin.SetOnClosed(func() {
+		fmt.Println("gui only closed")
+		os.Exit(0)
+	})
 	rootWin.ShowAndRun()
 }
 
