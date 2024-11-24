@@ -90,6 +90,7 @@ func (cc *MacroRunnerController) ReconnectSerialDevice() error {
 		)
 		return err
 	}
+	return fmt.Errorf("SerialDevice not set")
 }
 
 func (cc *MacroRunnerController) UpdateConfigView() {
