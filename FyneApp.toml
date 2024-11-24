@@ -5,4 +5,4 @@ Website = "https://github.com/ssebs/go-mmp/"
   Name = "Mini Macro Pad"
   ID = "com.ssebs.go-mmp"
   Version = "1.2.3"
-  Build = 12
+  Build = 13

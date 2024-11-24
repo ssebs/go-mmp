@@ -16,8 +16,6 @@ import (
 )
 
 /* To Fix before v2 release:
-- Organize Listeners & channels
-- Change GUIMode In ConfigEditor => Reconnect to serial device
 - [Cleanup UI] Cleanup printing config when saving
 - [Cleanup UI] Don't open 3 windows for ConfigEditor
 - [Cleanup UI] Close when Saving?
@@ -85,6 +83,9 @@ func runSerialAndGUI(
 		// TODO: show list of devices to select from and update config
 	}
 	defer arduino.CloseConnection()
+
+	// Add arduino to controller
+	guiController.SetSerialDevice(arduino)
 
 	// listener channels
 	btnch := make(chan string, 2)

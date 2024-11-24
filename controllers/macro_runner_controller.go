@@ -7,6 +7,7 @@ import (
 	"fyne.io/fyne/v2"
 	"github.com/ssebs/go-mmp/macro"
 	"github.com/ssebs/go-mmp/models"
+	"github.com/ssebs/go-mmp/serialdevice"
 	"github.com/ssebs/go-mmp/utils"
 	"github.com/ssebs/go-mmp/views"
 )
@@ -17,6 +18,7 @@ type MacroRunnerController struct {
 	*views.ConfigEditorView
 	*ConfigController
 	*macro.MacroManager
+	*serialdevice.SerialDevice
 }
 
 func NewMacroRunnerController(m *models.Config, v *views.MacroRunnerView, mm *macro.MacroManager) *MacroRunnerController {
@@ -25,6 +27,7 @@ func NewMacroRunnerController(m *models.Config, v *views.MacroRunnerView, mm *ma
 		MacroRunnerView:  v,
 		ConfigEditorView: views.NewConfigEditorView(m.Columns),
 		MacroManager:     mm,
+		SerialDevice:     nil,
 	}
 	cc.ConfigController = NewConfigController(cc.Config, cc.ConfigEditorView)
 
@@ -42,6 +45,10 @@ func NewMacroRunnerController(m *models.Config, v *views.MacroRunnerView, mm *ma
 		win.Show()
 		win.SetOnClosed(func() {
 			cc.UpdateConfigView()
+
+			if err := cc.ReconnectSerialDevice(); err != nil {
+				fmt.Fprint(os.Stderr, err)
+			}
 		})
 	})
 
@@ -65,6 +72,24 @@ func NewMacroRunnerController(m *models.Config, v *views.MacroRunnerView, mm *ma
 
 	cc.UpdateConfigView()
 	return cc
+}
+
+func (cc *MacroRunnerController) SetSerialDevice(s *serialdevice.SerialDevice) {
+	cc.SerialDevice = s
+}
+
+// Reconnect Serial device if it's different
+func (cc *MacroRunnerController) ReconnectSerialDevice() error {
+	if cc.SerialDevice != nil &&
+		(cc.SerialDevice.PortName != cc.Config.Metadata.SerialPortName) ||
+		(cc.SerialDevice.Mode.BaudRate != cc.metaController.SerialBaudRate) {
+
+		err := cc.SerialDevice.ChangePortAndReconnect(
+			cc.Config.Metadata.SerialPortName,
+			cc.Config.Metadata.SerialBaudRate,
+		)
+		return err
+	}
 }
 
 func (cc *MacroRunnerController) UpdateConfigView() {

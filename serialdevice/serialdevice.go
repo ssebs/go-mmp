@@ -12,36 +12,40 @@ import (
 
 // SerialDevice is used to manage an arduino's serial connections
 type SerialDevice struct {
-	portName string
-	mode     *serial.Mode
 	Conn     serial.Port
+	PortName string
+	Mode     *serial.Mode
+	Timeout  time.Duration
 }
 
 // This will Open a connection to the portName with baudRate
 func NewSerialDevice(portName string, baudRate int, timeout time.Duration) (*SerialDevice, error) {
 	serialDevice := &SerialDevice{
-		portName: portName,
-		mode:     &serial.Mode{BaudRate: baudRate},
+		PortName: portName,
+		Timeout:  timeout,
+		Mode:     &serial.Mode{BaudRate: baudRate},
 		Conn:     nil,
 	}
 
-	conn, err := serial.Open(serialDevice.portName, serialDevice.mode)
-	if err != nil {
-		return serialDevice, fmt.Errorf("failed to open serial %s, err: %s", portName, err)
-	}
-	serialDevice.Conn = conn
-
-	err = serialDevice.Conn.SetReadTimeout(timeout)
-	if err != nil {
-		return serialDevice, fmt.Errorf("failed to set read timeout, err: %s", err)
+	if err := serialDevice.openConnection(); err != nil {
+		return nil, err
 	}
 
 	return serialDevice, nil
 }
-
 func NewSerialDeviceFromConfig(c *models.Config, timeout time.Duration) (*SerialDevice, error) {
 	arduino, err := NewSerialDevice(c.Metadata.SerialPortName, c.Metadata.SerialBaudRate, timeout)
 	return arduino, err
+}
+
+func (s *SerialDevice) ChangePortAndReconnect(portName string, baudRate int) error {
+	if err := s.Conn.Close(); err != nil {
+		return fmt.Errorf("failed to close connection, err:%s", err)
+	}
+
+	s.PortName = portName
+	s.Mode.BaudRate = baudRate
+	return s.openConnection()
 }
 
 func (s *SerialDevice) CloseConnection() error {
@@ -60,7 +64,7 @@ free:
 			break free
 		default:
 			// If we get data, send to chan
-			actionID, err := s.ScanThing()
+			actionID, err := s.scanThing()
 			if err != nil {
 				slog.Debug(fmt.Sprint("Listen err: ", err))
 			}
@@ -69,9 +73,24 @@ free:
 	}
 }
 
+func (s *SerialDevice) openConnection() error {
+	conn, err := serial.Open(s.PortName, s.Mode)
+	if err != nil {
+		return fmt.Errorf("failed to open serial %s, err: %s", s.PortName, err)
+	}
+	s.Conn = conn
+
+	err = s.Conn.SetReadTimeout(s.Timeout)
+	if err != nil {
+		return fmt.Errorf("failed to set read timeout, err: %s", err)
+	}
+
+	return nil
+}
+
 // Listen & return data
 // Runs in a bufio.Scanner.Scan() loop
-func (s *SerialDevice) ScanThing() (actionID string, err error) {
+func (s *SerialDevice) scanThing() (actionID string, err error) {
 	scanner := bufio.NewScanner(s.Conn)
 	for scanner.Scan() {
 		return scanner.Text(), nil
