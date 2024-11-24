@@ -16,11 +16,11 @@ import (
 )
 
 /* To Fix before v2 release:
-- Cleanup main function
 - Rewrite README
 - Validate Params in config
 - Support 1 indexing in config
 - [Cleanup UI] Drag and Drop highlighting
+- [Cleanup UI] Cleanup DragBoxItems for Macros
 
 */
 

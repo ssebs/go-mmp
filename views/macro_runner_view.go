@@ -1,7 +1,6 @@
 package views
 
 import (
-	"fmt"
 	"time"
 
 	"fyne.io/fyne/v2"
@@ -21,6 +20,7 @@ type MacroRunnerView struct {
 	OnOpenConfig    func()
 	OnQuit          func()
 	OnEditConfig    func()
+	OnResetConfig   func()
 
 	mainMenu *fyne.MainMenu
 	rootWin  fyne.Window
@@ -37,7 +37,7 @@ func NewMacroRunnerView(cols int, rootWin fyne.Window) *MacroRunnerView {
 	view.mainMenu = fyne.NewMainMenu(
 		fyne.NewMenu("File",
 			fyne.NewMenuItem("Open Config", func() { view.OnOpenConfig() }),
-			fyne.NewMenuItem("Reset Config", func() { fmt.Println("reset config") }),
+			fyne.NewMenuItem("Reset Config", func() { view.OnResetConfig() }),
 			fyne.NewMenuItemSeparator(),
 			fyne.NewMenuItem("Quit", func() { view.OnQuit() }),
 		),
@@ -85,6 +85,9 @@ func (v *MacroRunnerView) SetOnMacroTapped(f func(*models.Macro)) {
 }
 func (v *MacroRunnerView) SetOnOpenConfig(f func()) {
 	v.OnOpenConfig = f
+}
+func (v *MacroRunnerView) SetOnResetConfig(f func()) {
+	v.OnResetConfig = f
 }
 func (v *MacroRunnerView) SetOnQuit(f func()) {
 	v.OnQuit = f

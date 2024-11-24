@@ -67,6 +67,10 @@ func NewMacroRunnerController(m *models.Config, v *views.MacroRunnerView, mm *ma
 		cc.UpdateConfigView()
 	})
 
+	cc.MacroRunnerView.SetOnResetConfig(func() {
+		fmt.Fprint(os.Stderr, "TODO: Implement ResetConfig in models.Config!")
+	})
+
 	cc.MacroRunnerView.SetOnQuit(func() {
 		fyne.CurrentApp().Quit()
 	})
