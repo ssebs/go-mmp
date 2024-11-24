@@ -38,7 +38,7 @@ func NewMacroRunnerController(m *models.Config, v *views.MacroRunnerView, mm *ma
 	cc.MacroRunnerView.SetOnEditConfig(func() {
 		win := fyne.CurrentApp().NewWindow("Macro Editor")
 		win.CenterOnScreen()
-		win.Resize(fyne.NewSize(300, 500))
+		win.Resize(fyne.NewSize(500, 600))
 
 		cc.ConfigController.SetRootWin(win)
 		win.SetContent(cc.ConfigController.ConfigEditorView)
@@ -81,8 +81,11 @@ func (cc *MacroRunnerController) SetSerialDevice(s *serialdevice.SerialDevice) {
 
 // Reconnect Serial device if it's different
 func (cc *MacroRunnerController) ReconnectSerialDevice() error {
-	if cc.SerialDevice != nil &&
-		(cc.SerialDevice.PortName != cc.Config.Metadata.SerialPortName) ||
+	if cc.SerialDevice != nil {
+		return fmt.Errorf("SerialDevice not set")
+	}
+
+	if (cc.SerialDevice.PortName != cc.Config.Metadata.SerialPortName) ||
 		(cc.SerialDevice.Mode.BaudRate != cc.MetadataController.SerialBaudRate) {
 
 		err := cc.SerialDevice.ChangePortAndReconnect(
@@ -91,7 +94,8 @@ func (cc *MacroRunnerController) ReconnectSerialDevice() error {
 		)
 		return err
 	}
-	return fmt.Errorf("SerialDevice not set")
+
+	return nil
 }
 
 func (cc *MacroRunnerController) UpdateConfigView() {
