@@ -82,7 +82,7 @@ func (cc *MacroRunnerController) SetSerialDevice(s *serialdevice.SerialDevice) {
 func (cc *MacroRunnerController) ReconnectSerialDevice() error {
 	if cc.SerialDevice != nil &&
 		(cc.SerialDevice.PortName != cc.Config.Metadata.SerialPortName) ||
-		(cc.SerialDevice.Mode.BaudRate != cc.metaController.SerialBaudRate) {
+		(cc.SerialDevice.Mode.BaudRate != cc.MetadataController.SerialBaudRate) {
 
 		err := cc.SerialDevice.ChangePortAndReconnect(
 			cc.Config.Metadata.SerialPortName,

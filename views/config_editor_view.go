@@ -15,7 +15,7 @@ type ConfigEditorView struct {
 	widget.BaseWidget
 	cols            int
 	titleLabel      *widget.Label
-	metadataBtn     *widget.Button
+	metadataView    *MetadataEditorView
 	macrosContainer *DragAndDropView
 	OnMacroTapped   func(m *models.Macro)
 	OnMacrosSwapped func(idx1, idx2 int)
@@ -31,7 +31,7 @@ func NewConfigEditorView(cols int) *ConfigEditorView {
 		titleLabel: widget.NewLabelWithStyle("Edit Config", fyne.TextAlignCenter,
 			fyne.TextStyle{Bold: true},
 		),
-		metadataBtn:     widget.NewButton("Edit Metadata", nil),
+		metadataView:    nil,
 		macrosContainer: NewDragAndDropView(container.NewGridWithColumns(cols), DRAG_BOTH),
 		addMacroBtn:     widget.NewButton("+ Add Macro", nil),
 		saveAsBtn:       widget.NewButton("Save as", nil),
@@ -67,8 +67,8 @@ func (v *ConfigEditorView) SetOnMacroDeleted(f func(int)) {
 func (v *ConfigEditorView) SetOnMacroTapped(f func(*models.Macro)) {
 	v.OnMacroTapped = f
 }
-func (v *ConfigEditorView) SetOnMetadataTapped(f func()) {
-	v.metadataBtn.OnTapped = f
+func (v *ConfigEditorView) SetMetadataView(mView *MetadataEditorView) {
+	v.metadataView = mView
 }
 func (v *ConfigEditorView) SetOnMacrosSwapped(f func(idx1, idx2 int)) {
 	v.OnMacrosSwapped = f
@@ -89,8 +89,9 @@ func (v *ConfigEditorView) SetCols(c int) {
 }
 
 func (v *ConfigEditorView) CreateRenderer() fyne.WidgetRenderer {
+	// TODO: widget.Accordion
 	c := container.NewVBox(
-		container.NewVBox(v.titleLabel, v.metadataBtn),
+		container.NewVBox(v.titleLabel, v.metadataView),
 		v.macrosContainer,
 		container.NewHBox(v.addMacroBtn, v.saveAsBtn, v.saveBtn),
 	)

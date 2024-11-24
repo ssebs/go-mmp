@@ -16,8 +16,6 @@ import (
 )
 
 /* To Fix before v2 release:
-- [Cleanup UI] Cleanup printing config when saving
-- [Cleanup UI] Move Metadataview to main edit page
 - [Cleanup UI] Don't open 3 windows for ConfigEditor
 - [Cleanup UI] Close when Saving?
 - Cleanup main function

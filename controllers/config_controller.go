@@ -13,29 +13,22 @@ import (
 type ConfigController struct {
 	*models.Config
 	*views.ConfigEditorView
-	metaController *MetadataController
+	*MetadataController
 }
 
 func NewConfigController(m *models.Config, v *views.ConfigEditorView) *ConfigController {
 	cc := &ConfigController{
-		Config:           m,
-		ConfigEditorView: v,
-		metaController:   NewMetadataController(m.Metadata, views.NewMetadataEditorView()),
+		Config:             m,
+		ConfigEditorView:   v,
+		MetadataController: NewMetadataController(m.Metadata, views.NewMetadataEditorView()),
 	}
-
-	cc.ConfigEditorView.SetOnMetadataTapped(func() {
-		win := fyne.CurrentApp().NewWindow("Metadata Editor")
-		win.CenterOnScreen()
-		win.Resize(fyne.NewSize(300, 500))
-
-		win.SetContent(cc.metaController.MetadataEditorView)
-
-		win.Show()
-		win.SetOnClosed(func() {
-			fmt.Println("cols", cc.Config.Columns)
-			cc.UpdateConfigView()
-		})
+	cc.MetadataController.SetOnSubmit(func(m models.Metadata) {
+		cc.MetadataController.UpdateAllFields(m)
+		fmt.Println("Updated metadata")
+		// fmt.Println(mc.Metadata)
+		cc.UpdateConfigView()
 	})
+	cc.ConfigEditorView.SetMetadataView(cc.MetadataEditorView)
 
 	cc.ConfigEditorView.SetOnMacrosSwapped(func(idx1, idx2 int) {
 		if err := cc.Config.SwapMacroPositions(idx1, idx2); err != nil {
@@ -66,7 +59,7 @@ func NewConfigController(m *models.Config, v *views.ConfigEditorView) *ConfigCon
 
 	cc.ConfigEditorView.SetOnSave(func() {
 		fmt.Println("Saving")
-		fmt.Println(cc.Config)
+		// fmt.Println(cc.Config)
 		if err := cc.Config.SaveConfig(""); err != nil {
 			fmt.Fprint(os.Stderr, err)
 		}
@@ -77,7 +70,7 @@ func NewConfigController(m *models.Config, v *views.ConfigEditorView) *ConfigCon
 			fmt.Fprint(os.Stderr, err)
 		}
 		fmt.Println("Saving to", yamlPath)
-		fmt.Println(cc.Config)
+		// fmt.Println(cc.Config)
 		if err := cc.Config.SaveConfig(yamlPath); err != nil {
 			fmt.Fprint(os.Stderr, err)
 		}

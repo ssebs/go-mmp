@@ -1,8 +1,6 @@
 package controllers
 
 import (
-	"fmt"
-
 	"github.com/ssebs/go-mmp/models"
 	"github.com/ssebs/go-mmp/views"
 )
@@ -18,18 +16,12 @@ func NewMetadataController(m *models.Metadata, v *views.MetadataEditorView) *Met
 		MetadataEditorView: v,
 	}
 
-	mc.MetadataEditorView.SetOnSubmit(func(m models.Metadata) {
-		mc.UpdateAllFields(m)
-
-		fmt.Println("Updated")
-		fmt.Println(mc.Metadata)
-	})
-
 	mc.UpdateMetadataView()
-
 	return mc
 }
-
+func (mc *MetadataController) SetOnSubmit(f func(m models.Metadata)) {
+	mc.MetadataEditorView.SetOnSubmit(f)
+}
 func (mc *MetadataController) UpdateMetadataView() {
 	mc.MetadataEditorView.SetMetadata(mc.Metadata)
 }

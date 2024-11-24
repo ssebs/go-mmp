@@ -34,6 +34,7 @@ func NewMetadataEditorView() *MetadataEditorView {
 		guiModeSelect:       widget.NewSelect(models.GetGUIModesList(), nil),
 		form:                widget.NewForm(),
 	}
+	view.form.SubmitText = "Save Metadata"
 
 	view.form.Append("Grid columns", view.colsEntry)
 	view.form.Append("Serial Port Name", view.serialPortNameEntry)
@@ -57,6 +58,7 @@ func (v *MetadataEditorView) SetOnSubmit(f func(models.Metadata)) {
 	v.form.OnSubmit = func() {
 		f(v.GetMetadata())
 	}
+	v.form.Refresh()
 }
 
 func (v *MetadataEditorView) GetMetadata() models.Metadata {
