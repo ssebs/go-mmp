@@ -34,6 +34,7 @@ func NewMacroEditorView(rootWin fyne.Window) *MacroEditorView {
 		saveBtn:      widget.NewButton("Save and Close", nil),
 		rootWin:      rootWin,
 	}
+	view.saveBtn.Importance = widget.HighImportance
 	view.macroNameEntry.Validator = nil
 	view.actionsScroll.Resize(view.actionsScroll.Size().AddWidthHeight(0, 400))
 
