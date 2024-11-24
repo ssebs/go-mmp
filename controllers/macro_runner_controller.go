@@ -40,6 +40,7 @@ func NewMacroRunnerController(m *models.Config, v *views.MacroRunnerView, mm *ma
 		win.CenterOnScreen()
 		win.Resize(fyne.NewSize(300, 500))
 
+		cc.ConfigController.SetRootWin(win)
 		win.SetContent(cc.ConfigController.ConfigEditorView)
 
 		win.Show()
@@ -57,7 +58,7 @@ func NewMacroRunnerController(m *models.Config, v *views.MacroRunnerView, mm *ma
 		if err != nil {
 			fmt.Fprint(os.Stderr, err)
 		}
-		fmt.Println("Saving to", yamlPath)
+		fmt.Println("Loading", yamlPath)
 
 		if err := cc.Config.OpenConfig(yamlPath); err != nil {
 			fmt.Fprint(os.Stderr, err)

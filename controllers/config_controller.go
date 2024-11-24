@@ -63,7 +63,9 @@ func NewConfigController(m *models.Config, v *views.ConfigEditorView) *ConfigCon
 		if err := cc.Config.SaveConfig(""); err != nil {
 			fmt.Fprint(os.Stderr, err)
 		}
+		cc.ConfigEditorView.CloseWindow()
 	})
+
 	cc.ConfigEditorView.SetOnSaveAs(func() {
 		yamlPath, err := utils.GetYAMLFilename(true)
 		if err != nil {
@@ -74,6 +76,7 @@ func NewConfigController(m *models.Config, v *views.ConfigEditorView) *ConfigCon
 		if err := cc.Config.SaveConfig(yamlPath); err != nil {
 			fmt.Fprint(os.Stderr, err)
 		}
+		cc.ConfigEditorView.CloseWindow()
 	})
 
 	cc.ConfigEditorView.SetOnMacroDeleted(func(i int) {
@@ -90,4 +93,8 @@ func NewConfigController(m *models.Config, v *views.ConfigEditorView) *ConfigCon
 func (cc *ConfigController) UpdateConfigView() {
 	cc.SetCols(cc.Config.Columns)
 	cc.ConfigEditorView.SetMacros(cc.Config.Macros)
+}
+
+func (cc *ConfigController) SetRootWin(rootWin fyne.Window) {
+	cc.ConfigEditorView.SetRootWin(rootWin)
 }

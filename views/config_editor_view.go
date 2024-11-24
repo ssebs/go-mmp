@@ -23,6 +23,7 @@ type ConfigEditorView struct {
 	addMacroBtn     *widget.Button
 	saveBtn         *widget.Button
 	saveAsBtn       *widget.Button
+	rootWin         fyne.Window
 }
 
 func NewConfigEditorView(cols int) *ConfigEditorView {
@@ -34,9 +35,10 @@ func NewConfigEditorView(cols int) *ConfigEditorView {
 		metadataView:    nil,
 		macrosContainer: NewDragAndDropView(container.NewGridWithColumns(cols), DRAG_BOTH),
 		addMacroBtn:     widget.NewButton("+ Add Macro", nil),
-		saveAsBtn:       widget.NewButton("Save as", nil),
-		saveBtn:         widget.NewButton("Save", nil),
+		saveAsBtn:       widget.NewButton("Save as...", nil),
+		saveBtn:         widget.NewButton("Save and Close", nil),
 	}
+	view.saveBtn.Importance = widget.HighImportance
 
 	view.ExtendBaseWidget(view)
 	return view
@@ -86,6 +88,15 @@ func (v *ConfigEditorView) SetCols(c int) {
 	v.cols = c
 	v.macrosContainer.dragItems.Layout = (container.NewGridWithColumns(c)).Layout
 	v.macrosContainer.dragItems.Refresh()
+}
+func (v *ConfigEditorView) SetRootWin(rootWin fyne.Window) {
+	v.rootWin = rootWin
+}
+
+func (v *ConfigEditorView) CloseWindow() {
+	if v.rootWin != nil {
+		v.rootWin.Close()
+	}
 }
 
 func (v *ConfigEditorView) CreateRenderer() fyne.WidgetRenderer {
