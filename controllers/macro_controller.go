@@ -32,11 +32,13 @@ func NewMacroController(m *models.Macro, v *views.MacroEditorView) *MacroControl
 	})
 
 	mc.SetOnSave(func() {
-		fmt.Println("Saving Macro!")
-		fmt.Println(mc.Macro)
+		fmt.Println("\"Saving\" Macro")
+		// fmt.Println(mc.Macro)
+		mc.MacroEditorView.CloseWindow()
 	})
 
 	mc.SetOnActionDeleted(func(idx int) {
+		// TODO: allow cancel / undo. add delete to stack?
 		if err := mc.Macro.DeleteAction(idx); err != nil {
 			fmt.Fprintln(os.Stderr, "failed to delete action", err)
 		}

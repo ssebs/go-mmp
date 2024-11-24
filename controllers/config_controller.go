@@ -49,7 +49,7 @@ func NewConfigController(m *models.Config, v *views.ConfigEditorView) *ConfigCon
 		win.CenterOnScreen()
 		win.Resize(fyne.NewSize(300, 500))
 
-		mv := views.NewMacroEditorView()
+		mv := views.NewMacroEditorView(win)
 		mc := NewMacroController(macro, mv)
 		win.SetContent(mc.MacroEditorView)
 

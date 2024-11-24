@@ -18,11 +18,12 @@ type MacroEditorView struct {
 	titleLabel       *widget.Label
 	addActionBtn     *widget.Button
 	saveBtn          *widget.Button
+	rootWin          fyne.Window
 	OnActionDeleted  func(idx int)
 	OnActionsSwapped func(idx1, idx2 int)
 }
 
-func NewMacroEditorView() *MacroEditorView {
+func NewMacroEditorView(rootWin fyne.Window) *MacroEditorView {
 	view := &MacroEditorView{
 		macroNameEntry: widget.NewEntry(),
 		actionsScroll:  container.NewVScroll(NewDragAndDropView(container.NewVBox(), DRAG_VERTICAL)),
@@ -30,7 +31,8 @@ func NewMacroEditorView() *MacroEditorView {
 			fyne.TextStyle{Bold: true},
 		),
 		addActionBtn: widget.NewButton("+ Add Action", nil),
-		saveBtn:      widget.NewButton("Save", nil),
+		saveBtn:      widget.NewButton("Save and Close", nil),
+		rootWin:      rootWin,
 	}
 	view.macroNameEntry.Validator = nil
 	view.actionsScroll.Resize(view.actionsScroll.Size().AddWidthHeight(0, 400))
@@ -100,4 +102,7 @@ func (v *MacroEditorView) SetOnActionDeleted(f func(idx int)) {
 }
 func (v *MacroEditorView) SetOnActionsSwapped(f func(idx1, idx2 int)) {
 	v.OnActionsSwapped = f
+}
+func (v *MacroEditorView) CloseWindow() {
+	v.rootWin.Close()
 }
