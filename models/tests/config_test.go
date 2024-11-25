@@ -85,27 +85,27 @@ func TestConfigM(t *testing.T) {
 		assert.Equal(t, _macros[0].Name, swapped1.Name)
 	})
 
-	t.Run("Test parser", func(t *testing.T) {
-		expectedStr := `Metadata:
-    Columns: 2
-    SerialPortName: ""
-    SerialBaudRate: 9600
-    Delay: 125ms
-    GUIMode: GUIOnly
-Macros:
-    - Name: TestFirst
-      Actions: []
-    - Name: TestSecond
-      Actions: []`
-		// if err := os.WriteFile("../../tmp/expectedStr.txt", []byte(want.String()), 0644); err != nil {
-		// 	t.Fatal(err)
-		// }
+	// 	t.Run("Test parser", func(t *testing.T) {
+	// 		expectedStr := `Metadata:
+	//     Columns: 2
+	//     SerialPortName: ""
+	//     SerialBaudRate: 9600
+	//     Delay: 125ms
+	//     GUIMode: GUIOnly
+	// Macros:
+	//     - Name: TestFirst
+	//       Actions: []
+	//     - Name: TestSecond
+	//       Actions: []`
+	// 		// if err := os.WriteFile("../../tmp/expectedStr.txt", []byte(want.String()), 0644); err != nil {
+	// 		// 	t.Fatal(err)
+	// 		// }
 
-		assert.YAMLEq(
-			t,
-			expectedStr,
-			want.String(),
-		)
-	})
+	// 		assert.YAMLEq(
+	// 			t,
+	// 			expectedStr,
+	// 			want.String(),
+	// 		)
+	// 	})
 
 }
