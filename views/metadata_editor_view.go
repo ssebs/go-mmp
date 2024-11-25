@@ -23,6 +23,7 @@ type MetadataEditorView struct {
 	serialPortBaudEntry *widget.Entry
 	delayEntry          *widget.Entry
 	guiModeSelect       *widget.Select
+	indexingSelect      *widget.Select
 }
 
 func NewMetadataEditorView() *MetadataEditorView {
@@ -32,6 +33,7 @@ func NewMetadataEditorView() *MetadataEditorView {
 		serialPortBaudEntry: widget.NewEntry(),
 		delayEntry:          widget.NewEntry(),
 		guiModeSelect:       widget.NewSelect(models.GetGUIModesList(), nil),
+		indexingSelect:      widget.NewSelect([]string{"0", "1"}, nil),
 		form:                widget.NewForm(),
 	}
 	view.form.SubmitText = "Save Metadata"
@@ -41,6 +43,7 @@ func NewMetadataEditorView() *MetadataEditorView {
 	view.form.Append("Serial Port Baud Rate", view.serialPortBaudEntry)
 	view.form.Append("Default Delay", view.delayEntry)
 	view.form.Append("GUI Mode", view.guiModeSelect)
+	view.form.Append("Indexing", view.indexingSelect)
 
 	view.ExtendBaseWidget(view)
 	return view
@@ -52,6 +55,7 @@ func (v *MetadataEditorView) SetMetadata(m *models.Metadata) {
 	v.serialPortNameEntry.SetText(m.SerialPortName)
 	v.delayEntry.SetText(m.Delay.String())
 	v.guiModeSelect.SetSelected(m.GUIMode.String())
+	v.indexingSelect.SetSelected(fmt.Sprintf("%d", m.Indexing))
 	v.Refresh()
 }
 func (v *MetadataEditorView) SetOnSubmit(f func(models.Metadata)) {
@@ -66,6 +70,7 @@ func (v *MetadataEditorView) GetMetadata() models.Metadata {
 	baud, _ := utils.StringToInt(v.serialPortBaudEntry.Text)
 	delay, _ := time.ParseDuration(v.delayEntry.Text)
 	guimode, _ := models.ParseGUIModeString(v.guiModeSelect.Selected)
+	indexing, _ := utils.StringToInt(v.indexingSelect.Selected)
 
 	return models.Metadata{
 		Columns:        cols,
@@ -73,6 +78,7 @@ func (v *MetadataEditorView) GetMetadata() models.Metadata {
 		SerialBaudRate: baud,
 		Delay:          delay,
 		GUIMode:        guimode,
+		Indexing:       indexing,
 	}
 }
 

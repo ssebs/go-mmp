@@ -15,10 +15,12 @@ type Metadata struct {
 	SerialBaudRate int           `yaml:"SerialBaudRate"`
 	Delay          time.Duration `yaml:"Delay"`
 	GUIMode        GUIMode       `yaml:"GUIMode"`
+	Indexing       int           `yaml:"Indexing"`
 }
 
 func NewMetadata(
 	portName string, baudRate int, guiMode GUIMode, cols int, delay time.Duration,
+	indexing int,
 ) *Metadata {
 	return &Metadata{
 		Columns:        cols,
@@ -26,6 +28,7 @@ func NewMetadata(
 		SerialBaudRate: baudRate,
 		Delay:          delay,
 		GUIMode:        guiMode,
+		Indexing:       indexing,
 	}
 }
 
@@ -36,6 +39,7 @@ func NewDefaultMetadata() *Metadata {
 		SerialBaudRate: 9600,
 		Delay:          125 * time.Millisecond,
 		GUIMode:        GUIOnly,
+		Indexing:       0,
 	}
 
 	// if ports, err := serial.GetPortsList(); err != nil {
@@ -51,6 +55,7 @@ func (m *Metadata) UpdateAllFields(updated Metadata) {
 	m.SerialBaudRate = updated.SerialBaudRate
 	m.Delay = updated.Delay
 	m.GUIMode = updated.GUIMode
+	m.Indexing = updated.Indexing
 }
 
 func GetSerialPortsList() []string {

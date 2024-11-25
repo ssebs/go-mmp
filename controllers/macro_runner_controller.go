@@ -67,9 +67,10 @@ func NewMacroRunnerController(m *models.Config, v *views.MacroRunnerView, mm *ma
 		cc.UpdateConfigView()
 	})
 
-	cc.MacroRunnerView.SetOnResetConfig(func() {
-		fmt.Fprint(os.Stderr, "TODO: Implement ResetConfig in models.Config!")
-	})
+	// cc.MacroRunnerView.SetOnResetConfig(func() {
+	// 	cc.Config.ResetConfig()
+	// 	cc.UpdateConfigView()
+	// })
 
 	cc.MacroRunnerView.SetOnQuit(func() {
 		fyne.CurrentApp().Quit()
@@ -115,6 +116,7 @@ free:
 		select {
 		case btnStr := <-displayBtnch:
 			if iBtn, err := utils.StringToInt(btnStr); err == nil {
+				iBtn -= cc.Config.Indexing
 				cc.ShowPressedAnimation(iBtn, cc.Delay)
 			}
 		case <-quitch:

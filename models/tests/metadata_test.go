@@ -17,7 +17,7 @@ func TestMetadataModel(t *testing.T) {
 		GUIMode:        models.TESTING,
 	}
 	t.Run("test constructor", func(t *testing.T) {
-		got := models.NewMetadata("TEST", 1, models.TESTING, 1, time.Second)
+		got := models.NewMetadata("TEST", 1, models.TESTING, 1, time.Second, 0)
 		assert.Equal(t, got, want)
 	})
 

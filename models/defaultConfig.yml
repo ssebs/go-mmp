@@ -5,6 +5,7 @@ Metadata:
   SerialBaudRate: 9600
   Delay: 125ms # Default delay when using Delay Action
   GUIMode: GUIOnly # NORMAL or GUIOnly
+  Indexing: 0 # 0 or 1 indexing
 Macros: # Position on Macro + Display is in order, and split by the # of Columns
   - Name: nt # Text to display on Button
     Actions: # List of Actions to do when Macro is used

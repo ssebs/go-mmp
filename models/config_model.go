@@ -54,6 +54,38 @@ func NewConfigFromFile(flags *CLIFlags) (*Config, error) {
 	return c, err
 }
 
+func NewDefaultConfig() *Config {
+	c := &Config{
+		Metadata: NewDefaultMetadata(),
+		Macros: []*Macro{
+			NewMacro("Type gg", []*Action{
+				NewAction("Shortcut", "SHIFT+ENTER"),
+				NewAction("SendText", "gg"),
+				NewAction("Delay", "250ms"),
+				NewAction("PressRelease", "ENTER"),
+			}),
+			NewMacro("Close App", []*Action{
+				NewAction("Shortcut", "ALT+F4"),
+			}),
+			NewMacro("Task Manager", []*Action{
+				NewAction("Shortcut", "CTRL+SHIFT+ESC"),
+			}),
+			NewMacro("Skip Song", []*Action{
+				NewAction("PressRelease", "audio_next"),
+			}),
+			NewMacro("Cookie Click", []*Action{
+				NewAction("Repeat", "LMB+100ms"),
+			}),
+		},
+	}
+
+	if c.Macros == nil {
+		c.Macros = make([]*Macro, 0)
+	}
+
+	return c
+}
+
 // depending on CLI args, and what files already exist, save default config if needed, and set c.ConfigFullPath
 func (c *Config) figureOutConfigPath(configPath string) error {
 	// Get the fullpath of the default config
@@ -148,11 +180,25 @@ func (c *Config) OpenConfig(srcFullPath string) error {
 	return c.loadConfig()
 }
 
+// Reset to defaults
+func (c *Config) ResetConfig() {
+	cNew := NewDefaultConfig()
+	c.Columns = cNew.Columns
+	c.Delay = cNew.Delay
+	c.GUIMode = cNew.GUIMode
+	c.Indexing = cNew.Indexing
+	c.SerialBaudRate = cNew.SerialBaudRate
+	c.SerialPortName = cNew.SerialPortName
+	c.Metadata = cNew.Metadata
+	c.Macros = cNew.Macros
+}
+
 //go:embed defaultConfig.yml
 var defaultConfigFile []byte
 
 // Write the defaultconfig to c.ConfigFullPath
 func (c *Config) saveDefaultConfig() error {
+	// TODO: use newDefaultConfig in models.Config to generate instead of copying file
 	f, err := os.Create(c.ConfigFullPath)
 	if err != nil {
 		return fmt.Errorf("could not open file %s, %e", c.ConfigFullPath, err)

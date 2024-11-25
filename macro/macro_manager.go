@@ -61,6 +61,8 @@ func (mm *MacroManager) RunMacroById(macroIdStr string) error {
 	// TODO: verbose mode
 	fmt.Printf("Pressed: %d\n", macroId)
 
+	macroId -= mm.Config.Indexing
+
 	matchedMacro, err := mm.Config.GetMacro(macroId)
 	if err != nil {
 		return fmt.Errorf("could not find macroId: %d in Macros %+v", macroId, mm.Config.Macros)

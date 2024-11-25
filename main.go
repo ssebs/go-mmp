@@ -16,9 +16,9 @@ import (
 )
 
 /* To Fix before v2 release:
+- On ResetConfig, don't use defaultConfig.yml
 - Rewrite README
 - Validate Params in config
-- Support 1 indexing in config
 - [Cleanup UI] Drag and Drop highlighting
 - [Cleanup UI] Cleanup DragBoxItems for Macros
 

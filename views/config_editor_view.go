@@ -20,6 +20,7 @@ type ConfigEditorView struct {
 	OnMacroTapped   func(m *models.Macro)
 	OnMacrosSwapped func(idx1, idx2 int)
 	OnMacroDeleted  func(idx1 int)
+	resetBtn        *widget.Button
 	addMacroBtn     *widget.Button
 	saveBtn         *widget.Button
 	saveAsBtn       *widget.Button
@@ -34,6 +35,7 @@ func NewConfigEditorView(cols int) *ConfigEditorView {
 		),
 		metadataView:    nil,
 		macrosContainer: NewDragAndDropView(container.NewGridWithColumns(cols), DRAG_BOTH),
+		resetBtn:        widget.NewButton("Reset Config", nil),
 		addMacroBtn:     widget.NewButton("+ Add Macro", nil),
 		saveAsBtn:       widget.NewButton("Save as...", nil),
 		saveBtn:         widget.NewButton("Save and Close", nil),
@@ -84,6 +86,9 @@ func (v *ConfigEditorView) SetOnSave(f func()) {
 func (v *ConfigEditorView) SetOnSaveAs(f func()) {
 	v.saveAsBtn.OnTapped = f
 }
+func (v *ConfigEditorView) SetOnReset(f func()) {
+	v.resetBtn.OnTapped = f
+}
 func (v *ConfigEditorView) SetCols(c int) {
 	v.cols = c
 	v.macrosContainer.dragItems.Layout = (container.NewGridWithColumns(c)).Layout
@@ -109,7 +114,7 @@ func (v *ConfigEditorView) CreateRenderer() fyne.WidgetRenderer {
 
 	c := container.NewBorder(
 		v.titleLabel,
-		container.NewHBox(v.addMacroBtn, v.saveAsBtn, v.saveBtn),
+		container.NewHBox(v.resetBtn, v.addMacroBtn, v.saveAsBtn, v.saveBtn),
 		nil, nil,
 		accordion,
 	)

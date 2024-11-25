@@ -28,7 +28,7 @@ func NewMacro(name string, actions []*Action) *Macro {
 
 func NewDefaultMacro() *Macro {
 	return &Macro{
-		Name:    "",
+		Name:    "MacroName",
 		Actions: make([]*Action, 0),
 	}
 }

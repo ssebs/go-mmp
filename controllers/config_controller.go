@@ -86,6 +86,11 @@ func NewConfigController(m *models.Config, v *views.ConfigEditorView) *ConfigCon
 		cc.UpdateConfigView()
 	})
 
+	cc.ConfigEditorView.SetOnReset(func() {
+		cc.Config.ResetConfig()
+		cc.UpdateConfigView()
+	})
+
 	cc.UpdateConfigView()
 	return cc
 }
