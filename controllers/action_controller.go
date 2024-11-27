@@ -24,6 +24,8 @@ func NewActionController(a *models.Action, v *views.ActionItemEditorView) *Actio
 		ac.Action.FuncParam = s
 	})
 
+	ac.SetValidator(CheckValidParams)
+
 	ac.UpdateActionView()
 	return ac
 }
@@ -32,7 +34,7 @@ func (ac *ActionController) UpdateActionView() {
 	ac.ActionItemEditorView.SetAction(ac.Action)
 }
 
-func (ac *ActionController) CheckValidParams() bool {
-	// TODO: implement
-	return false
+func CheckValidParams(a models.Action) error {
+	err := a.Validate()
+	return err
 }

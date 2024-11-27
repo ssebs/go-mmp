@@ -1,7 +1,10 @@
 package models
 
 import (
+	"fmt"
 	"log"
+	"strings"
+	"time"
 
 	"gopkg.in/yaml.v3"
 )
@@ -37,6 +40,32 @@ func NewDefaultAction() *Action {
 		FuncName:  "SendText",
 		FuncParam: "",
 	}
+}
+
+func (a Action) Validate() error {
+	found := false
+	for _, actionFuncName := range actionFunctionList {
+		if a.FuncName == actionFuncName {
+			found = true
+		}
+	}
+	if !found {
+		return fmt.Errorf("%s is not a valid Function in Actions", a.FuncName)
+	}
+
+	// TODO: validate FuncParam
+	switch a.FuncName {
+	case "Delay":
+		if _, err := time.ParseDuration(a.FuncParam); err != nil {
+			return fmt.Errorf("%s is not a valid go time.duration", a.FuncParam)
+		}
+	case "Shortcut":
+		if !strings.Contains(a.FuncParam, "+") {
+			return fmt.Errorf("%s does not have a + for a shortcut", a.FuncParam)
+		}
+	}
+
+	return nil
 }
 
 func GetActionFunctions() []string {
