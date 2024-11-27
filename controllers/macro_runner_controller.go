@@ -90,6 +90,10 @@ func (cc *MacroRunnerController) ReconnectSerialDevice() error {
 		return fmt.Errorf("SerialDevice not set")
 	}
 
+	if cc.Config.GUIMode == models.GUIOnly {
+		return nil
+	}
+
 	if (cc.SerialDevice.PortName != cc.Config.Metadata.SerialPortName) ||
 		(cc.SerialDevice.Mode.BaudRate != cc.MetadataController.SerialBaudRate) {
 
