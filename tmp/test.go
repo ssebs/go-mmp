@@ -1,48 +1,92 @@
 package main
 
 import (
+	"image/color"
+
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
+	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/layout"
+	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
-	"github.com/ssebs/go-mmp/controllers"
-	"github.com/ssebs/go-mmp/models"
-	"github.com/ssebs/go-mmp/views"
 )
+
+var _ fyne.Widget = (*ColorBorderBox)(nil)
+
+var TealColor = color.RGBA{0, 120, 120, 255}
+var GrayColor = color.RGBA{60, 60, 60, 255}
+
+// // Make "border" layout
+// // Stacks the first item with pad
+// type SebsCoolLayout struct{}
+
+// func (d *SebsCoolLayout) MinSize(objects []fyne.CanvasObject) fyne.Size {
+// 	w, h := float32(0), float32(0)
+// 	for _, o := range objects {
+// 		childSize := o.MinSize()
+
+// 		w += childSize.Width
+// 		h += childSize.Height
+// 	}
+// 	return fyne.NewSize(w, h)
+// }
+
+// func (d *SebsCoolLayout) Layout(objects []fyne.CanvasObject, containerSize fyne.Size) {
+// 	pos := fyne.NewPos(0, containerSize.Height-d.MinSize(objects).Height)
+// 	for _, o := range objects {
+// 		size := o.MinSize()
+// 		o.Resize(size)
+// 		o.Move(pos)
+
+// 		pos = pos.Add(fyne.NewPos(size.Width, size.Height))
+// 	}
+// }
+
+type ColorBorderBox struct {
+	widget.BaseWidget
+	ItemContainer *fyne.Container
+	PadWidth      float32
+	BGColor       color.Color
+}
+
+// Create div in a div, outer has padding and bg color
+func NewTestBox(padWidth float32, bgColor color.Color, itemContainer *fyne.Container) *ColorBorderBox {
+	box := &ColorBorderBox{
+		ItemContainer: itemContainer,
+		PadWidth:      float32(padWidth),
+		BGColor:       TealColor,
+	}
+	box.ExtendBaseWidget(box)
+	return box
+}
+
+func (box *ColorBorderBox) CreateRenderer() fyne.WidgetRenderer {
+	c := container.NewStack(
+		canvas.NewRectangle(box.BGColor),
+		container.New(
+			layout.NewCustomPaddedLayout(box.PadWidth, box.PadWidth, box.PadWidth, box.PadWidth),
+			canvas.NewRectangle(theme.Color(theme.ColorNameBackground)),
+			box.ItemContainer,
+		),
+	)
+	return widget.NewSimpleRenderer(c)
+}
 
 func main() {
 	testApp := app.New()
 	win := testApp.NewWindow("TEST")
 
-	cm := models.NewConfig(models.NewDefaultMetadata(), []*models.Macro{
-		models.NewMacro("Undo", []*models.Action{
-			models.NewAction("Shortcut", "CTRL+Z"),
-		}),
-		models.NewMacro("gg", []*models.Action{
-			models.NewAction("PressRelease", "Enter"),
-			models.NewAction("Delay", "100ms"),
-			models.NewAction("SendText", "gg"),
-			models.NewAction("PressRelease", "Enter"),
-		}),
-		models.NewMacro("close game", []*models.Action{
-			models.NewAction("Shortcut", "ALT+F4"),
-		}),
-	})
-	cv := views.NewConfigEditorView(cm.Columns)
-	cc := controllers.NewConfigController(cm, cv)
-
-	// cm.UpdateMetadataView()
-
-	win.SetContent(container.NewBorder(
-		widget.NewSeparator(),
-		widget.NewSeparator(),
-		widget.NewSeparator(),
-		widget.NewSeparator(),
-		cc.ConfigEditorView,
+	testBox := NewTestBox(12, TealColor, container.NewGridWithColumns(2,
+		widget.NewButton("test", nil),
+		widget.NewLabel("test"),
+		widget.NewLabel("test2"),
 	))
 
+	win.SetContent(container.NewCenter(testBox))
+
 	win.CenterOnScreen()
-	win.Resize(fyne.NewSize(300, 500))
+	win.Resize(fyne.NewSize(300, 300))
 	win.ShowAndRun()
 }
 
