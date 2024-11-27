@@ -15,18 +15,18 @@ var _ fyne.Widget = (*ColorBorderBox)(nil)
 
 type ColorBorderBox struct {
 	widget.BaseWidget
-	ItemContainer *fyne.Container
-	PadWidth      float32
-	BGColor       color.Color
-	padContainer  *fyne.Container
-	bgRect        *canvas.Rectangle
+	Item         fyne.CanvasObject
+	PadWidth     float32
+	BGColor      color.Color
+	padContainer *fyne.Container
+	bgRect       *canvas.Rectangle
 }
 
-func NewColorBorderBox(padWidth float32, bgColor color.Color, itemContainer *fyne.Container) *ColorBorderBox {
+func NewColorBorderBox(padWidth float32, bgColor color.Color, item fyne.CanvasObject) *ColorBorderBox {
 	box := &ColorBorderBox{
-		ItemContainer: itemContainer,
-		PadWidth:      float32(padWidth),
-		BGColor:       bgColor,
+		Item:     item,
+		PadWidth: float32(padWidth),
+		BGColor:  bgColor,
 	}
 	box.genPadContainer()
 	box.genBGRect()
@@ -44,7 +44,7 @@ func (box *ColorBorderBox) genPadContainer() {
 	box.padContainer = container.New(
 		layout.NewCustomPaddedLayout(box.PadWidth, box.PadWidth, box.PadWidth, box.PadWidth),
 		canvas.NewRectangle(theme.Color(theme.ColorNameBackground)),
-		box.ItemContainer,
+		box.Item,
 	)
 	box.padContainer.Refresh()
 }

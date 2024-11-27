@@ -2,6 +2,7 @@ package views
 
 import (
 	"fmt"
+	"image/color"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
@@ -14,6 +15,7 @@ var _ fyne.Widget = (*DragAndDropView)(nil)
 
 type DragAndDropView struct {
 	widget.BaseWidget
+	dragHoverItem    fyne.CanvasObject
 	dragItems        *fyne.Container
 	draggedItemIdx   int
 	latestDraggedIdx int
@@ -27,6 +29,7 @@ func NewDragAndDropView(containingBox *fyne.Container, ddir DragDirection) *Drag
 		draggedItemIdx:   -1,
 		latestDraggedIdx: -1,
 		dragDirection:    ddir,
+		dragHoverItem:    NewColorBorderBox(12, color.RGBA{0, 120, 120, 255}, widget.NewLabel("dragging me")),
 	}
 
 	view.ExtendBaseWidget(view)

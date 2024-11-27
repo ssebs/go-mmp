@@ -23,7 +23,7 @@ func main() {
 		widget.NewLabel("test2"),
 	))
 
-	testBox.ItemContainer.Objects[0].(*widget.Button).OnTapped = func() {
+	testBox.Item.(*fyne.Container).Objects[0].(*widget.Button).OnTapped = func() {
 		testBox.BGColor = color.RGBA{255, 0, 0, 255}
 		testBox.PadWidth = 32
 		testBox.Refresh()
