@@ -2,6 +2,7 @@ package utils
 
 import (
 	"fmt"
+	"image/color"
 	"io"
 	"os"
 	"reflect"
@@ -97,4 +98,24 @@ func GetYAMLFilename(isSaving bool) (string, error) {
 		err = fmt.Errorf("could not open YAML config file, err: %s", err)
 	}
 	return filename, err
+}
+
+// SetOpacity sets the opacity of a color.Color and returns a new color.Color
+// with the given opacity (0-255).
+func SetOpacity(c color.Color, opacity uint8) color.Color {
+	// Get the RGBA components of the input color
+	r, g, b, _ := c.RGBA()
+
+	// Convert the RGBA values from 16-bit to 8-bit range
+	r = r >> 8
+	g = g >> 8
+	b = b >> 8
+
+	// Return a new color with the specified opacity
+	return color.RGBA{
+		R: uint8(r),
+		G: uint8(g),
+		B: uint8(b),
+		A: opacity,
+	}
 }

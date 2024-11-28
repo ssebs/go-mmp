@@ -7,7 +7,6 @@ import (
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/layout"
-	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
 )
 
@@ -18,6 +17,7 @@ type ColorBorderBox struct {
 	Item         fyne.CanvasObject
 	PadWidth     float32
 	BGColor      color.Color
+	FGColor      color.Color
 	padContainer *fyne.Container
 	bgRect       *canvas.Rectangle
 }
@@ -27,7 +27,9 @@ func NewColorBorderBox(padWidth float32, bgColor color.Color, item fyne.CanvasOb
 		Item:     item,
 		PadWidth: float32(padWidth),
 		BGColor:  bgColor,
+		FGColor:  color.RGBA{0, 0, 0, 0},
 	}
+
 	box.genPadContainer()
 	box.genBGRect()
 
@@ -43,7 +45,7 @@ func (box *ColorBorderBox) Refresh() {
 func (box *ColorBorderBox) genPadContainer() {
 	box.padContainer = container.New(
 		layout.NewCustomPaddedLayout(box.PadWidth, box.PadWidth, box.PadWidth, box.PadWidth),
-		canvas.NewRectangle(theme.Color(theme.ColorNameBackground)),
+		canvas.NewRectangle(box.FGColor),
 		box.Item,
 	)
 	box.padContainer.Refresh()

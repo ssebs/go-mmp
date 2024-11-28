@@ -11,7 +11,7 @@ import (
 	"fyne.io/fyne/v2/widget"
 )
 
-var MainColor = color.RGBA{65, 175, 255, 255}
+var HighlightColor = color.RGBA{0, 255, 255, 120}
 
 // Ensure interface implementation.
 var _ fyne.Widget = (*DragAndDropView)(nil)
@@ -77,7 +77,7 @@ func (v *DragAndDropView) Dragged(e *fyne.DragEvent) {
 		// fmt.Printf("dragging: %d\n", v.draggedItemIdx)
 
 		v.addDragItem(
-			NewColorBorderBox(2, MainColor, widget.NewLabel("Release to swap.")),
+			NewColorBorderBox(2, HighlightColor, widget.NewLabel("")),
 		)
 	}
 
