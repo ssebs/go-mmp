@@ -26,19 +26,19 @@ void loop() {
 void handleInput() {
   
   if (digitalRead(BTN_1_PIN) == LOW) {
-    Serial.print("1");
+    Serial.print("0");
     delay(_DELAY);
   }
   if (digitalRead(BTN_2_PIN) == LOW) {
-    Serial.print("2");
+    Serial.print("1");
     delay(_DELAY);
   }
   if (digitalRead(BTN_3_PIN) == LOW) {
-    Serial.print("3");
+    Serial.print("2");
     delay(_DELAY);
   }
   if (digitalRead(BTN_4_PIN) == LOW) {
-    Serial.print("4");
+    Serial.print("3");
     delay(_DELAY);
   }
 }

@@ -6,10 +6,79 @@ import (
 	"time"
 
 	"github.com/go-vgo/robotgo"
+	"github.com/ssebs/go-mmp/models"
+	"github.com/ssebs/go-mmp/utils"
 )
 
-// macroaction.go is where the DoBlah functions are housed.
-// macro.go was getting too hard to read, so I moved half of the methods here.
+// For testing: Check out https://keyboard-test.space/
+
+type MacroManager struct {
+	*models.Config
+	functionMap  map[string]func(string) error
+	isRepeating  bool
+	repeatStopCh chan struct{}
+}
+
+func NewMacroManager(conf *models.Config) (*MacroManager, error) {
+	mgr := &MacroManager{
+		Config:       conf,
+		functionMap:  make(map[string]func(string) error),
+		isRepeating:  false,
+		repeatStopCh: make(chan struct{}),
+	}
+
+	// TODO: Organize with macro.FunctionList
+	mgr.functionMap = map[string]func(string) error{
+		"Delay":        mgr.doDelayAction,
+		"PressRelease": mgr.doPressReleaseAction,
+		"Press":        mgr.doPressAction,
+		"Release":      mgr.doReleaseAction,
+		"SendText":     mgr.doSendTextAction,
+		"Shortcut":     mgr.doShortcutAction,
+		"Repeat":       mgr.doRepeatAction,
+	}
+	return mgr, nil
+}
+
+// Run the Actions in a Macro in order.
+func (mm *MacroManager) RunMacro(macro *models.Macro) error {
+	// Within a Macro, there's a list of Actions to run.
+	// we want to run each one in order
+	for _, action := range macro.Actions {
+		if err := mm.runFuncFromMap(action.FuncName, action.FuncParam); err != nil {
+			return fmt.Errorf("failed to run function from map, %s", err)
+		}
+	}
+	return nil
+}
+
+// Run the Actions from the matching ID in Config.Macros in a Macro in order.
+func (mm *MacroManager) RunMacroById(macroIdStr string) error {
+	macroId, err := utils.StringToInt(macroIdStr)
+	if err != nil {
+		return fmt.Errorf("failed to convert macroID into int, %s", err)
+	}
+	// TODO: verbose mode
+	fmt.Printf("Pressed: %d\n", macroId)
+
+	macroId -= mm.Config.Indexing
+
+	matchedMacro, err := mm.Config.GetMacro(macroId)
+	if err != nil {
+		return fmt.Errorf("could not find macroId: %d in Macros %+v", macroId, mm.Config.Macros)
+	}
+
+	return mm.RunMacro(matchedMacro)
+}
+
+// runFuncFromMap runs the function from the functionMap if it exists, errors otherwise
+func (mm *MacroManager) runFuncFromMap(funcName string, funcParams string) error {
+	_, ok := mm.functionMap[funcName]
+	if !ok {
+		return fmt.Errorf("could not find %s in functionMap", funcName)
+	}
+	return mm.functionMap[funcName](funcParams)
+}
 
 /*
  Below are the functions that provide the actual macro functionality
@@ -17,33 +86,29 @@ import (
 
 // DoSendString will type a string that's passed
 // param should be a string, this can be a letter, word, sentence, etc.
-// e.g. DoSendTextAction("foo bar")
-func (mm *MacroManager) DoSendTextAction(param string) error {
+func (mm *MacroManager) doSendTextAction(param string) error {
 	// fmt.Println("DoSendTextAction:", param)
 	robotgo.TypeStr(param)
 	return nil
 }
 
-// DoPressAction will press down a key and keep it held.
+// doPressAction will press down a key and keep it held.
 // To release, use DoReleaseAction.
 // param should be a keyname, see README.md
-// e.g. DoPressAction("enter")
-func (mm *MacroManager) DoPressAction(param string) error {
+func (mm *MacroManager) doPressAction(param string) error {
 	return robotgo.KeyDown(param)
 }
 
-// DoReleaseAction will release a pressed key.
+// doReleaseAction will release a pressed key.
 // To press, use DoPressAction.
 // param should be a keyname, see README.md
-// e.g. DoReleaseAction("enter")
-func (mm *MacroManager) DoReleaseAction(param string) error {
+func (mm *MacroManager) doReleaseAction(param string) error {
 	return robotgo.KeyUp(param)
 }
 
-// DoPressReleaseAction will press and release a key or mouse button
+// doPressReleaseAction will press and release a key or mouse button
 // param should be a keyname or mouse btn name, see README.md
-// e.g. DoPressReleaseAction("enter") or DoPressReleaseAction("RMB")
-func (mm *MacroManager) DoPressReleaseAction(param string) error {
+func (mm *MacroManager) doPressReleaseAction(param string) error {
 	// fmt.Println("DoPressReleaseAction:", param)
 	// If it's a mouse button, pressMouse
 	if isKeyNameMouseBtn(param) {
@@ -53,16 +118,15 @@ func (mm *MacroManager) DoPressReleaseAction(param string) error {
 	return pressKey(param)
 }
 
-// DoShortcutAction will type a shortcut out for you
-// param should be formatted as: "SHIFT+ENTER+c"
+// doShortcutAction will type a shortcut out for you
+// param should be formatted like: "SHIFT+ENTER+c"
+//
 // After keys are held down, there's a delay defined in mm.Config.Delay,
 // then the keys will release
 // This does NOT support mouse buttons
-// e.g. DoShortcutAction("CTRL+SHIFT+ESC")
-func (mm *MacroManager) DoShortcutAction(param string) error {
-	// fmt.Println("DoShortcutAction:", param)
-
+func (mm *MacroManager) doShortcutAction(param string) error {
 	// TODO: add option to delay between keydown/keyup
+
 	keys := strings.Split(param, "+")
 
 	// Hold down all keys
@@ -72,8 +136,9 @@ func (mm *MacroManager) DoShortcutAction(param string) error {
 			return err
 		}
 	}
+
 	// Delay
-	time.Sleep(mm.Config.Delay)
+	time.Sleep(mm.Config.Metadata.Delay)
 
 	// Release all keys
 	for _, key := range keys {
@@ -85,10 +150,23 @@ func (mm *MacroManager) DoShortcutAction(param string) error {
 	return nil
 }
 
-// DoRepeatAction will...
-// param should be formatted as: "LMB+100ms"
+// DoDelay will time.sleep for the delay if it can be parsed
+// param should be formatted like: "120ms"
+func (mm *MacroManager) doDelayAction(param string) error {
+	// Try to parse the duration
+	delay, err := time.ParseDuration(param)
+	if err != nil {
+		return fmt.Errorf("could not parse delay duration %q, err: %s", param, err)
+	}
+	// Then sleep
+	time.Sleep(delay)
+	return nil
+}
+
+// doRepeatAction will...
+// param should be formatted like: "LMB+100ms"
 // Only a single key and the delay between repeats should be in the string.
-func (mm *MacroManager) DoRepeatAction(param string) error {
+func (mm *MacroManager) doRepeatAction(param string) error {
 	// TODO: keep the button looking pressed in the GUI while
 	// mm.isRepeating is true
 
@@ -98,7 +176,6 @@ func (mm *MacroManager) DoRepeatAction(param string) error {
 
 	// Assert that we have the correct params
 	if len(parts) != 2 {
-		// TODO: convert this to an error type
 		return fmt.Errorf("config error: Repeat should only have 1 \"+\" between a keyname and the delay. expect format such as: \"LMB+100ms\", but got %s", param)
 	}
 
@@ -130,7 +207,7 @@ func (mm *MacroManager) DoRepeatAction(param string) error {
 // f is the function to run, param is the parameter to that function,
 // repeatDelay is the delay between repeats in the loop,
 // stopCh will break the loop when it's closed.
-func repeatFunc(f fn, param string, repeatDelay time.Duration, stopCh chan struct{}) {
+func repeatFunc(f func(string) error, param string, repeatDelay time.Duration, stopCh chan struct{}) {
 free:
 	for {
 		select {
@@ -145,18 +222,6 @@ free:
 			time.Sleep(repeatDelay)
 		}
 	}
-}
-
-// DoDelay will time.sleep for the delay if it can be parsed
-func (mm *MacroManager) DoDelayAction(param string) error {
-	// Try to parse the duration
-	delay, err := time.ParseDuration(param)
-	if err != nil {
-		return fmt.Errorf("could not parse delay duration %q, err: %s", param, err)
-	}
-	// Then sleep
-	time.Sleep(delay)
-	return nil
 }
 
 /* Helpers */

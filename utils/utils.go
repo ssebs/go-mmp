@@ -2,13 +2,14 @@ package utils
 
 import (
 	"fmt"
+	"image/color"
 	"io"
 	"os"
 	"reflect"
 	"strconv"
-)
 
-const ProjectName = "Go-MMP"
+	"github.com/sqweek/dialog"
+)
 
 // Errors
 type ErrCannotParseIntFromEmptyString struct{}
@@ -72,4 +73,49 @@ func CopyFile(src, dest string) error {
 		return fmt.Errorf("failed to copy file: %v", err)
 	}
 	return nil
+}
+
+func GetKeyVal(m map[string]string) (string, string) {
+	for k, v := range m {
+		return k, v
+	}
+	return "", ""
+}
+
+// returns path to .yaml|.yml file
+// isSaving sets the type to save file instead of open file.
+func GetYAMLFilename(isSaving bool) (string, error) {
+	var filename string
+	var err error
+
+	if isSaving {
+		filename, err = dialog.File().Filter("YAML config file", "yaml", "yml").Save()
+	} else {
+		filename, err = dialog.File().Filter("YAML config file", "yaml", "yml").Load()
+	}
+
+	if err != nil {
+		err = fmt.Errorf("could not open YAML config file, err: %s", err)
+	}
+	return filename, err
+}
+
+// SetOpacity sets the opacity of a color.Color and returns a new color.Color
+// with the given opacity (0-255).
+func SetOpacity(c color.Color, opacity uint8) color.Color {
+	// Get the RGBA components of the input color
+	r, g, b, _ := c.RGBA()
+
+	// Convert the RGBA values from 16-bit to 8-bit range
+	r = r >> 8
+	g = g >> 8
+	b = b >> 8
+
+	// Return a new color with the specified opacity
+	return color.RGBA{
+		R: uint8(r),
+		G: uint8(g),
+		B: uint8(b),
+		A: opacity,
+	}
 }

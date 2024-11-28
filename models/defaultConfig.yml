@@ -1,0 +1,111 @@
+---
+Metadata:
+  Columns: 3 # Cols of Buttons on physical device
+  SerialPortName: COM1
+  SerialBaudRate: 9600
+  Delay: 125ms # Default delay when using Delay Action
+  GUIMode: GUIOnly # NORMAL or GUIOnly
+  Indexing: 0 # 0 or 1 indexing
+Macros: # Position on Macro + Display is in order, and split by the # of Columns
+  - Name: nt # Text to display on Button
+    Actions: # List of Actions to do when Macro is used
+      - FuncName: PressRelease
+        FuncParam: enter
+      - FuncName: SendText
+        FuncParam: nt
+      - FuncName: Delay
+        FuncParam: 250ms
+      - FuncName: PressRelease
+        FuncParam: enter
+  - Name: nice
+    Actions:
+      - FuncName: PressRelease
+        FuncParam: enter
+      - FuncName: SendText
+        FuncParam: nice
+      - FuncName: Delay
+        FuncParam: 250ms
+      - FuncName: PressRelease
+        FuncParam: enter
+  - Name: Open Task Mgr
+    Actions:
+      - FuncName: Shortcut
+        FuncParam: CTRL+SHIFT+ESC
+  - Name: gg
+    Actions:
+      - FuncName: Shortcut
+        FuncParam: SHIFT+ENTER
+      - FuncName: SendText
+        FuncParam: gg
+      - FuncName: Delay
+        FuncParam: 250ms
+      - FuncName: PressRelease
+        FuncParam: enter
+  - Name: ggwp
+    Actions:
+      - FuncName: Shortcut
+        FuncParam: SHIFT+ENTER
+      - FuncName: SendText
+        FuncParam: ggwp
+      - FuncName: Delay
+        FuncParam: 250ms
+      - FuncName: PressRelease
+        FuncParam: enter
+  - Name: ggez
+    Actions:
+      - FuncName: Shortcut
+        FuncParam: SHIFT+ENTER
+      - FuncName: SendText
+        FuncParam: ggez
+      - FuncName: Delay
+        FuncParam: 250ms
+      - FuncName: PressRelease
+        FuncParam: enter
+  - Name: surf reset all
+    Actions:
+      - FuncName: PressRelease
+        FuncParam: enter
+      - FuncName: Delay
+        FuncParam: 100ms
+      - FuncName: SendText
+        FuncParam: "/r"
+      - FuncName: Delay
+        FuncParam: 100ms
+      - FuncName: PressRelease
+        FuncParam: enter
+  - Name: HD2 Reinforce
+    Actions:
+      - FuncName: Press
+        FuncParam: alt
+      - FuncName: PressRelease
+        FuncParam: up
+      - FuncName: PressRelease
+        FuncParam: down
+      - FuncName: PressRelease
+        FuncParam: right
+      - FuncName: PressRelease
+        FuncParam: left
+      - FuncName: PressRelease
+        FuncParam: up
+      - FuncName: Release
+        FuncParam: alt
+  - Name: Spam Click
+    Actions:
+      - FuncName: Repeat
+        FuncParam: LMB+100ms
+  - Name: Skip song
+    Actions:
+      - FuncName: PressRelease
+        FuncParam: audio_next
+  - Name: startup folder
+    Actions:
+      - FuncName: Shortcut
+        FuncParam: cmd+r
+      - FuncName: Delay
+        FuncParam: 100ms
+      - FuncName: SendText
+        FuncParam: "shell:startup"
+      - FuncName: Delay
+        FuncParam: 100ms
+      - FuncName: PressRelease
+        FuncParam: enter

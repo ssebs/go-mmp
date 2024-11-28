@@ -9,20 +9,9 @@
             "type": "go",
             "request": "launch",
             "mode": "auto",
-            "program": "${workspaceFolder}/cmd/main.go",
+            "program": "${workspaceFolder}/main.go",
             "args": [
-                "--mode",
-                "NORMAL"
-            ]
-        },
-        {
-            "name": "GUI Only",
-            "type": "go",
-            "request": "launch",
-            "mode": "auto",
-            "program": "${workspaceFolder}/cmd/main.go",
-            "args": [
-                "--gui-only"
+                
             ]
         },
         {
@@ -30,9 +19,20 @@
             "type": "go",
             "request": "launch",
             "mode": "auto",
-            "program": "${workspaceFolder}/cmd/main.go",
+            "program": "${workspaceFolder}/main.go",
             "args": [
                 "--reset-config"
+            ]
+        },
+        {
+            "name": "GUI Only",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/main.go",
+            "args": [
+                "--mode",
+                "GUIOnly"
             ]
         },
         {
@@ -41,6 +41,10 @@
             "request": "launch",
             "mode": "auto",
             "program": "${workspaceFolder}/tmp/test.go",
+            "args": [
+                "-p",
+                "${workspaceFolder}/tmp/conftest.yml"
+            ]
         }
     ]
 }

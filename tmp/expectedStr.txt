@@ -1,0 +1,11 @@
+Metadata:
+    Columns: 2
+    SerialPortName: ""
+    SerialBaudRate: 9600
+    Delay: 125ms
+    GUIMode: GUIOnly
+Macros:
+    - Name: TestFirst
+      Actions: []
+    - Name: TestSecond
+      Actions: []
