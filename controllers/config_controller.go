@@ -40,7 +40,7 @@ func NewConfigController(m *models.Config, v *views.ConfigEditorView) *ConfigCon
 	cc.ConfigEditorView.SetOnMacroTapped(func(macro *models.Macro) {
 		win := fyne.CurrentApp().NewWindow("Macro Editor")
 		win.CenterOnScreen()
-		win.Resize(fyne.NewSize(300, 500))
+		win.Resize(fyne.NewSize(500, 500))
 
 		mv := views.NewMacroEditorView(win)
 		mc := NewMacroController(macro, mv)

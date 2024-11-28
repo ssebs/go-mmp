@@ -16,7 +16,6 @@ import (
 )
 
 /* To Fix before v2 release:
-- Validate Params in config
 - [Cleanup UI] Drag and Drop highlighting
 - [Cleanup UI] Cleanup DragBoxItems for Macros
 - Rewrite README

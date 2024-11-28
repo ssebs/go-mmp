@@ -3,6 +3,7 @@ package views
 import (
 	"fmt"
 	"image/color"
+	"os"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
@@ -10,12 +11,13 @@ import (
 	"fyne.io/fyne/v2/widget"
 )
 
+var MainColor = color.RGBA{65, 175, 255, 255}
+
 // Ensure interface implementation.
 var _ fyne.Widget = (*DragAndDropView)(nil)
 
 type DragAndDropView struct {
 	widget.BaseWidget
-	dragHoverItem    fyne.CanvasObject
 	dragItems        *fyne.Container
 	draggedItemIdx   int
 	latestDraggedIdx int
@@ -29,7 +31,6 @@ func NewDragAndDropView(containingBox *fyne.Container, ddir DragDirection) *Drag
 		draggedItemIdx:   -1,
 		latestDraggedIdx: -1,
 		dragDirection:    ddir,
-		dragHoverItem:    NewColorBorderBox(12, color.RGBA{0, 120, 120, 255}, widget.NewLabel("dragging me")),
 	}
 
 	view.ExtendBaseWidget(view)
@@ -43,14 +44,25 @@ func (v *DragAndDropView) SetOnItemsSwapped(f func(idx1, idx2 int)) {
 func (v *DragAndDropView) SetDragItems(items []fyne.CanvasObject) {
 	v.dragItems.RemoveAll()
 	for _, item := range items {
-		v.dragItems.Add(container.NewBorder(
-			nil, nil,
-			widget.NewIcon(theme.MenuIcon()),
-			nil,
-			item,
-		))
+		v.addDragItem(item)
 	}
 	v.dragItems.Refresh()
+}
+
+func (v *DragAndDropView) addDragItem(item fyne.CanvasObject) {
+	v.dragItems.Add(container.NewBorder(
+		nil, nil,
+		widget.NewIcon(theme.MenuIcon()),
+		nil,
+		item,
+	))
+}
+
+func (v *DragAndDropView) removeDragItem(idx int) {
+	if idx > len(v.dragItems.Objects) || idx < 0 {
+		fmt.Fprintln(os.Stderr, idx, "is out of dragItems range!")
+	}
+	v.dragItems.Remove(v.dragItems.Objects[idx])
 }
 
 /* Actions Drag and Drop funcs */
@@ -63,11 +75,14 @@ func (v *DragAndDropView) Dragged(e *fyne.DragEvent) {
 	if v.draggedItemIdx == -1 && v.latestDraggedIdx != -1 {
 		v.draggedItemIdx = v.latestDraggedIdx
 		// fmt.Printf("dragging: %d\n", v.draggedItemIdx)
+
+		v.addDragItem(
+			NewColorBorderBox(2, MainColor, widget.NewLabel("Release to swap.")),
+		)
 	}
 
 	// currently dragging
 	if v.draggedItemIdx != -1 {
-		// Allow releasing over the whole item, not just the icon
 		v.latestDraggedIdx = v.getDragItemIdxAtPosition(e.Position)
 
 		newPos := v.dragItems.Objects[v.draggedItemIdx].Position()
@@ -81,10 +96,13 @@ func (v *DragAndDropView) Dragged(e *fyne.DragEvent) {
 		}
 
 		v.dragItems.Objects[v.draggedItemIdx].Move(newPos)
+		v.dragItems.Objects[len(v.dragItems.Objects)-1].Move(newPos)
 	}
 }
 func (v *DragAndDropView) DragEnd() {
-	fmt.Printf("draggedIdx: %d, hoverIdx: %d\n", v.draggedItemIdx, v.latestDraggedIdx)
+	fmt.Printf("draggedIdx: %d, latestDraggedIdx: %d\n", v.draggedItemIdx, v.latestDraggedIdx)
+
+	v.removeDragItem(len(v.dragItems.Objects) - 1)
 
 	if v.latestDraggedIdx != -1 && v.draggedItemIdx != v.latestDraggedIdx {
 		if v.OnItemsSwapped != nil {
@@ -97,11 +115,6 @@ func (v *DragAndDropView) DragEnd() {
 	v.draggedItemIdx, v.latestDraggedIdx = -1, -1
 	v.dragItems.Refresh()
 }
-
-// func (v *ActionDragView) Tapped(e *fyne.PointEvent) {
-// 	fmt.Printf("tapped: x: %.1f y: %.1f\n", e.Position.X, e.Position.Y)
-// 	v.getDragIconIdxAtPosition(e.Position)
-// }
 
 // Return the idx of v.dragItems where the mousePos clicks.
 // Only matches on the drag icon
@@ -125,8 +138,11 @@ func (v *DragAndDropView) getDragIconIdxAtPosition(mousePos fyne.Position) int {
 // Return the idx of v.dragItems where the mousePos clicks.
 // Returns -1 if there's no match
 func (v *DragAndDropView) getDragItemIdxAtPosition(mousePos fyne.Position) int {
-	for idx, item := range v.dragItems.Objects {
-		if withinBounds(mousePos, item.Position(), item.Size()) && v.draggedItemIdx != idx {
+	for idx := 0; idx < len(v.dragItems.Objects)-1; idx++ {
+		item := v.dragItems.Objects[idx]
+
+		if withinBounds(mousePos, item.Position(), item.Size()) &&
+			v.draggedItemIdx != idx {
 			return idx
 		}
 	}
