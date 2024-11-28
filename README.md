@@ -1,25 +1,21 @@
 # Mini Macro Pad (go-mmp)
 [![Go](https://github.com/ssebs/go-mmp/actions/workflows/go.yml/badge.svg?branch=main)](https://github.com/ssebs/go-mmp/actions/workflows/go.yml)
 
-Simplify task automation with an arduino and some 3D printing. This lets you create shortcuts and run them at the press of a button, customizable through a YAML config file.
+Run Macros, shortcuts, and more at the press of a button. If you have a 3D Printer and some soldering knowledge, you can get yourself a Mini Macro pad!
 
-> No device? No problem! You can still click on the buttons to run the macros.
-
-Here's what the GUI looks like, you can click the buttons to run the macro, or use the arduino to press them.
-![screenshot of gui](res/GUIScreenshot.png)
-
-Most of my keybinds are for an FPS shooter, for example typing "gg" in the chat. 
+> No device? No problem! You can click on the buttons to run the Macros too!
 
 - [Mini Macro Pad (go-mmp)](#mini-macro-pad-go-mmp)
-  - [What kind of macros can you make?](#what-kind-of-macros-can-you-make)
-    - [You can add multiple "actions" to a macro](#you-can-add-multiple-actions-to-a-macro)
   - [Hardware](#hardware)
   - [3D Printed housing](#3d-printed-housing)
+  - [The GUI](#the-gui)
+  - [What kind of macros can you make?](#what-kind-of-macros-can-you-make)
+    - [You can add multiple "actions" to a macro](#you-can-add-multiple-actions-to-a-macro)
   - [Getting started](#getting-started)
-    - [Don't have an arduino but still want to run macros?](#dont-have-an-arduino-but-still-want-to-run-macros)
-    - [CLI Usage:](#cli-usage)
-  - [Actions:](#actions)
-    - [The following Actions are available:](#the-following-actions-are-available)
+  - [Change your Macros on the fly](#change-your-macros-on-the-fly)
+  - [Got an arduino all hooked up?](#got-an-arduino-all-hooked-up)
+  - [Don't have an arduino but still want to run macros?](#dont-have-an-arduino-but-still-want-to-run-macros)
+  - [The following Actions are available:](#the-following-actions-are-available)
       - [PressRelease](#pressrelease)
       - [Press](#press)
       - [Release](#release)
@@ -27,12 +23,34 @@ Most of my keybinds are for an FPS shooter, for example typing "gg" in the chat.
       - [Shortcut](#shortcut)
       - [Delay](#delay)
       - [Repeat](#repeat)
-  - [Building](#building)
-    - [Installing binary version](#installing-binary-version)
-    - [Get the code](#get-the-code)
-    - [Build the code](#build-the-code)
-  - [Docs / References:](#docs--references)
+  - [Installing binary version](#installing-binary-version)
+  - [Install dependencies \& get the code](#install-dependencies--get-the-code)
+  - [Build and run the code](#build-and-run-the-code)
   - [LICENSE](#license)
+
+
+## Hardware
+You'll need a microcontroller, some key switches, and a 3D Printer. I'm using a Teensy LC, but you could use an Arduino Micro or ESP32.
+
+Pic of mine below:
+
+![Macro Pad](./res/mmpbuilt.png)
+
+Wiring under the hood:
+> Please forgive the newbie soldering!
+
+![Wiring](./res/mmpwiring.png)
+
+## 3D Printed housing
+There are many available, but if you like the one I designed, check out my [thangs.com](https://than.gs/m/710028) profile.
+
+
+## The GUI
+
+Here's what the GUI looks like, you can click the buttons to run the macro, or use the arduino to press them.
+![screenshot of gui](res/GUIScreenshot.png)
+
+Most of my keybinds are for an FPS shooter, for example typing "gg" in the chat, but you can automate all sorts of things!
 
 
 ## What kind of macros can you make?
@@ -45,93 +63,56 @@ Most of my keybinds are for an FPS shooter, for example typing "gg" in the chat.
 - Whatever you can think of, feel free to submit PRs!
 
 ### You can add multiple "actions" to a macro
-If you want a single button to type "ggez" for you in VALORANT or CS, you can!
+If you want a single button to type "gg" for you in VALORANT or CS, you can!
 - You just need to add 3 actions:
   - `Shortcut: shift+enter`
-  - `SendText: ggez`
+  - `SendText: gg`
   - `PressRelease: enter`
 
-## Hardware
-You'll need an arduino with some buttons. I'm using a Teensy LC, but you could use an Arduino Micro or ESP32.
-
-Pic of mine below:
-![Macro Pad](./res/mmpbuilt.png)
-
-Wiring under the hood
-![Wiring](./res/mmpwiring.png)
-
-## 3D Printed housing
-There are many available, but if you like the one I designed, check out my [thangs.com](https://than.gs/m/710028) profile.
-
-<!-- TODO: Add video of it -->
 
 ## Getting started
-- You'll need an arduino/serial based device that sends [0-9] numbers over a serial connection.
-  - See [arduino-mmp.ino](./arduino-mmp.ino) source code to see how I did this.
-  - Connecting and understanding baudrate, etc. is out of the scope of this guide.
-- Download the app
-  - [Download go-mmp.exe](https://github.com/ssebs/go-mmp/releases/)
-  - [Build from source](#building)
+If you have a arduino/serial macro pad ready, great! You get to use the full functionality of go-mmp.
+
+If not, you can still run Macros at the press of a button.
+
+- [Download the exe](https://github.com/ssebs/go-mmp/releases/)
 - Double click the **go-mmp.exe** file
-- It will generate a config for you at `$HOME/mmpConfig.yml`
+- It will generate a config for you in your home folder.
     - e.g. `C:\Users\ssebs\mmpConfig.yml` or `/home/ssebs/mmpConfig.yml`
-  - You can see what will be generated by looking at the [defaulyConfig.yml file](./config/defaultConfig.yml)
-    - Take a look here to see what the file format should look like
-  - You can edit this config from a text editor like Notepad, VSCode, or vim
-    - All config changes must be made in this file, **this is how you create macros**
-    - If someone would like to create a GUI based editor, please feel free 😁
-    - If you want to choose a specific config file, you can use the `--path` CLI flag.
-- In the config file, this is where you configure:
-  - The MacroPad's layout (3x3 buttons)
-  - The serial device info (portname, buad, etc)
-    - You'll need to find out what the Serial port name is
-  - The Macros themselves
-    - The digit is used to position the macros, so keep the 1,2,3,4... for each macro you want.
-    - Name:
-      - This is what shows up on the buttons in the GUI. You can use emojis here.
-    - Actions:
-      - List of Actions, see [Actions](#actions) section below
-- When you press a button on the Arduino based MacroPad, it should run the macro.
-- You can also click the button in the UI to run the macro.
-- Testing with a virtual serial device (Linux)
-  - If you don't have a physical serial device, you can still simulate button presses.
-  - Install `socat`, and open up two terminals
-  - `$ socat -d -d PTY,raw,echo=0 PTY,raw,echo=0`
-    - You'll get two `/dev/pts/<num>` devices listed, the first one is what you set in your config, and the second is used to send data.
-  - `$ echo -n "<num>" > /dev/pts/num2`
-    - e.g. use num 0 to press the first button
+- When you press a button on the Arduino based MacroPad, it will run a Macro that's set in your config.
 
-### Don't have an arduino but still want to run macros?
-You can still run this in GUI only mode, but you'll need to open up a CLI terminal
 
-Open a terminal to where the go-mmp.exe file is
-- Run `PS> go-mmp.exe --mode GUIOnly` and hit enter.
+## Change your Macros on the fly
+New in `v2`, you can now update your Macros in the UI instead of from the config file.
 
-### CLI Usage:
-> Not sure why, but the print statements stop working after I export to exe, so no help message.
-```
-Usage of go-mmp.exe:
-  -m, --mode           GUI Mode, defaults to 'NORMAL', use 'GUIOnly' to run without a serial device.
-  -p, --path string    Path to your mmpConfig.yml. If used with reset-config, the specifified file will be reset. (default "mmpConfig.yml")
-  -r, --reset-config   Reset your ~/mmpConfig.yml file to default. If using config-path, reset that file.
-```
+![ConfigEditor](./res/ConfigEditor.png)
 
-## Actions:
-All the available actions are listed below, the format is:
-  ```yaml
-  Actions:
-    - FuncName: parameter
-  ```
+Just go to Edit > Edit Config and Drag and Drop your macros into the right positions, and click on the name to change what they do.
 
-Example Actions:
-  ```yaml
-  Actions:
-    - Shortcut: SHIFT+ENTER
-    - SendText: ggez
-    - PressRelease: enter
-  ```
+Here's the "gg" Macro for example.
 
-### The following Actions are available:
+![MacroEditor](./res/MacroEditor.png)
+
+
+## Got an arduino all hooked up?
+- You'll need an arduino/serial based device that sends [0-9] numbers over a serial connection.
+  - See the [arduino-mmp.ino](./arduino-mmp.ino) source code.
+  - > Connecting and understanding baudrate, etc. is out of the scope of this guide.
+
+Just edit your config, edit metadata, and set the Serial Port Name, Baud rate, and change `GUIMode` to `NORMAL`.
+
+> if your device sends 1 for the first button instead of 0, you can set the Indexing setting to 1
+
+![MetadataEditor](./res/MetadataEditor.png)
+
+## Don't have an arduino but still want to run macros?
+You can still run this in GUI only mode, This is the default so you're all set! 
+
+Just click on the buttons to run Macros.
+
+![GUIScreenshot](./res/GUIScreenshot.png)
+
+## The following Actions are available:
 > The keyname must be found in https://github.com/go-vgo/robotgo/blob/master/docs/keys.md#keys, or if it's a mouse button then it should be "LMB", "RMB", "MMB"
 
 #### PressRelease
@@ -168,29 +149,31 @@ Example Actions:
 - Press and repeat a key or mouse button over and over with the delay between each press.
   - The delay must be formatted as a duration string like above.
 
-## Building
-### Installing binary version
+## Installing binary version
 - Download latest release from https://github.com/ssebs/go-mmp/releases
-  - Download either the .exe.zip for Windows or .tar.xz if you're on Linux.
+  - Download either the `.exe.zip `for Windows or `.tar.xz` if you're on Linux.
 - If you have fyne installed and setup, you can run
-  - `go install github.com/ssebs/go-mmp@latest`
+  - `go run github.com/ssebs/go-mmp@latest` to run
+  - `go install github.com/ssebs/go-mmp@latest` to install 
 
-### Get the code
+## Install dependencies & get the code
+- Install [Golang](https://go.dev/doc/install)
+- Follow the install docs at https://docs.fyne.io/started/
+  - This takes a while but is required.
+- If running on linux
+  - Add yourself to the `dialout` group
+    - `sudo usermod -aG dialout <username>`
+  - Install GTK3-dev
+    - > This is for the file dialogs
+    - `sudo apt install libgtk-3-dev`
 - Source:
-  - Git clone https://github.com/ssebs/go-mmp
-    - Install [Golang](https://go.dev/doc/install)
-    - Follow the install docs at https://docs.fyne.io/started/
-      - This takes a while but is required to get this working.
-    - If running on linux
-      - Add yourself to the `dialout` group
-        - `sudo usermod -aG dialout <username>`
-      - Install GTK3-dev
-        - `sudo apt install libgtk-3-dev`
+  - `git clone https://github.com/ssebs/go-mmp`
 - Go pkg
   - `go get github.com/ssebs/go-mmp`
 
-### Build the code
-- `go run main.go`  to run go-mmp file
+## Build and run the code
+- Running the code:
+  - `go run main.go` 
 - Unit tests:
   - `go test ./...`
 - Coverage
@@ -208,37 +191,23 @@ Example Actions:
     - `$ fyne package -os darwin`
   - Linux:
     - `$ fyne package -os linux`
-- Updates:
+- Updating:
   - Make code changes 
   - Run upgrades: `go get -u && go mod tidy`
   - Update Version in `FyneApp.toml`
   - Create Pull Request
   - Once committed, git tag & push with same version from `FyneApp.toml`
+  - Create release and upload exe and tar.xz 
   - `go get github.com/ssebs/go-mmp@<version>`
+- Testing with a virtual serial device (Linux)
+  - If you don't have a physical serial device, you can still simulate button presses.
+  - Install `socat`, and open up two terminals
+  - `$ socat -d -d PTY,raw,echo=0 PTY,raw,echo=0`
+    - You'll get two `/dev/pts/<num>` devices listed, the first one is what you set in your config, and the second is used to send data.
+  - `$ echo -n "<num>" > /dev/pts/num2`
+    - e.g. use num 0 to press the first button
 
-<hr/>
-
-If you're curious, check out the older python code at https://github.com/ssebs/MiniMacroPad/
-
-## Docs / References:
-- GUI (fyne)
-  - https://developer.fyne.io/
-  - https://github.com/fyne-io/fyne/tree/master/cmd/fyne_demo
-- Serial
-  - https://github.com/bugst/go-serial
-- Keyboard & Mouse
-  - https://github.com/go-vgo/robotgo
-- Existing thing I want to improve
-  - https://github.com/ssebs/MiniMacroPad/
-- For testing macros, check out https://keyboard-test.space/
-
-<details>
- <summary>Architecture / Flow Diagram</summary>
-
-To update it, edit the [Architecture.drawio](./res/Architecture.drawio) file. I'm using [this](https://open-vsx.org/extension/hediet/vscode-drawio) VSCode extension.
- 
-![Diagram](./res/Architecture.png)
-</details>
+> If you're curious, check out the older python code at https://github.com/ssebs/MiniMacroPad/
 
 ## LICENSE
 [Apache 2 License](./LICENSE)
