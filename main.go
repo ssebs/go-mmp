@@ -76,7 +76,9 @@ func runSerialAndGUI(
 	// Connect Serial Device from the config
 	arduino, err := serialdevice.NewSerialDeviceFromConfig(conf, time.Millisecond*20)
 	if err != nil {
-		views.ShowErrorDialogAndRunWithLink(err, conf.ConfigFullPath)
+		views.ShowErrorDialogAndRun(err)
+		rootWin.ShowAndRun()
+		return
 		// TODO: show list of devices to select from and update config
 	}
 	defer arduino.CloseConnection()
