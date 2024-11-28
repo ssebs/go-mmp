@@ -18,6 +18,7 @@ import (
 /*
 To Fix before v2 release:
 - Fix GUIMode changing not connecting serial after saving (currently shows error)
+- Fix crash when canceling save/open file as
 - Rewrite README
 */
 
