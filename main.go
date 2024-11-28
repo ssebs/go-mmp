@@ -17,6 +17,7 @@ import (
 
 /*
 To Fix before v2 release:
+- Fix GUIMode changing not connecting serial after saving
 - Rewrite README
 */
 
