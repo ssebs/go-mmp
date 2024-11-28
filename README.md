@@ -1,160 +1,117 @@
-# Mini Macro Pad (go-mmp)
+# Mini Macro Pad (go-mmp) <!-- omit in toc -->
 [![Go](https://github.com/ssebs/go-mmp/actions/workflows/go.yml/badge.svg?branch=main)](https://github.com/ssebs/go-mmp/actions/workflows/go.yml)
 
-Run Macros, shortcuts, and more at the press of a button. If you have a 3D Printer and some soldering knowledge, you can get yourself a Mini Macro pad!
+<div style="display: grid; grid-template-columns: 50% 50%; gap: 1rem;">
+<div>
 
-> No device? No problem! You can click on the buttons to run the Macros too!
+**Mini Macro Pad (go-mmp)** is a tool for creating and running macros, shortcuts, and other automated actions at the press of a button. 
 
-- [Mini Macro Pad (go-mmp)](#mini-macro-pad-go-mmp)
-  - [Hardware](#hardware)
-  - [3D Printed housing](#3d-printed-housing)
-  - [The GUI](#the-gui)
-  - [What kind of macros can you make?](#what-kind-of-macros-can-you-make)
-    - [You can add multiple "actions" to a macro](#you-can-add-multiple-actions-to-a-macro)
-  - [Getting started](#getting-started)
-  - [Change your Macros on the fly](#change-your-macros-on-the-fly)
+It works with hardware like Arduino-based macro pads or directly through a desktop GUI, making it versatile for various workflows.
+
+**Table of Contents:** <!-- omit in toc -->
+- [What kind of macros can you make?](#what-kind-of-macros-can-you-make)
+- [You can add multiple "actions" to a macro](#you-can-add-multiple-actions-to-a-macro)
+- [Getting started](#getting-started)
+- [Getting set up](#getting-set-up)
+- [Change your Macros on the fly](#change-your-macros-on-the-fly)
+- [3D Printing \& Hardware](#3d-printing--hardware)
   - [Got an arduino all hooked up?](#got-an-arduino-all-hooked-up)
-  - [Don't have an arduino but still want to run macros?](#dont-have-an-arduino-but-still-want-to-run-macros)
-  - [The following Actions are available:](#the-following-actions-are-available)
-      - [PressRelease](#pressrelease)
-      - [Press](#press)
-      - [Release](#release)
-      - [SendText](#sendtext)
-      - [Shortcut](#shortcut)
-      - [Delay](#delay)
-      - [Repeat](#repeat)
-  - [Installing binary version](#installing-binary-version)
-  - [Install dependencies \& get the code](#install-dependencies--get-the-code)
-  - [Build and run the code](#build-and-run-the-code)
-  - [LICENSE](#license)
+- [Install dependencies \& get the code](#install-dependencies--get-the-code)
+- [Build and run the code](#build-and-run-the-code)
+- [LICENSE](#license)
 
 
-## Hardware
-You'll need a microcontroller, some key switches, and a 3D Printer. I'm using a Teensy LC, but you could use an Arduino Micro or ESP32.
-
-Pic of mine below:
-
-![Macro Pad](./res/mmpbuilt.png)
-
-Wiring under the hood:
-> Please forgive the newbie soldering!
-
-![Wiring](./res/mmpwiring.png)
-
-## 3D Printed housing
-There are many available, but if you like the one I designed, check out my [thangs.com](https://than.gs/m/710028) profile.
-
-
-## The GUI
-
-Here's what the GUI looks like, you can click the buttons to run the macro, or use the arduino to press them.
-![screenshot of gui](res/GUIScreenshot.png)
-
-Most of my keybinds are for an FPS shooter, for example typing "gg" in the chat, but you can automate all sorts of things!
-
+</div>
+<div>
+  <img src="./res/GUIScreenshot.png" width="360px">
+</div>
+</div>
 
 ## What kind of macros can you make?
 - Shortcuts:
-  - CTRL + C, CTRL + V, etc.
-- Press whatever key you want, as long as it's [in the list](https://github.com/go-vgo/robotgo/blob/master/docs/keys.md#keys).
-  - Skip song, type "enter", etc.
+  - CTRL+C, CTRL+V, CTRL+SHIFT+ESC, etc.
+- Adding Media keys to skip songs, change the volume, or even add back the HOME and DELETE keys to a TKL keyboard.
+  - You can press whatever key you want, as long as it's [in the list](https://github.com/go-vgo/robotgo/blob/master/docs/keys.md#keys).
+- Macros:
+  - Type "gg" in game, rage quit a game, or do something more useful in Excel!
 - Repeat keypresses (or mouse button presses)
   - Playing cookie clicker? Press your macro to repeatedly press your mouse button down until you click the macro again
 - Whatever you can think of, feel free to submit PRs!
 
-### You can add multiple "actions" to a macro
+## You can add multiple "actions" to a macro
 If you want a single button to type "gg" for you in VALORANT or CS, you can!
 - You just need to add 3 actions:
   - `Shortcut: shift+enter`
   - `SendText: gg`
   - `PressRelease: enter`
-
+- See [Actions.md](./Actions.md) to learn more
 
 ## Getting started
-If you have a arduino/serial macro pad ready, great! You get to use the full functionality of go-mmp.
+If you have a arduino/serial macro pad ready, great! You get to use the full functionality of go-mmp! 
 
-If not, you can still run Macros at the press of a button.
+See the the [3D Printing \& Hardware](#3d-printing--hardware) section to get started with the physical device.
 
-- [Download the exe](https://github.com/ssebs/go-mmp/releases/)
-- Double click the **go-mmp.exe** file
+Don't have an arduino but still want to run macros? You can still run this in GUI only mode, This is the default mode, so you're all set! 
+
+Just click on the buttons to run Macros.
+
+## Getting set up
+- [Download the latest exe](https://github.com/ssebs/go-mmp/releases/)
+- Double click the **Mini Macro Pad.exe** file
 - It will generate a config for you in your home folder.
     - e.g. `C:\Users\ssebs\mmpConfig.yml` or `/home/ssebs/mmpConfig.yml`
 - When you press a button on the Arduino based MacroPad, it will run a Macro that's set in your config.
 
-
 ## Change your Macros on the fly
 New in `v2`, you can now update your Macros in the UI instead of from the config file.
 
-![ConfigEditor](./res/ConfigEditor.png)
+<div style="display: grid; grid-template-columns: 50% 50%; gap: 1rem;">
+<div>
 
-Just go to Edit > Edit Config and Drag and Drop your macros into the right positions, and click on the name to change what they do.
+Just go to Edit > Edit Config and Drag and Drop your macros into the right positions.
 
-Here's the "gg" Macro for example.
+<img src="./res/ConfigEditor.png" width="400px" alt="Config Editor Screenshot">
 
-![MacroEditor](./res/MacroEditor.png)
+</div>
+<div>
+Click on the name to change what they do.
 
+Here's the "gg" Macro for example:
 
-## Got an arduino all hooked up?
+<img src="./res/MacroEditor.png" width="360px" alt="Macro Editor Screenshot">
+
+</div>
+</div>
+
+## 3D Printing & Hardware
+You'll need a microcontroller, some key switches, and a 3D Printer. I'm using a Teensy LC, but you could use an Arduino Micro or ESP32.
+
+<div style="display: grid; grid-template-columns: 50% 50%; gap: 1rem;">
+<div>
+
+My 3D Printed housing is available on [thangs.com](https://than.gs/m/710028).
+
+<img src="./res/mmpbuilt.png" width="256px" alt="physical macro pad">
+</div>
+<div>
+
+Wiring under the hood (please forgive the newbie soldering)
+
+<img src="./res/mmpwiring.png" width="256px" alt="macro pad wiring">
+</div>
+</div>
+
+### Got an arduino all hooked up?
 - You'll need an arduino/serial based device that sends [0-9] numbers over a serial connection.
   - See the [arduino-mmp.ino](./arduino-mmp.ino) source code.
   - > Connecting and understanding baudrate, etc. is out of the scope of this guide.
+- Just edit your config, edit metadata, and set the Serial Port Name, Baud rate, and change `GUIMode` to `NORMAL`.
+  - If your device sends 1 for the first button instead of 0, you can set the Indexing setting to 1
+  - Medatata Editor:
+  - <img src="./res/MetadataEditor.png" width="400px" alt="MetadataEditor screenshot">
 
-Just edit your config, edit metadata, and set the Serial Port Name, Baud rate, and change `GUIMode` to `NORMAL`.
 
-> if your device sends 1 for the first button instead of 0, you can set the Indexing setting to 1
 
-![MetadataEditor](./res/MetadataEditor.png)
-
-## Don't have an arduino but still want to run macros?
-You can still run this in GUI only mode, This is the default so you're all set! 
-
-Just click on the buttons to run Macros.
-
-![GUIScreenshot](./res/GUIScreenshot.png)
-
-## The following Actions are available:
-> The keyname must be found in https://github.com/go-vgo/robotgo/blob/master/docs/keys.md#keys, or if it's a mouse button then it should be "LMB", "RMB", "MMB"
-
-#### PressRelease
-- e.g. `enter`, `a`, `alt`, `LMB`
-- Press and release a key or mouse button.
-
-#### Press
-- e.g. `enter`, `a`, `alt`, `LMB`
-- Press and hold a key, to release a key use "Release".
-
-#### Release
-- e.g. `enter`, `a`, `alt`, `LMB`
-- Release a key from being held.
-
-#### SendText
-- e.g. `ggez`, `Thanks, ssebs`, `git-gud`
-- Type out text from the keyboard.
-
-#### Shortcut
-- e.g. `CTRL+SHIFT+ESC`, `CMD+C`, `CMD+R`
-  - Hotkey sequence, split up by "+" chars. All keys between the "+"'s will be pressed at the same time.
-  - NOTE: The "Windows" button is "CMD", same for the "Command" button on a Mac.
-- Run a shortcut by typing multiple keys at once.
-
-#### Delay
-- e.g. `10ms`
-- You must enter a duration string. A duration string is a possibly signed sequence of decimal numbers, each with optional fraction and a unit suffix, such as "300ms", "-1.5h" or "2h45m". Valid time units are "ns", "us" (or "µs"), "ms", "s", "m", "h".
-  - This will add a delay of the time you select.
-  - This is useful if your set of actions are too fast and you need to slow them down.
-- 
-#### Repeat
-- e.g. `LMB+50ms`, `z+500ms`
-  - KeyName + delay sequence, split up by "+" chars. Only 1 "+" is allowed, so you MUST only put 1 key/mouse button on the left, and a duration string on the right.
-- Press and repeat a key or mouse button over and over with the delay between each press.
-  - The delay must be formatted as a duration string like above.
-
-## Installing binary version
-- Download latest release from https://github.com/ssebs/go-mmp/releases
-  - Download either the `.exe.zip `for Windows or `.tar.xz` if you're on Linux.
-- If you have fyne installed and setup, you can run
-  - `go run github.com/ssebs/go-mmp@latest` to run
-  - `go install github.com/ssebs/go-mmp@latest` to install 
 
 ## Install dependencies & get the code
 - Install [Golang](https://go.dev/doc/install)
