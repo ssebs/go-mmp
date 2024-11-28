@@ -2,6 +2,7 @@ package views
 
 import (
 	"fmt"
+	"os"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
@@ -65,7 +66,10 @@ func (v *ActionItemEditorView) GetAction() models.Action {
 func (v *ActionItemEditorView) SetValidator(f func(models.Action) error) {
 	v.funcParamEntry.Validator = func(s string) error {
 		err := f(v.GetAction())
-		fmt.Println(err)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+		}
+
 		return err
 	}
 }

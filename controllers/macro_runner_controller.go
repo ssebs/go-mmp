@@ -86,7 +86,7 @@ func (cc *MacroRunnerController) SetSerialDevice(s *serialdevice.SerialDevice) {
 
 // Reconnect Serial device if it's different
 func (cc *MacroRunnerController) ReconnectSerialDevice() error {
-	if cc.SerialDevice != nil {
+	if cc.SerialDevice == nil {
 		return fmt.Errorf("SerialDevice not set")
 	}
 

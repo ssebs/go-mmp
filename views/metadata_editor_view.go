@@ -36,7 +36,7 @@ func NewMetadataEditorView() *MetadataEditorView {
 		indexingSelect:      widget.NewSelect([]string{"0", "1"}, nil),
 		form:                widget.NewForm(),
 	}
-	view.form.SubmitText = "Save Metadata"
+	view.form.SubmitText = "Update Metadata"
 
 	view.form.Append("Grid columns", view.colsEntry)
 	view.form.Append("Serial Port Name", view.serialPortNameEntry)

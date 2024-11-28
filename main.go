@@ -16,7 +16,6 @@ import (
 )
 
 /* To Fix before v2 release:
-- [Cleanup UI] Drag and Drop highlighting
 - [Cleanup UI] Cleanup DragBoxItems for Macros
 - Rewrite README
 - On ResetConfig, don't use defaultConfig.yml
