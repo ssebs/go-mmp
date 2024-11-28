@@ -19,6 +19,7 @@ It works with hardware like Arduino-based macro pads or directly through a deskt
 - [Install dependencies \& get the code](#install-dependencies--get-the-code)
 - [Build and run the code](#build-and-run-the-code)
 - [LICENSE](#license)
+- [Contributing to go-mmp](#contributing-to-go-mmp)
 
 
 </div>
@@ -51,14 +52,14 @@ If you have a arduino/serial macro pad ready, great! You get to use the full fun
 
 See the the [3D Printing \& Hardware](#3d-printing--hardware) section to get started with the physical device.
 
-Don't have an arduino but still want to run macros? You can still run this in GUI only mode, This is the default mode, so you're all set! 
+Don't have an Arduino but still want to run macros? You can use the GUI-only mode, which is the default, so you're all set!
 
 Just click on the buttons to run Macros.
 
 ## Getting set up
 - [Download the latest exe](https://github.com/ssebs/go-mmp/releases/)
 - Double click the **Mini Macro Pad.exe** file
-- It will generate a config for you in your home folder.
+- It will generate a configuration file in your home folder.
     - e.g. `C:\Users\ssebs\mmpConfig.yml` or `/home/ssebs/mmpConfig.yml`
 - When you press a button on the Arduino based MacroPad, it will run a Macro that's set in your config.
 
@@ -68,7 +69,7 @@ New in `v2`, you can now update your Macros in the UI instead of from the config
 <div style="display: grid; grid-template-columns: 50% 50%; gap: 1rem;">
 <div>
 
-Just go to Edit > Edit Config and Drag and Drop your macros into the right positions.
+Just go to **Edit** > **Edit Config**, and drag-and-drop your macros into the correct positions
 
 <img src="./res/ConfigEditor.png" width="400px" alt="Config Editor Screenshot">
 
@@ -76,7 +77,7 @@ Just go to Edit > Edit Config and Drag and Drop your macros into the right posit
 <div>
 Click on the name to change what they do.
 
-Here's the "gg" Macro for example:
+Here's the "**gg**" Macro for example:
 
 <img src="./res/MacroEditor.png" width="360px" alt="Macro Editor Screenshot">
 
@@ -111,11 +112,9 @@ Wiring under the hood (please forgive the newbie soldering)
   - <img src="./res/MetadataEditor.png" width="400px" alt="MetadataEditor screenshot">
 
 
-
-
 ## Install dependencies & get the code
 - Install [Golang](https://go.dev/doc/install)
-- Follow the install docs at https://docs.fyne.io/started/
+- Follow the fyne install docs at https://docs.fyne.io/started/
   - This takes a while but is required.
 - If running on linux
   - Add yourself to the `dialout` group
@@ -167,4 +166,15 @@ Wiring under the hood (please forgive the newbie soldering)
 > If you're curious, check out the older python code at https://github.com/ssebs/MiniMacroPad/
 
 ## LICENSE
-[Apache 2 License](./LICENSE)
+Licensed under the [Apache 2 License](./LICENSE).
+
+## Contributing to go-mmp
+- **Open an Issue**: 
+  - Link to an existing issue or create a new one, ensuring it’s tagged (e.g., `feature`, `bug`).
+- **Fork & Clone**: 
+  - Fork the repo, clone it, and make your changes.
+- **Write Tests**: 
+  - Add or update tests to cover your changes. Run `go test ./...` to ensure all tests pass.
+- **Submit a PR**: 
+  - Create a pull request referencing the issue (e.g., `Fixes #<issue-number>`). 
+  - Include before/after examples in your PR. (screenshots or .gifs)
