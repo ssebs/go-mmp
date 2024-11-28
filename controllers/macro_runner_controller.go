@@ -87,7 +87,20 @@ func (cc *MacroRunnerController) SetSerialDevice(s *serialdevice.SerialDevice) {
 // Reconnect Serial device if it's different
 func (cc *MacroRunnerController) ReconnectSerialDevice() error {
 	if cc.SerialDevice == nil {
-		return fmt.Errorf("SerialDevice not set")
+		// Create new device
+		dev, err := serialdevice.NewSerialDevice(cc.Config.Metadata.SerialPortName, cc.Config.Metadata.SerialBaudRate, cc.Delay)
+		if err != nil {
+			return fmt.Errorf("failed to create serial device when it was previously not set, err: %e", err)
+		}
+		cc.SerialDevice = dev
+
+		// ...and connect
+		// err = cc.SerialDevice.ChangePortAndReconnect(
+		// 	cc.Config.Metadata.SerialPortName,
+		// 	cc.Config.Metadata.SerialBaudRate,
+		// )
+		views.ShowErrorDialogAndRun(fmt.Errorf("you need to restart the app to connect the serial device"))
+		return nil
 	}
 
 	if cc.Config.GUIMode == models.GUIOnly {

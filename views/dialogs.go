@@ -20,8 +20,10 @@ import (
 // at the bottom so the user can click on it.
 func ShowErrorDialogAndRunWithLink(err error, link string) {
 	curApp := fyne.CurrentApp()
+	isNewApp := false
 	if curApp == nil {
 		curApp = app.New()
+		isNewApp = true
 	}
 
 	w := curApp.NewWindow("Error!")
@@ -59,7 +61,11 @@ func ShowErrorDialogAndRunWithLink(err error, link string) {
 	w.SetContent(container)
 	w.SetOnClosed(errFunc)
 	w.CenterOnScreen()
-	w.ShowAndRun()
+	if isNewApp {
+		w.ShowAndRun()
+	} else {
+		w.Show()
+	}
 }
 
 // ShowErrorDialogAndRun will create a new error window displaying the text of the error.
