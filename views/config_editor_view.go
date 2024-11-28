@@ -105,18 +105,17 @@ func (v *ConfigEditorView) CloseWindow() {
 }
 
 func (v *ConfigEditorView) CreateRenderer() fyne.WidgetRenderer {
-	accordion := widget.NewAccordion(
-		widget.NewAccordionItem("Metadata", v.metadataView),
-		widget.NewAccordionItem("Macros", v.macrosContainer),
+	tabs := container.NewAppTabs(
+		container.NewTabItem("Macros", v.macrosContainer),
+		container.NewTabItem("Metadata", v.metadataView),
 	)
-	accordion.MultiOpen = true
-	accordion.Open(1)
+	tabs.SetTabLocation(container.TabLocationTop)
 
 	c := container.NewBorder(
 		v.titleLabel,
 		container.NewHBox(v.resetBtn, v.addMacroBtn, v.saveAsBtn, v.saveBtn),
 		nil, nil,
-		accordion,
+		tabs,
 	)
 	return widget.NewSimpleRenderer(c)
 }
