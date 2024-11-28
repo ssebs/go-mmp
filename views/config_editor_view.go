@@ -3,6 +3,7 @@ package views
 import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
 	"github.com/ssebs/go-mmp/models"
@@ -35,7 +36,7 @@ func NewConfigEditorView(cols int) *ConfigEditorView {
 		),
 		metadataView:    nil,
 		macrosContainer: NewDragAndDropView(container.NewGridWithColumns(cols), DRAG_BOTH),
-		resetBtn:        widget.NewButton("Reset Config", nil),
+		resetBtn:        widget.NewButton("Reset Config to default", nil),
 		addMacroBtn:     widget.NewButton("+ Add Macro", nil),
 		saveAsBtn:       widget.NewButton("Save as...", nil),
 		saveBtn:         widget.NewButton("Save and Close", nil),
@@ -113,7 +114,7 @@ func (v *ConfigEditorView) CreateRenderer() fyne.WidgetRenderer {
 
 	c := container.NewBorder(
 		v.titleLabel,
-		container.NewHBox(v.resetBtn, v.addMacroBtn, v.saveAsBtn, v.saveBtn),
+		container.NewHBox(layout.NewSpacer(), v.resetBtn, v.addMacroBtn, v.saveAsBtn, v.saveBtn, layout.NewSpacer()),
 		nil, nil,
 		tabs,
 	)

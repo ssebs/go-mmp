@@ -15,12 +15,12 @@ import (
 	"github.com/ssebs/go-mmp/views"
 )
 
-/* To Fix before v2 release:
-- [Cleanup UI] Cleanup DragBoxItems for Macros
+/*
+To Fix before v2 release:
 - Rewrite README
-- On ResetConfig, don't use defaultConfig.yml
-
 */
+
+// TODO: On ResetConfig, don't use defaultConfig.yml
 
 func main() {
 	cliFlags := models.ParseFlags()

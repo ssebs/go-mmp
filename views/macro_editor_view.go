@@ -52,8 +52,10 @@ func (v *MacroEditorView) CreateRenderer() fyne.WidgetRenderer {
 			),
 		),
 		container.NewHBox(
+			layout.NewSpacer(),
 			v.addActionBtn,
 			v.saveBtn,
+			layout.NewSpacer(),
 		),
 		nil, nil,
 		v.actionsScroll,
