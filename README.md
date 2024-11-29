@@ -6,7 +6,7 @@
 
 **Mini Macro Pad (go-mmp)** is a tool for creating and running macros, shortcuts, and other automated actions at the press of a button. 
 
-It works with hardware like Arduino-based macro pads or directly through a desktop GUI, making it versatile for various workflows.
+It works with hardware like Arduino-based macro pads or directly through a desktop GUI.
 
 **Table of Contents:** <!-- omit in toc -->
 - [What kind of macros can you make?](#what-kind-of-macros-can-you-make)
