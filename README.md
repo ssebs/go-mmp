@@ -8,6 +8,8 @@
 
 It works with hardware like Arduino-based macro pads or directly through a desktop GUI.
 
+> Want to learn more? Check out the [blog post](https://ssebs.com/blog/minimacropad)
+
 **Table of Contents:** <!-- omit in toc -->
 - [What kind of macros can you make?](#what-kind-of-macros-can-you-make)
 - [You can add multiple "actions" to a macro](#you-can-add-multiple-actions-to-a-macro)
