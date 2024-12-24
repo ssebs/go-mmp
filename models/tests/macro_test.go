@@ -70,6 +70,19 @@ func TestModelMacroActions(t *testing.T) {
 
 		assert.Equal(t, want, got)
 	})
+	t.Run("Test MoveActionPositions", func(t *testing.T) {
+		got := models.NewMacro("TEST", []*models.Action{
+			models.NewAction("TESTONE", "TESTONE"),
+			models.NewAction("TESTTWO", "TESTTWO"),
+			models.NewAction("TESTTHREE", "TESTTHREE"),
+		})
+		err := got.MoveActionPositions(2, 0) // TESTTHREE moved to where TESTONE is, TESTONE and TESTTWO moved by 1
+		assert.Nil(t, err)
+
+		assert.Equal(t, "TESTTHREE", got.Actions[0].FuncName)
+		assert.Equal(t, "TESTONE", got.Actions[1].FuncName)
+		assert.Equal(t, "TESTTWO", got.Actions[2].FuncName)
+	})
 
 	t.Run("Test GetAction", func(t *testing.T) {
 		got, err := want.GetAction(1)

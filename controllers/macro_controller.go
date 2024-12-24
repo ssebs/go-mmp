@@ -47,11 +47,11 @@ func NewMacroController(m *models.Macro, v *views.MacroEditorView) *MacroControl
 	})
 
 	mc.SetOnActionsSwapped(func(idx1, idx2 int) {
-		if err := mc.Macro.SwapActionPositions(idx1, idx2); err != nil {
-			fmt.Fprintln(os.Stderr, "failed to swap actions", err)
+		if err := mc.Macro.MoveActionPositions(idx1, idx2); err != nil {
+			fmt.Fprintln(os.Stderr, "failed to move actions", err)
 		}
 		mc.UpdateActionsInView()
-		fmt.Printf("Swapped Actions %d and %d\n", idx1, idx2)
+		fmt.Printf("Moved Actions %d and %d\n", idx1, idx2)
 	})
 
 	mc.UpdateMacroView()

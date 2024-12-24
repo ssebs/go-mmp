@@ -1,40 +1,40 @@
 package main
 
 import (
-	"image/color"
-
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
+	"github.com/ssebs/go-mmp/controllers"
+	"github.com/ssebs/go-mmp/models"
 	"github.com/ssebs/go-mmp/views"
 )
 
-var TealColor = color.RGBA{0, 120, 120, 255}
-var GrayColor = color.RGBA{60, 60, 60, 255}
+// var TealColor = color.RGBA{0, 120, 120, 255}
+// var GrayColor = color.RGBA{60, 60, 60, 255}
 
-func main() {
-	testApp := app.New()
-	win := testApp.NewWindow("TEST")
+// func main() {
+// 	testApp := app.New()
+// 	win := testApp.NewWindow("TEST")
 
-	testBox := views.NewColorBorderBox(12, TealColor, container.NewGridWithColumns(2,
-		widget.NewButton("test", nil),
-		widget.NewLabel("test"),
-		widget.NewLabel("test2"),
-	))
+// 	testBox := views.NewColorBorderBox(12, TealColor, container.NewGridWithColumns(2,
+// 		widget.NewButton("test", nil),
+// 		widget.NewLabel("test"),
+// 		widget.NewLabel("test2"),
+// 	))
 
-	testBox.Item.(*fyne.Container).Objects[0].(*widget.Button).OnTapped = func() {
-		testBox.BGColor = color.RGBA{255, 0, 0, 255}
-		testBox.PadWidth = 32
-		testBox.Refresh()
-	}
+// 	testBox.Item.(*fyne.Container).Objects[0].(*widget.Button).OnTapped = func() {
+// 		testBox.BGColor = color.RGBA{255, 0, 0, 255}
+// 		testBox.PadWidth = 32
+// 		testBox.Refresh()
+// 	}
 
-	win.SetContent(container.NewCenter(testBox))
+// 	win.SetContent(container.NewCenter(testBox))
 
-	win.CenterOnScreen()
-	win.Resize(fyne.NewSize(300, 300))
-	win.ShowAndRun()
-}
+// 	win.CenterOnScreen()
+// 	win.Resize(fyne.NewSize(300, 300))
+// 	win.ShowAndRun()
+// }
 
 // test medatata editor
 
@@ -64,32 +64,32 @@ func main() {
 
 // test MacroEditorView
 
-// func main() {
-// 	testApp := app.New()
-// 	win := testApp.NewWindow("TEST")
+func main() {
+	testApp := app.New()
+	win := testApp.NewWindow("TEST")
 
-// 	mm := models.NewMacro("TestMacro", []*models.Action{
-// 		models.NewAction("PressRelease", "ENTER"),
-// 		models.NewAction("Delay", "200ms"),
-// 		models.NewAction("SendText", "GG"),
-// 		models.NewAction("PressRelease", "ENTER"),
-// 	})
-// 	mv := views.NewMacroEditorView()
-// 	mc := controllers.NewMacroController(mm, mv)
-// 	mc.UpdateMacroView()
+	mm := models.NewMacro("TestMacro", []*models.Action{
+		models.NewAction("PressRelease", "ENTER"),
+		models.NewAction("Delay", "200ms"),
+		models.NewAction("SendText", "GG"),
+		models.NewAction("PressRelease", "ENTER"),
+	})
+	mv := views.NewMacroEditorView(win)
+	mc := controllers.NewMacroController(mm, mv)
+	mc.UpdateMacroView()
 
-// 	win.SetContent(container.NewBorder(
-// 		widget.NewSeparator(),
-// 		widget.NewSeparator(),
-// 		widget.NewSeparator(),
-// 		widget.NewSeparator(),
-// 		mc.MacroEditorView,
-// 	))
+	win.SetContent(container.NewBorder(
+		widget.NewSeparator(),
+		widget.NewSeparator(),
+		widget.NewSeparator(),
+		widget.NewSeparator(),
+		mc.MacroEditorView,
+	))
 
-// 	win.CenterOnScreen()
-// 	win.Resize(fyne.NewSize(300, 500))
-// 	win.ShowAndRun()
-// }
+	win.CenterOnScreen()
+	win.Resize(fyne.NewSize(300, 500))
+	win.ShowAndRun()
+}
 
 // func main() {
 // 	cliFlags := config.ParseFlags()
