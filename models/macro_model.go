@@ -62,12 +62,36 @@ func (m *Macro) DeleteAction(idx int) error {
 	return nil
 }
 
+// swap positions of idx1 and idx2
 func (m *Macro) SwapActionPositions(idx1, idx2 int) error {
 	if !m.isValidBoundsInActions(idx1) || !m.isValidBoundsInActions(idx2) {
 		return fmt.Errorf("idx out of bounds of Macro's actions")
 	}
 
 	m.Actions[idx1], m.Actions[idx2] = m.Actions[idx2], m.Actions[idx1]
+	return nil
+}
+
+// move srcIdx to where destIdx is, and shift over by 1
+func (m *Macro) MoveActionPositions(srcIdx, destIdx int) error {
+	if !m.isValidBoundsInActions(srcIdx) || !m.isValidBoundsInActions(destIdx) {
+		return fmt.Errorf("idx out of bounds of Macro's actions")
+	}
+	if srcIdx == destIdx {
+		return nil
+	}
+
+	item := m.Actions[srcIdx]
+	// Remove the item at srcIdx by shifting left
+	if srcIdx < destIdx {
+		// Move item to a higher index
+		copy(m.Actions[srcIdx:], m.Actions[srcIdx+1:destIdx+1])
+	} else {
+		// Move item to a lower index
+		copy(m.Actions[destIdx+1:], m.Actions[destIdx:srcIdx])
+	}
+
+	m.Actions[destIdx] = item
 	return nil
 }
 
