@@ -2,6 +2,7 @@ package macro
 
 import (
 	"fmt"
+	"os"
 	"strings"
 	"time"
 
@@ -28,6 +29,7 @@ func NewMacroManager(conf *models.Config) (*MacroManager, error) {
 	}
 
 	// TODO: Organize with macro.FunctionList
+	// NOTE: When updating, also update models/action_model.go
 	mgr.functionMap = map[string]func(string) error{
 		"Delay":        mgr.doDelayAction,
 		"PressRelease": mgr.doPressReleaseAction,
@@ -36,6 +38,7 @@ func NewMacroManager(conf *models.Config) (*MacroManager, error) {
 		"SendText":     mgr.doSendTextAction,
 		"Shortcut":     mgr.doShortcutAction,
 		"Repeat":       mgr.doRepeatAction,
+		"ClickAt":      mgr.doClickAtAction,
 	}
 	return mgr, nil
 }
@@ -201,6 +204,41 @@ func (mm *MacroManager) doRepeatAction(param string) error {
 	}
 	mm.isRepeating = !mm.isRepeating
 	return nil
+}
+
+// doClickAtAction will click at a screen coordinate
+// param should be formatted like: "LMB@x,y"
+func (mm *MacroManager) doClickAtAction(param string) error {
+	// robotgo.MovesClick(xPos, yPos, )
+
+	// TODO: move to func
+	param = strings.ReplaceAll(param, " ", "")
+
+	pSplit := strings.Split(param, "@")
+	mouseButtonName := pSplit[0]
+
+	coordSplit := strings.Split(pSplit[1], ",")
+	if len(coordSplit) != 2 {
+		fmt.Fprintf(os.Stderr, "Action in Config: %s must be in the format: LMB@x,y. coords are ints", param)
+	}
+
+	xPos, err := utils.StringToInt(coordSplit[0])
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Action in Config: %s must be in the format: LMB@x,y. coords are ints", param)
+	}
+
+	yPos, err := utils.StringToInt(coordSplit[1])
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Action in Config: %s must be in the format: LMB@x,y. coords are ints", param)
+	}
+
+	// TODO: validate coords
+
+	// curMouseX, curMouseY := robotgo.Location() // Gets Monitor coordinates using resolution. e.g. 2 monitors at bottom right => (5119 1439)
+	// fmt.Printf("MOUSE POS: (%d, %d)\n", curMouseX, curMouseY)
+
+	robotgo.MoveSmooth(xPos, yPos, 0.5, 1.0, 0)
+	return pressMouse(mouseButtonName)
 }
 
 // repeatFunc will run f() until stopCh is closed

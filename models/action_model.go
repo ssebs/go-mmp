@@ -19,6 +19,7 @@ var actionFunctionList = []string{
 	"SendText",
 	"Shortcut",
 	"Repeat",
+	"ClickAt",
 }
 
 // Action describes an "action" to take. e.g. "Shortcut" => "CTRL+Z"
