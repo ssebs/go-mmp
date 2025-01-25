@@ -1,9 +1,9 @@
 package serialdevice
 
 import (
-	"bufio"
 	"fmt"
 	"log/slog"
+	"strings"
 	"time"
 
 	"github.com/ssebs/go-mmp/models"
@@ -15,14 +15,14 @@ type SerialDevice struct {
 	Conn     serial.Port
 	PortName string
 	Mode     *serial.Mode
-	Timeout  time.Duration
+	Timeout  time.Duration // defaults to 20ms
 }
 
 // This will Open a connection to the portName with baudRate
-func NewSerialDevice(portName string, baudRate int, timeout time.Duration) (*SerialDevice, error) {
+func NewSerialDevice(portName string, baudRate int) (*SerialDevice, error) {
 	serialDevice := &SerialDevice{
 		PortName: portName,
-		Timeout:  timeout,
+		Timeout:  time.Millisecond * 20,
 		Mode:     &serial.Mode{BaudRate: baudRate},
 		Conn:     nil,
 	}
@@ -33,8 +33,8 @@ func NewSerialDevice(portName string, baudRate int, timeout time.Duration) (*Ser
 
 	return serialDevice, nil
 }
-func NewSerialDeviceFromConfig(c *models.Config, timeout time.Duration) (*SerialDevice, error) {
-	arduino, err := NewSerialDevice(c.Metadata.SerialPortName, c.Metadata.SerialBaudRate, timeout)
+func NewSerialDeviceFromConfig(c *models.Config) (*SerialDevice, error) {
+	arduino, err := NewSerialDevice(c.Metadata.SerialPortName, c.Metadata.SerialBaudRate)
 	return arduino, err
 }
 
@@ -56,6 +56,7 @@ func (s *SerialDevice) CloseConnection() error {
 // Takes in a btnch to send data to when the serial connection gets something,
 // and a quitch if we need to stop the goroutine
 func (s *SerialDevice) Listen(btnch chan string, quitch chan struct{}) {
+	buf := make([]byte, 8)
 free:
 	// Keep looping since sd.Listen() will return if no data is sent
 	for {
@@ -64,11 +65,21 @@ free:
 			break free
 		default:
 			// If we get data, send to chan
-			actionID, err := s.scanThing()
-			if err != nil {
-				slog.Debug(fmt.Sprint("Listen err: ", err))
+			actionID := &strings.Builder{}
+			for {
+				n, err := s.Conn.Read(buf)
+				if err != nil {
+					slog.Debug(fmt.Sprint("Listen err: ", err))
+				}
+				if n == 0 {
+					break
+				}
+
+				data := buf[0:n]
+				actionID.WriteString(strings.TrimSpace(string(data)))
+
 			}
-			btnch <- actionID
+			btnch <- actionID.String()
 		}
 	}
 }
@@ -86,16 +97,6 @@ func (s *SerialDevice) openConnection() error {
 	}
 
 	return nil
-}
-
-// Listen & return data
-// Runs in a bufio.Scanner.Scan() loop
-func (s *SerialDevice) scanThing() (actionID string, err error) {
-	scanner := bufio.NewScanner(s.Conn)
-	for scanner.Scan() {
-		return scanner.Text(), nil
-	}
-	return "", scanner.Err()
 }
 
 // Errors

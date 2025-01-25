@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
-	"time"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
@@ -71,7 +70,7 @@ func runSerialAndGUI(
 	mmpApp fyne.App, macroMgr *macro.MacroManager,
 ) {
 	// Connect Serial Device from the config
-	arduino, err := serialdevice.NewSerialDeviceFromConfig(conf, time.Millisecond*20)
+	arduino, err := serialdevice.NewSerialDeviceFromConfig(conf)
 	if err != nil {
 		views.ShowErrorDialogAndRun(err)
 		rootWin.ShowAndRun()

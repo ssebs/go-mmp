@@ -1,14 +1,45 @@
 package main
 
 import (
-	"fyne.io/fyne/v2"
-	"fyne.io/fyne/v2/app"
-	"fyne.io/fyne/v2/container"
-	"fyne.io/fyne/v2/widget"
-	"github.com/ssebs/go-mmp/controllers"
-	"github.com/ssebs/go-mmp/models"
-	"github.com/ssebs/go-mmp/views"
+	"fmt"
+	"log"
+
+	"github.com/ssebs/go-mmp/serialdevice"
 )
+
+// test serial
+func main() {
+	arduino, err := serialdevice.NewSerialDevice("COM7", 9600)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer arduino.CloseConnection()
+
+	buf := make([]byte, 1)
+
+	for {
+		// fmt.Println("starting scan")
+		n, err := arduino.Conn.Read(buf)
+		if err != nil {
+			log.Fatal(err)
+		}
+		if n != 0 {
+			str := fmt.Sprintf("- %s\n", buf[0:n])
+			fmt.Println(str)
+		}
+	}
+
+	// for {
+	// 	fmt.Println("starting scan")
+	// 	scanner := bufio.NewScanner(arduino.Conn)
+	// 	for scanner.Scan() {
+	// 		txt := scanner.Text()
+	// 		fmt.Println(":", txt)
+	// 	}
+	// 	fmt.Println("out of scan")
+	// }
+
+}
 
 // var TealColor = color.RGBA{0, 120, 120, 255}
 // var GrayColor = color.RGBA{60, 60, 60, 255}
@@ -61,35 +92,35 @@ import (
 // 	win.ShowAndRun()
 
 // }
-
+// serialdevice
 // test MacroEditorView
 
-func main() {
-	testApp := app.New()
-	win := testApp.NewWindow("TEST")
+// func main() {
+// 	testApp := app.New()
+// 	win := testApp.NewWindow("TEST")
 
-	mm := models.NewMacro("TestMacro", []*models.Action{
-		models.NewAction("PressRelease", "ENTER"),
-		models.NewAction("Delay", "200ms"),
-		models.NewAction("SendText", "GG"),
-		models.NewAction("PressRelease", "ENTER"),
-	})
-	mv := views.NewMacroEditorView(win)
-	mc := controllers.NewMacroController(mm, mv)
-	mc.UpdateMacroView()
+// 	mm := models.NewMacro("TestMacro", []*models.Action{
+// 		models.NewAction("PressRelease", "ENTER"),
+// 		models.NewAction("Delay", "200ms"),
+// 		models.NewAction("SendText", "GG"),
+// 		models.NewAction("PressRelease", "ENTER"),
+// 	})
+// 	mv := views.NewMacroEditorView(win)
+// 	mc := controllers.NewMacroController(mm, mv)
+// 	mc.UpdateMacroView()
 
-	win.SetContent(container.NewBorder(
-		widget.NewSeparator(),
-		widget.NewSeparator(),
-		widget.NewSeparator(),
-		widget.NewSeparator(),
-		mc.MacroEditorView,
-	))
+// 	win.SetContent(container.NewBorder(
+// 		widget.NewSeparator(),
+// 		widget.NewSeparator(),
+// 		widget.NewSeparator(),
+// 		widget.NewSeparator(),
+// 		mc.MacroEditorView,
+// 	))
 
-	win.CenterOnScreen()
-	win.Resize(fyne.NewSize(300, 500))
-	win.ShowAndRun()
-}
+// 	win.CenterOnScreen()
+// 	win.Resize(fyne.NewSize(300, 500))
+// 	win.ShowAndRun()
+// }
 
 // func main() {
 // 	cliFlags := config.ParseFlags()
