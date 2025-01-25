@@ -88,7 +88,7 @@ func (cc *MacroRunnerController) SetSerialDevice(s *serialdevice.SerialDevice) {
 func (cc *MacroRunnerController) ReconnectSerialDevice() error {
 	if cc.SerialDevice == nil {
 		// Create new device
-		dev, err := serialdevice.NewSerialDevice(cc.Config.Metadata.SerialPortName, cc.Config.Metadata.SerialBaudRate, cc.Delay)
+		dev, err := serialdevice.NewSerialDevice(cc.Config.Metadata.SerialPortName, cc.Config.Metadata.SerialBaudRate)
 		if err != nil {
 			return fmt.Errorf("failed to create serial device when it was previously not set, err: %e", err)
 		}
